@@ -1,0 +1,371 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Loader2, CheckCircle, XCircle, AlertCircle, ChevronRight, ArrowLeft } from 'lucide-react'
+import { cn, extractRepoInfo, getScoreColor, getScoreGrade } from '@/lib/utils'
+import type { AnalysisResult, AnalysisProgress, CategoryScore } from '@/types/analysis'
+
+interface Props {
+  repoUrl: string
+}
+
+export default function AnalysisScreen({ repoUrl }: Props) {
+  const [progress, setProgress] = useState<AnalysisProgress>({
+    stage: 'fetching',
+    message: 'Fetching repository data...',
+    percentage: 0,
+  })
+  const [result, setResult] = useState<AnalysisResult | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set())
+
+  useEffect(() => {
+    analyzeRepository()
+  }, [repoUrl])
+
+  const analyzeRepository = async () => {
+    try {
+      const repoInfo = extractRepoInfo(repoUrl)
+      if (!repoInfo) {
+        throw new Error('Invalid repository URL')
+      }
+
+      const response = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ repoUrl, ...repoInfo }),
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Analysis failed')
+      }
+
+      const reader = response.body?.getReader()
+      const decoder = new TextDecoder()
+
+      if (!reader) throw new Error('No response body')
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        const chunk = decoder.decode(value)
+        const lines = chunk.split('\n').filter(line => line.trim())
+
+        for (const line of lines) {
+          try {
+            const data = JSON.parse(line)
+            if (data.progress) {
+              setProgress(data.progress)
+            } else if (data.result) {
+              setResult(data.result)
+              setProgress({ stage: 'complete', message: 'Analysis complete', percentage: 100 })
+            }
+          } catch (e) {
+            // Ignore parsing errors
+          }
+        }
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Analysis failed')
+    }
+  }
+
+  const toggleCategory = (categoryName: string) => {
+    const newExpanded = new Set(expandedCategories)
+    if (newExpanded.has(categoryName)) {
+      newExpanded.delete(categoryName)
+    } else {
+      newExpanded.add(categoryName)
+    }
+    setExpandedCategories(newExpanded)
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-center">
+          <XCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold mb-2">Analysis Failed</h2>
+          <p className="text-gray-400">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-6 px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg font-semibold"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-black text-white">
+      <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-black to-blue-900/20" />
+      
+      <div className="relative z-10">
+        <header className="p-6 flex justify-between items-center">
+          <motion.button
+            onClick={() => window.location.reload()}
+            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+            whileHover={{ x: -5 }}
+          >
+            <ArrowLeft className="w-5 h-5" />
+            Back
+          </motion.button>
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg" />
+            <span className="font-bold text-xl">inprod.ai</span>
+          </div>
+        </header>
+
+        <main className="max-w-6xl mx-auto px-6 pb-12">
+          {!result ? (
+            <div className="mt-20">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-center mb-12"
+              >
+                <h2 className="text-3xl font-bold mb-4">Analyzing Repository</h2>
+                <p className="text-gray-400">{repoUrl}</p>
+              </motion.div>
+
+              <div className="max-w-2xl mx-auto">
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="bg-gray-900/50 backdrop-blur-xl rounded-xl p-8"
+                >
+                  <div className="flex items-center justify-center mb-6">
+                    <Loader2 className="w-12 h-12 text-purple-400 animate-spin" />
+                  </div>
+                  
+                  <div className="mb-6">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-sm text-gray-400">{progress.message}</span>
+                      <span className="text-sm text-gray-400">{progress.percentage}%</span>
+                    </div>
+                    <div className="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
+                      <motion.div
+                        className="h-full bg-gradient-to-r from-purple-500 to-blue-500"
+                        initial={{ width: 0 }}
+                        animate={{ width: `${progress.percentage}%` }}
+                        transition={{ duration: 0.3 }}
+                      />
+                    </div>
+                  </div>
+
+                  {progress.currentCategory && (
+                    <motion.p
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="text-center text-sm text-gray-500"
+                    >
+                      Analyzing: {progress.currentCategory}
+                    </motion.p>
+                  )}
+                </motion.div>
+              </div>
+            </div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              {/* Score Header */}
+              <div className="text-center mb-12">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 200, damping: 20 }}
+                  className="inline-block"
+                >
+                  <div className="relative">
+                    <div className="w-48 h-48 rounded-full bg-gradient-to-br from-purple-500/20 to-blue-500/20 flex items-center justify-center">
+                      <div className="text-center">
+                        <div className={cn("text-6xl font-bold", getScoreColor(result.overallScore))}>
+                          {Math.round(result.overallScore)}
+                        </div>
+                        <div className="text-2xl font-semibold mt-2">{getScoreGrade(result.overallScore)}</div>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+                <h2 className="text-3xl font-bold mt-6 mb-2">{result.repo}</h2>
+                <p className="text-gray-400">Production Readiness Score</p>
+              </div>
+
+              {/* Summary */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="bg-gray-900/50 backdrop-blur-xl rounded-xl p-6"
+                >
+                  <h3 className="text-lg font-semibold mb-3 text-green-400">Strengths</h3>
+                  <ul className="space-y-2">
+                    {result.summary.strengths.map((strength, i) => (
+                      <li key={i} className="text-sm text-gray-300 flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
+                        <span>{strength}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="bg-gray-900/50 backdrop-blur-xl rounded-xl p-6"
+                >
+                  <h3 className="text-lg font-semibold mb-3 text-orange-400">Areas to Improve</h3>
+                  <ul className="space-y-2">
+                    {result.summary.weaknesses.map((weakness, i) => (
+                      <li key={i} className="text-sm text-gray-300 flex items-start gap-2">
+                        <AlertCircle className="w-4 h-4 text-orange-400 mt-0.5 flex-shrink-0" />
+                        <span>{weakness}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="bg-gray-900/50 backdrop-blur-xl rounded-xl p-6"
+                >
+                  <h3 className="text-lg font-semibold mb-3 text-blue-400">Top Priorities</h3>
+                  <ul className="space-y-2">
+                    {result.summary.topPriorities.map((priority, i) => (
+                      <li key={i} className="text-sm text-gray-300 flex items-start gap-2">
+                        <span className="text-blue-400 font-semibold">{i + 1}.</span>
+                        <span>{priority}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
+              </div>
+
+              {/* Category Scores */}
+              <div className="space-y-4">
+                <h3 className="text-2xl font-bold mb-6">Detailed Analysis</h3>
+                {result.categories.map((category, i) => (
+                  <motion.div
+                    key={category.name}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.05 }}
+                  >
+                    <CategoryCard
+                      category={category}
+                      isExpanded={expandedCategories.has(category.name)}
+                      onToggle={() => toggleCategory(category.name)}
+                    />
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </main>
+      </div>
+    </div>
+  )
+}
+
+function CategoryCard({ 
+  category, 
+  isExpanded, 
+  onToggle 
+}: { 
+  category: CategoryScore
+  isExpanded: boolean
+  onToggle: () => void
+}) {
+  const scorePercentage = category.applicable ? (category.score / category.maxScore) * 100 : 0
+  
+  return (
+    <div className="bg-gray-900/50 backdrop-blur-xl rounded-xl overflow-hidden">
+      <button
+        onClick={onToggle}
+        className="w-full p-6 text-left hover:bg-gray-800/30 transition-colors"
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex-1">
+            <h4 className="text-lg font-semibold mb-2">{category.displayName}</h4>
+            {category.applicable ? (
+              <div className="flex items-center gap-4">
+                <div className="flex-1 max-w-md">
+                  <div className="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
+                    <motion.div
+                      className={cn("h-full", getScoreColor(scorePercentage).replace('text-', 'bg-'))}
+                      initial={{ width: 0 }}
+                      animate={{ width: `${scorePercentage}%` }}
+                      transition={{ duration: 0.5, delay: 0.2 }}
+                    />
+                  </div>
+                </div>
+                <span className={cn("font-semibold", getScoreColor(scorePercentage))}>
+                  {category.score}/{category.maxScore}
+                </span>
+              </div>
+            ) : (
+              <span className="text-sm text-gray-500">Not applicable for this repository</span>
+            )}
+          </div>
+          <ChevronRight className={cn("w-5 h-5 text-gray-400 transition-transform", isExpanded && "rotate-90")} />
+        </div>
+      </button>
+      
+      <AnimatePresence>
+        {isExpanded && (
+          <motion.div
+            initial={{ height: 0 }}
+            animate={{ height: "auto" }}
+            exit={{ height: 0 }}
+            transition={{ duration: 0.3 }}
+            className="overflow-hidden"
+          >
+            <div className="px-6 pb-6 space-y-4">
+              <p className="text-sm text-gray-400">{category.description}</p>
+              
+              {category.subcategories && category.subcategories.length > 0 && (
+                <div className="space-y-2">
+                  <h5 className="text-sm font-semibold text-gray-300">Breakdown:</h5>
+                  {category.subcategories.map((sub, i) => (
+                    <div key={i} className="flex items-center justify-between text-sm">
+                      <span className="text-gray-400">{sub.name}</span>
+                      <span className={cn("font-medium", sub.score === sub.maxScore ? "text-green-400" : "text-gray-300")}>
+                        {sub.score}/{sub.maxScore}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              
+              {category.recommendations.length > 0 && (
+                <div className="space-y-2">
+                  <h5 className="text-sm font-semibold text-gray-300">Recommendations:</h5>
+                  <ul className="space-y-1">
+                    {category.recommendations.map((rec, i) => (
+                      <li key={i} className="text-sm text-gray-400 flex items-start gap-2">
+                        <span className="text-purple-400">•</span>
+                        <span>{rec}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
