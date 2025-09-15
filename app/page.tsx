@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Github, Zap, Shield, Gauge } from 'lucide-react'
+import { Github, Zap, Shield, Gauge, CheckCircle2 } from 'lucide-react'
 import { extractRepoInfo } from '@/lib/utils'
 import AnalysisScreen from '@/components/AnalysisScreen'
 import UserMenu from '@/components/UserMenu'
@@ -45,7 +45,9 @@ export default function Home() {
             animate={{ opacity: 1, x: 0 }}
             className="flex items-center gap-2"
           >
-            <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg" />
+            <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg flex items-center justify-center">
+              <CheckCircle2 className="w-5 h-5 text-white" />
+            </div>
             <span className="font-bold text-xl">inprod.ai</span>
           </motion.div>
           <UserMenu />
@@ -60,12 +62,12 @@ export default function Home() {
               transition={{ duration: 0.5 }}
               className="text-center mb-12"
             >
-              <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+              <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent leading-tight">
                 Is Your Code Release Ready?
               </h1>
               <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-                Get instant 0-100 release readiness score with actionable fixes showing 
-                exactly how many points each improvement adds. Perfect for pre-launch gates.
+                Get an intelligent analysis of your GitHub repository's production readiness 
+                with comprehensive scoring across security, performance, and best practices.
               </p>
             </motion.div>
 
@@ -120,22 +122,22 @@ export default function Home() {
                 <div className="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center mx-auto mb-3">
                   <Shield className="w-6 h-6 text-purple-400" />
                 </div>
-                <h3 className="text-lg font-semibold mb-2">Security (40%)</h3>
-                <p className="text-gray-400 text-sm">Authentication, data protection, vulnerability scanning, and secure coding practices</p>
+                <h3 className="text-lg font-semibold mb-2">Security Analysis</h3>
+                <p className="text-gray-400 text-sm">Comprehensive security audit including authentication, data protection, and vulnerability detection</p>
               </div>
               <div className="text-center">
                 <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mx-auto mb-3">
                   <Zap className="w-6 h-6 text-blue-400" />
                 </div>
-                <h3 className="text-lg font-semibold mb-2">Performance (30%)</h3>
-                <p className="text-gray-400 text-sm">Speed optimization, scalability patterns, and resource efficiency</p>
+                <h3 className="text-lg font-semibold mb-2">Performance Check</h3>
+                <p className="text-gray-400 text-sm">Optimization analysis for speed, scalability, and resource efficiency</p>
               </div>
               <div className="text-center">
                 <div className="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center mx-auto mb-3">
                   <Gauge className="w-6 h-6 text-green-400" />
                 </div>
-                <h3 className="text-lg font-semibold mb-2">Best Practices (30%)</h3>
-                <p className="text-gray-400 text-sm">Testing, CI/CD, documentation, and code maintainability</p>
+                <h3 className="text-lg font-semibold mb-2">Best Practices</h3>
+                <p className="text-gray-400 text-sm">Evaluation of code quality, testing coverage, and deployment readiness</p>
               </div>
             </motion.div>
         </div>
