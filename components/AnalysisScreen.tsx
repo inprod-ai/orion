@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Loader2, CheckCircle, XCircle, AlertCircle, ChevronRight, ArrowLeft } from 'lucide-react'
+import { Loader2, CheckCircle, XCircle, AlertCircle, ChevronRight, ArrowLeft, Plus, Clock, Shield, Zap, Code } from 'lucide-react'
 import { cn, extractRepoInfo, getScoreColor, getScoreGrade } from '@/lib/utils'
-import type { AnalysisResult, AnalysisProgress, CategoryScore } from '@/types/analysis'
+import type { AnalysisResult, AnalysisProgress, CategoryScore, Finding } from '@/types/analysis'
 
 interface Props {
   repoUrl: string
@@ -196,8 +196,34 @@ export default function AnalysisScreen({ repoUrl }: Props) {
                   </div>
                 </motion.div>
                 <h2 className="text-3xl font-bold mt-6 mb-2">{result.repo}</h2>
-                <p className="text-gray-400">Production Readiness Score</p>
+                <p className="text-gray-400">Release Readiness Score</p>
+                
+                {/* Confidence Badge */}
+                {result.confidence && (
+                  <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-gray-900/50 rounded-full">
+                    <span className="text-sm text-gray-400">Confidence:</span>
+                    <span className={cn(
+                      "text-sm font-semibold",
+                      result.confidence.level === 'high' ? 'text-green-400' : 
+                      result.confidence.level === 'medium' ? 'text-yellow-400' : 'text-orange-400'
+                    )}>
+                      {result.confidence.level.charAt(0).toUpperCase() + result.confidence.level.slice(1)}
+                    </span>
+                  </div>
+                )}
               </div>
+
+              {/* Top Findings */}
+              {result.findings && result.findings.length > 0 && (
+                <div className="mb-12">
+                  <h3 className="text-2xl font-bold mb-6">Top Findings</h3>
+                  <div className="space-y-4">
+                    {result.findings.slice(0, 5).map((finding, i) => (
+                      <FindingCard key={finding.id} finding={finding} index={i} />
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Summary */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
@@ -367,5 +393,97 @@ function CategoryCard({
         )}
       </AnimatePresence>
     </div>
+  )
+}
+
+function FindingCard({ finding, index }: { finding: Finding; index: number }) {
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      case 'security':
+        return <Shield className="w-5 h-5" />
+      case 'performance':
+        return <Zap className="w-5 h-5" />
+      case 'best-practices':
+        return <Code className="w-5 h-5" />
+      default:
+        return <AlertCircle className="w-5 h-5" />
+    }
+  }
+
+  const getEffortColor = (effort: string) => {
+    switch (effort) {
+      case 'easy':
+        return 'text-green-400 bg-green-400/10'
+      case 'medium':
+        return 'text-yellow-400 bg-yellow-400/10'
+      case 'hard':
+        return 'text-red-400 bg-red-400/10'
+      default:
+        return 'text-gray-400 bg-gray-400/10'
+    }
+  }
+
+  const getSeverityColor = (severity: string) => {
+    switch (severity) {
+      case 'critical':
+        return 'text-red-400'
+      case 'high':
+        return 'text-orange-400'
+      case 'medium':
+        return 'text-yellow-400'
+      case 'low':
+        return 'text-blue-400'
+      default:
+        return 'text-gray-400'
+    }
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: index * 0.1 }}
+      className="bg-gray-900/50 backdrop-blur-xl rounded-xl p-6 hover:bg-gray-800/50 transition-colors"
+    >
+      <div className="flex items-start justify-between mb-4">
+        <div className="flex items-start gap-3">
+          <div className={cn("p-2 rounded-lg", 
+            finding.category === 'security' ? 'bg-red-500/10 text-red-400' :
+            finding.category === 'performance' ? 'bg-blue-500/10 text-blue-400' :
+            'bg-purple-500/10 text-purple-400'
+          )}>
+            {getCategoryIcon(finding.category)}
+          </div>
+          <div className="flex-1">
+            <h4 className="text-lg font-semibold mb-1">{finding.title}</h4>
+            <p className="text-sm text-gray-400 mb-3">{finding.description}</p>
+            <div className="flex items-center gap-4 text-sm">
+              <span className={cn("font-medium", getSeverityColor(finding.severity))}>
+                {finding.severity.charAt(0).toUpperCase() + finding.severity.slice(1)} Priority
+              </span>
+              <span className="text-gray-500">•</span>
+              <div className="flex items-center gap-1">
+                <Clock className="w-4 h-4 text-gray-500" />
+                <span className="text-gray-400">{finding.estimatedTime}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-col items-end gap-2">
+          <div className="flex items-center gap-2 bg-green-500/10 text-green-400 px-3 py-1 rounded-full">
+            <Plus className="w-4 h-4" />
+            <span className="font-bold">{finding.points} points</span>
+          </div>
+          <span className={cn("text-xs px-2 py-1 rounded-full font-medium", getEffortColor(finding.effort))}>
+            {finding.effort === 'easy' ? '🟢 Easy' : finding.effort === 'medium' ? '🟡 Medium' : '🔴 Hard'}
+          </span>
+        </div>
+      </div>
+      <div className="mt-4 p-4 bg-gray-800/50 rounded-lg">
+        <p className="text-sm text-gray-300">
+          <span className="font-semibold text-gray-200">How to fix:</span> {finding.fix}
+        </p>
+      </div>
+    </motion.div>
   )
 }

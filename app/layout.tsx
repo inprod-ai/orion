@@ -5,13 +5,13 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "inprod.ai - Production Readiness Analysis",
-  description: "Get an intelligent analysis of your GitHub repository's production readiness with comprehensive scoring across security, performance, and best practices.",
-  keywords: "production readiness, code analysis, github, repository analysis, security audit, performance check",
+  title: "inprod.ai - Release Readiness Analysis",
+  description: "Instant 0-100 release readiness score with actionable fixes. See exactly how many points each improvement adds. Perfect for pre-launch gates and due diligence.",
+  keywords: "release readiness, code analysis, github, repository analysis, security audit, performance check, pre-launch, due diligence",
   authors: [{ name: "inprod.ai" }],
   openGraph: {
-    title: "inprod.ai - Is Your Code Production Ready?",
-    description: "Comprehensive production readiness analysis for GitHub repositories",
+    title: "inprod.ai - Is Your Code Release Ready?",
+    description: "Instant release readiness score with quantified remediation path",
     type: "website",
     url: "https://inprod.ai",
   },

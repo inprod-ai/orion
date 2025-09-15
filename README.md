@@ -1,14 +1,15 @@
 # inprod.ai
 
-Production readiness analysis for GitHub repositories.
+Release readiness analysis for GitHub repositories.
 
 ## Features
 
-- Comprehensive analysis across 12+ categories
-- Security, performance, and best practices evaluation
-- Intelligent scoring with AI-powered insights
+- Instant 0-100 release readiness score
+- Actionable findings showing exactly how many points each fix adds
+- Focus on Security (40%), Performance (30%), and Best Practices (30%)
+- Confidence scoring based on available repository data
 - Clean, futuristic UI with real-time progress updates
-- Rate-limited to prevent abuse (5 analyses per IP per day)
+- Perfect for pre-launch gates and due diligence
 
 ## Setup
 

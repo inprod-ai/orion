@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { ANALYSIS_CATEGORIES } from '@/types/analysis'
-import type { AnalysisResult, CategoryScore } from '@/types/analysis'
+import type { AnalysisResult, CategoryScore, Finding } from '@/types/analysis'
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY!,
@@ -97,6 +97,28 @@ export async function POST(request: NextRequest) {
           const hasRequirements = fileNames.includes('requirements.txt') || fileNames.includes('pyproject.toml')
           const hasEnvExample = fileNames.includes('.env.example') || fileNames.includes('.env.sample')
 
+          // Calculate confidence score
+          const confidenceFactors = []
+          let confidenceScore = 50 // Base confidence
+          
+          if (hasTests) {
+            confidenceScore += 25
+          } else {
+            confidenceFactors.push('No test files detected')
+          }
+          
+          if (hasCI) {
+            confidenceScore += 25
+          } else {
+            confidenceFactors.push('No CI/CD configuration found')
+          }
+          
+          if (!hasReadme) {
+            confidenceFactors.push('No README file')
+          }
+          
+          const confidenceLevel = confidenceScore >= 75 ? 'high' : confidenceScore >= 50 ? 'medium' : 'low'
+
           // Prepare context for Claude
           const context = {
             repoName: repo,
@@ -127,28 +149,27 @@ export async function POST(request: NextRequest) {
             } 
           }) + '\n'))
 
-          const prompt = `Analyze this GitHub repository for production readiness and provide scores for each category.
+          const prompt = `Analyze this GitHub repository for production readiness focusing on Security (40%), Performance (30%), and Best Practices (30%).
 
 Repository Context:
 ${JSON.stringify(context, null, 2)}
 
-For each of these categories, provide:
-1. A score out of the max score
-2. Whether it's applicable (true/false) - e.g., Financial/Billing might not apply to all projects
-3. A brief description of findings
-4. 2-3 specific recommendations
-5. Subcategories with individual scores if applicable
+Provide a comprehensive analysis with:
 
-Categories:
-${ANALYSIS_CATEGORIES.map(cat => `- ${cat.name} (weight: ${cat.weight})`).join('\n')}
+1. Category Scores for:
+${ANALYSIS_CATEGORIES.map(cat => `- ${cat.name} (weight: ${cat.weight}%)`).join('\n')}
 
-Also provide:
-- Overall score (0-100)
-- 3 main strengths
-- 3 main weaknesses  
-- 3 top priorities to address
+2. Top 5-7 actionable findings that would improve the score, each with:
+   - Clear title and description
+   - Category (security/performance/best-practices)
+   - Severity (critical/high/medium/low)
+   - Points that would be added if fixed (critical: 8-10, high: 5-7, medium: 2-4, low: 1)
+   - Effort level (easy/medium/hard) and time estimate
+   - Specific fix instructions
 
-Respond in JSON format matching this structure:
+3. Summary with strengths, weaknesses, and priorities
+
+Respond in JSON format:
 {
   "overallScore": number,
   "categories": [
@@ -160,13 +181,20 @@ Respond in JSON format matching this structure:
       "applicable": boolean,
       "description": string,
       "recommendations": string[],
-      "subcategories": [
-        {
-          "name": string,
-          "score": number,
-          "maxScore": number
-        }
-      ]
+      "subcategories": []
+    }
+  ],
+  "findings": [
+    {
+      "id": string,
+      "title": string,
+      "description": string,
+      "category": "security" | "performance" | "best-practices",
+      "severity": "critical" | "high" | "medium" | "low",
+      "points": number,
+      "effort": "easy" | "medium" | "hard",
+      "estimatedTime": string,
+      "fix": string
     }
   ],
   "summary": {
@@ -216,6 +244,12 @@ Respond in JSON format matching this structure:
             overallScore: analysisData.overallScore,
             timestamp: new Date(),
             categories: analysisData.categories,
+            findings: analysisData.findings || [],
+            confidence: {
+              level: confidenceLevel,
+              score: confidenceScore,
+              factors: confidenceFactors
+            },
             summary: analysisData.summary
           }
 
