@@ -2,6 +2,8 @@ import { NextRequest } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { ANALYSIS_CATEGORIES } from '@/types/analysis'
 import type { AnalysisResult, CategoryScore, Finding } from '@/types/analysis'
+import { auth } from '@/lib/auth'
+import { prisma } from '@/lib/prisma'
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY!,
@@ -34,6 +36,38 @@ export async function POST(request: NextRequest) {
   try {
     const { repoUrl, owner, repo } = await request.json()
     
+    // Get authenticated session
+    const session = await auth()
+    
+    // Check if user has exceeded free tier limits
+    if (session?.user) {
+      const user = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { tier: true, monthlyScans: true, lastResetAt: true }
+      })
+      
+      if (user) {
+        // Reset monthly scans if it's a new month
+        const now = new Date()
+        const lastReset = new Date(user.lastResetAt)
+        if (now.getMonth() !== lastReset.getMonth() || now.getFullYear() !== lastReset.getFullYear()) {
+          await prisma.user.update({
+            where: { id: session.user.id },
+            data: { monthlyScans: 0, lastResetAt: now }
+          })
+          user.monthlyScans = 0
+        }
+        
+        // Check scan limits for free tier
+        if (user.tier === 'FREE' && user.monthlyScans >= 3) {
+          return new Response(JSON.stringify({ error: 'Monthly scan limit reached. Upgrade to Pro for unlimited scans.' }), {
+            status: 403,
+            headers: { 'Content-Type': 'application/json' },
+          })
+        }
+      }
+    }
+    
     // Rate limiting
     const ip = request.headers.get('x-forwarded-for') || 'unknown'
     if (!checkRateLimit(ip)) {
@@ -57,14 +91,19 @@ export async function POST(request: NextRequest) {
             } 
           }) + '\n'))
 
-          // Fetch repository data from GitHub
-          const repoResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}`)
+          // Fetch all GitHub data in parallel for better performance
+          const [repoResponse, readmeResponse, languagesResponse, commitsResponse, contentsResponse] = await Promise.all([
+            fetch(`https://api.github.com/repos/${owner}/${repo}`),
+            fetch(`https://api.github.com/repos/${owner}/${repo}/readme`),
+            fetch(`https://api.github.com/repos/${owner}/${repo}/languages`),
+            fetch(`https://api.github.com/repos/${owner}/${repo}/commits?per_page=5`), // Reduced from 10
+            fetch(`https://api.github.com/repos/${owner}/${repo}/contents`)
+          ])
+
           if (!repoResponse.ok) {
             throw new Error('Repository not found')
           }
-          const repoData = await repoResponse.json()
 
-          // Fetch README
           controller.enqueue(encoder.encode(JSON.stringify({ 
             progress: { 
               stage: 'fetching', 
@@ -73,29 +112,27 @@ export async function POST(request: NextRequest) {
             } 
           }) + '\n'))
 
-          const readmeResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}/readme`)
+          // Parse responses in parallel
+          const [repoData, languages, recentCommits, contents] = await Promise.all([
+            repoResponse.json(),
+            languagesResponse.ok ? languagesResponse.json() : {},
+            commitsResponse.ok ? commitsResponse.json() : [],
+            contentsResponse.ok ? contentsResponse.json() : []
+          ])
+
           const hasReadme = readmeResponse.ok
 
-          // Fetch languages
-          const languagesResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}/languages`)
-          const languages = languagesResponse.ok ? await languagesResponse.json() : {}
-
-          // Fetch recent commits
-          const commitsResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}/commits?per_page=10`)
-          const recentCommits = commitsResponse.ok ? await commitsResponse.json() : []
-
-          // Fetch directory structure (root level)
-          const contentsResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents`)
-          const contents = contentsResponse.ok ? await contentsResponse.json() : []
-
-          // Check for important files
-          const fileNames = contents.map((item: any) => item.name.toLowerCase())
-          const hasTests = fileNames.some((name: string) => name.includes('test') || name.includes('spec'))
-          const hasCI = fileNames.includes('.github') || fileNames.includes('.circleci') || fileNames.includes('.gitlab-ci.yml')
-          const hasDocker = fileNames.includes('dockerfile') || fileNames.includes('docker-compose.yml')
-          const hasPackageJson = fileNames.includes('package.json')
-          const hasRequirements = fileNames.includes('requirements.txt') || fileNames.includes('pyproject.toml')
-          const hasEnvExample = fileNames.includes('.env.example') || fileNames.includes('.env.sample')
+          // Check for important files (optimized)
+          const fileNames = new Set(contents.map((item: any) => item.name.toLowerCase()))
+          const hasTests = contents.some((item: any) => {
+            const name = item.name.toLowerCase()
+            return name.includes('test') || name.includes('spec') || name === '__tests__' || name === 'tests'
+          })
+          const hasCI = fileNames.has('.github') || fileNames.has('.circleci') || fileNames.has('.gitlab-ci.yml')
+          const hasDocker = fileNames.has('dockerfile') || fileNames.has('docker-compose.yml') || fileNames.has('docker-compose.yaml')
+          const hasPackageJson = fileNames.has('package.json')
+          const hasRequirements = fileNames.has('requirements.txt') || fileNames.has('pyproject.toml') || fileNames.has('pipfile')
+          const hasEnvExample = fileNames.has('.env.example') || fileNames.has('.env.sample')
 
           // Calculate confidence score
           const confidenceFactors = []
@@ -137,7 +174,7 @@ export async function POST(request: NextRequest) {
             openIssues: repoData.open_issues_count,
             lastUpdated: repoData.updated_at,
             recentCommitCount: recentCommits.length,
-            fileStructure: fileNames.slice(0, 20), // First 20 files/folders
+            fileStructure: Array.from(fileNames).slice(0, 15), // First 15 files/folders
           }
 
           // Analyze with Claude
@@ -153,6 +190,8 @@ export async function POST(request: NextRequest) {
 
 Repository Context:
 ${JSON.stringify(context, null, 2)}
+
+IMPORTANT: Be concise in your responses. Focus on the most critical issues. Each finding description should be 1-2 sentences max.
 
 Provide a comprehensive analysis with:
 
@@ -206,7 +245,7 @@ Respond in JSON format:
 
           const response = await anthropic.messages.create({
             model: 'claude-3-5-sonnet-20241022',
-            max_tokens: 4000,
+            max_tokens: 2500, // Reduced for faster response
             temperature: 0.3,
             messages: [{
               role: 'user',
@@ -226,7 +265,7 @@ Respond in JSON format:
               } 
             }) + '\n'))
             progressPercentage += Math.floor(50 / ANALYSIS_CATEGORIES.length)
-            await new Promise(resolve => setTimeout(resolve, 300)) // Simulate processing time
+            await new Promise(resolve => setTimeout(resolve, 100)) // Reduced delay
           }
 
           // Parse Claude's response
@@ -253,6 +292,56 @@ Respond in JSON format:
             summary: analysisData.summary
           }
 
+          // Save scan to database
+          let savedScan
+          if (session?.user) {
+            savedScan = await prisma.scan.create({
+              data: {
+                userId: session.user.id,
+                repoUrl,
+                owner,
+                repo,
+                overallScore: result.overallScore,
+                confidence: result.confidence,
+                categories: result.categories,
+                findings: result.findings,
+                summary: result.summary,
+              }
+            })
+            
+            // Increment user's monthly scan count
+            await prisma.user.update({
+              where: { id: session.user.id },
+              data: { monthlyScans: { increment: 1 } }
+            })
+          } else {
+            // Save anonymous scan
+            savedScan = await prisma.scan.create({
+              data: {
+                repoUrl,
+                owner,
+                repo,
+                overallScore: result.overallScore,
+                confidence: result.confidence,
+                categories: result.categories,
+                findings: result.findings,
+                summary: result.summary,
+              }
+            })
+          }
+          
+          // Apply free tier restrictions if not authenticated or free user
+          let finalResult = result
+          if (!session?.user || (session.user as any).tier === 'FREE') {
+            // Only show top 2 findings for free tier
+            finalResult = {
+              ...result,
+              findings: result.findings.slice(0, 2),
+              isFreeTier: true,
+              totalFindings: result.findings.length
+            } as any
+          }
+
           // Send final result
           controller.enqueue(encoder.encode(JSON.stringify({ 
             progress: { 
@@ -262,7 +351,7 @@ Respond in JSON format:
             } 
           }) + '\n'))
 
-          controller.enqueue(encoder.encode(JSON.stringify({ result }) + '\n'))
+          controller.enqueue(encoder.encode(JSON.stringify({ result: finalResult, scanId: savedScan.id }) + '\n'))
           controller.close()
 
         } catch (error) {

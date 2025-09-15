@@ -46,6 +46,8 @@ export interface AnalysisResult {
     weaknesses: string[]
     topPriorities: string[]
   }
+  isFreeTier?: boolean // True if showing limited results
+  totalFindings?: number // Total number of findings (before filtering)
 }
 
 export interface AnalysisProgress {

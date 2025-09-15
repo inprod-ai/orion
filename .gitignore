@@ -388,3 +388,4 @@ dump.rdb
 .env.production.local
 .env.development.local
 .env.test.local
+/lib/generated/prisma

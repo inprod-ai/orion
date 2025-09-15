@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { Github, Zap, Shield, Gauge } from 'lucide-react'
 import { extractRepoInfo } from '@/lib/utils'
 import AnalysisScreen from '@/components/AnalysisScreen'
+import UserMenu from '@/components/UserMenu'
 
 export default function Home() {
   const [repoUrl, setRepoUrl] = useState('')
@@ -47,6 +48,7 @@ export default function Home() {
             <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg" />
             <span className="font-bold text-xl">inprod.ai</span>
           </motion.div>
+          <UserMenu />
         </header>
 
         {/* Main content */}

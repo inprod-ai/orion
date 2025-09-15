@@ -2,15 +2,18 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Loader2, CheckCircle, XCircle, AlertCircle, ChevronRight, ArrowLeft, Plus, Clock, Shield, Zap, Code } from 'lucide-react'
+import { Loader2, CheckCircle, XCircle, AlertCircle, ChevronRight, ArrowLeft, Plus, Clock, Shield, Zap, Code, Lock, Crown, Github, Download } from 'lucide-react'
 import { cn, extractRepoInfo, getScoreColor, getScoreGrade } from '@/lib/utils'
 import type { AnalysisResult, AnalysisProgress, CategoryScore, Finding } from '@/types/analysis'
+import { useSession } from 'next-auth/react'
+import { signIn } from 'next-auth/react'
 
 interface Props {
   repoUrl: string
 }
 
 export default function AnalysisScreen({ repoUrl }: Props) {
+  const { data: session } = useSession()
   const [progress, setProgress] = useState<AnalysisProgress>({
     stage: 'fetching',
     message: 'Fetching repository data...',
@@ -19,6 +22,8 @@ export default function AnalysisScreen({ repoUrl }: Props) {
   const [result, setResult] = useState<AnalysisResult | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set())
+  const [scanId, setScanId] = useState<string | null>(null)
+  const [exporting, setExporting] = useState(false)
 
   useEffect(() => {
     analyzeRepository()
@@ -62,6 +67,10 @@ export default function AnalysisScreen({ repoUrl }: Props) {
             } else if (data.result) {
               setResult(data.result)
               setProgress({ stage: 'complete', message: 'Analysis complete', percentage: 100 })
+              // Save scanId if returned
+              if (data.scanId) {
+                setScanId(data.scanId)
+              }
             }
           } catch (e) {
             // Ignore parsing errors
@@ -211,6 +220,47 @@ export default function AnalysisScreen({ repoUrl }: Props) {
                     </span>
                   </div>
                 )}
+                
+                {/* Export button for Pro users */}
+                {session?.user && (session.user as any).tier === 'PRO' && scanId && (
+                  <button
+                    onClick={async () => {
+                      setExporting(true)
+                      try {
+                        const response = await fetch('/api/export/pdf', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ scanId }),
+                        })
+                        
+                        if (response.ok) {
+                          const blob = await response.blob()
+                          const url = window.URL.createObjectURL(blob)
+                          const a = document.createElement('a')
+                          a.href = url
+                          a.download = `${result.repo}-analysis.pdf`
+                          document.body.appendChild(a)
+                          a.click()
+                          window.URL.revokeObjectURL(url)
+                          document.body.removeChild(a)
+                        }
+                      } catch (err) {
+                        console.error('Export failed:', err)
+                      } finally {
+                        setExporting(false)
+                      }
+                    }}
+                    disabled={exporting}
+                    className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
+                  >
+                    {exporting ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Download className="w-4 h-4" />
+                    )}
+                    Export PDF
+                  </button>
+                )}
               </div>
 
               {/* Top Findings */}
@@ -218,9 +268,48 @@ export default function AnalysisScreen({ repoUrl }: Props) {
                 <div className="mb-12">
                   <h3 className="text-2xl font-bold mb-6">Top Findings</h3>
                   <div className="space-y-4">
-                    {result.findings.slice(0, 5).map((finding, i) => (
+                    {result.findings.map((finding, i) => (
                       <FindingCard key={finding.id} finding={finding} index={i} />
                     ))}
+                    
+                    {/* Show blurred findings for free tier */}
+                    {result.isFreeTier && result.totalFindings && result.totalFindings > 2 && (
+                      <>
+                        {[...Array(Math.min(3, result.totalFindings - 2))].map((_, i) => (
+                          <BlurredFindingCard key={`blurred-${i}`} index={i + 2} />
+                        ))}
+                        
+                        <motion.div
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 rounded-xl p-8 text-center border border-purple-500/20"
+                        >
+                          <Crown className="w-12 h-12 text-purple-400 mx-auto mb-4" />
+                          <h4 className="text-xl font-bold mb-2">
+                            {result.totalFindings - 2} More Critical Findings Hidden
+                          </h4>
+                          <p className="text-gray-400 mb-6">
+                            Unlock all findings, detailed recommendations, and PDF exports with Pro
+                          </p>
+                          {session ? (
+                            <button
+                              onClick={() => window.location.href = '/upgrade'}
+                              className="px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-lg font-semibold hover:shadow-lg transition-shadow"
+                            >
+                              Upgrade to Pro
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => signIn('github')}
+                              className="px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-lg font-semibold hover:shadow-lg transition-shadow flex items-center gap-2 mx-auto"
+                            >
+                              <Github className="w-5 h-5" />
+                              Sign in to Unlock Pro Features
+                            </button>
+                          )}
+                        </motion.div>
+                      </>
+                    )}
                   </div>
                 </div>
               )}
@@ -483,6 +572,46 @@ function FindingCard({ finding, index }: { finding: Finding; index: number }) {
         <p className="text-sm text-gray-300">
           <span className="font-semibold text-gray-200">How to fix:</span> {finding.fix}
         </p>
+      </div>
+    </motion.div>
+  )
+}
+
+function BlurredFindingCard({ index }: { index: number }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: index * 0.1 }}
+      className="bg-gray-900/50 backdrop-blur-xl rounded-xl p-6 relative overflow-hidden"
+    >
+      {/* Blur overlay */}
+      <div className="absolute inset-0 backdrop-blur-md bg-gray-900/70 z-10 flex items-center justify-center">
+        <Lock className="w-8 h-8 text-gray-500" />
+      </div>
+      
+      {/* Placeholder content */}
+      <div className="filter blur-sm">
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex items-start gap-3">
+            <div className="p-2 rounded-lg bg-gray-800 w-10 h-10" />
+            <div className="flex-1">
+              <div className="h-6 bg-gray-800 rounded w-3/4 mb-2" />
+              <div className="h-4 bg-gray-800 rounded w-full mb-3" />
+              <div className="flex items-center gap-4">
+                <div className="h-4 bg-gray-800 rounded w-20" />
+                <div className="h-4 bg-gray-800 rounded w-20" />
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-col items-end gap-2">
+            <div className="h-8 bg-gray-800 rounded-full w-24" />
+            <div className="h-6 bg-gray-800 rounded-full w-16" />
+          </div>
+        </div>
+        <div className="mt-4 p-4 bg-gray-800/50 rounded-lg">
+          <div className="h-4 bg-gray-700 rounded w-full" />
+        </div>
       </div>
     </motion.div>
   )
