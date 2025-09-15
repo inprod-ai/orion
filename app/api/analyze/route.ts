@@ -4,46 +4,49 @@ import { ANALYSIS_CATEGORIES } from '@/types/analysis'
 import type { AnalysisResult, CategoryScore, Finding } from '@/types/analysis'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { analyzeRequestSchema } from '@/lib/validation'
-import { ANTHROPIC_API_KEY } from '@/lib/env'
-import { rateLimit } from '@/lib/rate-limit'
-import { z } from 'zod'
 
 const anthropic = new Anthropic({
-  apiKey: ANTHROPIC_API_KEY,
+  apiKey: process.env.ANTHROPIC_API_KEY!,
 })
 
-// Removed in-memory rate limiting - now using persistent database storage
+// Rate limiting cache
+const ipRequestCounts = new Map<string, { count: number; resetTime: number }>()
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now()
+  const limit = 5 // 5 requests per day
+  const windowMs = 24 * 60 * 60 * 1000 // 24 hours
+
+  const record = ipRequestCounts.get(ip)
+  
+  if (!record || now > record.resetTime) {
+    ipRequestCounts.set(ip, { count: 1, resetTime: now + windowMs })
+    return true
+  }
+
+  if (record.count >= limit) {
+    return false
+  }
+
+  record.count++
+  return true
+}
 
 export async function POST(request: NextRequest) {
   try {
-    // Validate request size
-    const contentLength = request.headers.get('content-length')
-    if (contentLength && parseInt(contentLength) > 1024) { // 1KB limit
-      return new Response(JSON.stringify({ error: 'Request too large' }), {
-        status: 413,
-        headers: { 'Content-Type': 'application/json' },
-      })
-    }
-
-    const body = await request.json()
-    
-    // Validate input
-    const validationResult = analyzeRequestSchema.safeParse(body)
-    if (!validationResult.success) {
-      return new Response(JSON.stringify({ 
-        error: 'Invalid input', 
-        details: validationResult.error.errors.map(e => e.message)
-      }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      })
-    }
-
-    const { repoUrl, owner, repo } = validationResult.data
+    const { repoUrl, owner, repo } = await request.json()
     
     // Get authenticated session
     const session = await auth()
+    
+    // Rate limiting
+    const ip = request.headers.get('x-forwarded-for') || 'unknown'
+    if (!checkRateLimit(ip)) {
+      return new Response(JSON.stringify({ error: 'Rate limit exceeded. Try again tomorrow.' }), {
+        status: 429,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
     
     // Check if user has exceeded free tier limits
     if (session?.user) {
