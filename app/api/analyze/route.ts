@@ -5,6 +5,9 @@ import type { AnalysisResult, CategoryScore, Finding } from '@/types/analysis'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
+// Increase timeout for AI analysis (Vercel Pro: up to 300s)
+export const maxDuration = 60
+
 // Validate required environment variables
 if (!process.env.ANTHROPIC_API_KEY) {
   throw new Error('ANTHROPIC_API_KEY is required')
@@ -301,9 +304,10 @@ Respond in JSON format:
   }
 }`
 
+          // Use Haiku for speed (3-5s vs 30-60s with Sonnet)
           const response = await anthropic.messages.create({
-            model: 'claude-3-5-sonnet-20241022',
-            max_tokens: 2500, // Reduced for faster response
+            model: 'claude-3-5-haiku-20241022',
+            max_tokens: 2500,
             temperature: 0.3,
             messages: [{
               role: 'user',
