@@ -1,0 +1,267 @@
+# inprod.ai Cursor Rules
+
+## Project Overview
+Production readiness analysis platform built with Next.js 16, TypeScript, Prisma, and custom GitHub OAuth.
+
+## TypeScript Conventions
+
+### Strict Mode
+- TypeScript strict mode is enabled. Never use `// @ts-ignore` or `any` without explicit justification.
+- Prefer explicit return types on exported functions.
+- Use `unknown` over `any` when type is truly unknown, then narrow with type guards.
+
+### Type Definitions
+- Define interfaces for all API request/response shapes.
+- Colocate types with their usage when specific to one file.
+- Share common types in `types/` or `lib/inprod/types.ts`.
+- Use `type` for unions/intersections, `interface` for object shapes that may be extended.
+
+```typescript
+// Good
+interface UserData {
+  id: string
+  name: string | null
+  tier: 'FREE' | 'PRO' | 'ENTERPRISE'
+}
+
+// Good - union type
+type Severity = 'blocker' | 'critical' | 'warning' | 'info'
+```
+
+## React Patterns
+
+### Components
+- Use function components with TypeScript, never class components.
+- Props interface named `{ComponentName}Props` or inline for simple cases.
+- Destructure props in function signature.
+- Use `'use client'` directive only when needed (useState, useEffect, event handlers).
+
+```typescript
+// Good
+interface RepoSelectorProps {
+  onSelectRepo: (url: string) => void
+}
+
+export default function RepoSelector({ onSelectRepo }: RepoSelectorProps) {
+  // ...
+}
+```
+
+### Hooks
+- Custom hooks in `hooks/` directory, named `use{Name}`.
+- Prefer `useCallback` for functions passed as props to prevent rerenders.
+- Avoid `useEffect` for derived state; compute inline or use `useMemo`.
+
+### State Management
+- Local state with `useState` for component-specific state.
+- Fetch data with `fetch` in `useEffect` or dedicated fetcher functions.
+- No Redux/Zustand unless complexity justifies it.
+
+## API Route Patterns
+
+### Structure
+Every API route follows this pattern:
+```typescript
+// =============================================================================
+// API: /api/example - Brief description
+// =============================================================================
+
+import { NextRequest, NextResponse } from 'next/server'
+import { getSession } from '@/lib/github-auth'
+import { prisma } from '@/lib/prisma'
+
+export async function GET(request: NextRequest) {
+  try {
+    // 1. Auth check (if needed)
+    const session = await getSession()
+    if (!session?.userId) {
+      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
+    }
+    
+    // 2. Input validation
+    // 3. Business logic
+    // 4. Return response
+    
+    return NextResponse.json({ data })
+  } catch (error) {
+    console.error('Error description:', error)
+    return NextResponse.json(
+      { error: 'User-friendly error message' },
+      { status: 500 }
+    )
+  }
+}
+```
+
+### Error Handling
+- Wrap entire handler in try/catch.
+- Return JSON errors with appropriate status codes: 400 (bad input), 401 (unauth), 403 (forbidden), 404 (not found), 500 (server error).
+- Log errors with `console.error` including context.
+- Never expose stack traces or internal details to client.
+
+### Security
+- Always validate and sanitize user input.
+- Use `parseGitHubUrl()` for URL inputs (SSRF protection).
+- Check session ownership before returning user-specific data.
+- Set request size limits with `content-length` header checks.
+
+## Prisma Best Practices
+
+### Queries
+- Use `select` to fetch only needed fields.
+- Use `findUnique` for single record by unique field, `findFirst` for other single records.
+- Always handle null results.
+
+```typescript
+// Good
+const user = await prisma.user.findUnique({
+  where: { id: session.userId },
+  select: { tier: true, monthlyScans: true }
+})
+
+if (!user) {
+  return NextResponse.json({ error: 'User not found' }, { status: 404 })
+}
+```
+
+### Mutations
+- Use `upsert` for create-or-update patterns.
+- Use transactions for multi-table operations.
+- Validate data before database operations.
+
+### Performance
+- Avoid N+1 queries; use `include` or batch operations.
+- Use pagination for list endpoints.
+- Add database indexes for frequently queried fields.
+
+## Naming Conventions
+
+### Variables & Functions
+- `camelCase` for functions, variables, object properties.
+- Verb prefixes for functions: `get`, `fetch`, `create`, `update`, `delete`, `handle`, `on`.
+
+```typescript
+// Good
+const fetchRepos = async () => { }
+const handleSignOut = () => { }
+const isSignedIn = user !== null
+```
+
+### Components & Types
+- `PascalCase` for React components, interfaces, types, enums.
+
+```typescript
+// Good
+interface AnalysisResult { }
+type Category = 'security' | 'testing'
+function RepoSelector() { }
+```
+
+### Files
+- Components: `PascalCase.tsx` (e.g., `UserMenu.tsx`)
+- Utilities/lib: `kebab-case.ts` (e.g., `github-auth.ts`)
+- API routes: `route.ts` in appropriate directory
+- Types: `types.ts` or `{domain}.ts`
+
+### Constants
+- `SCREAMING_SNAKE_CASE` for true constants.
+- Keep at top of file or in dedicated constants file.
+
+```typescript
+const MAX_FILE_SIZE = 1024 * 1024 // 1MB
+const RATE_LIMIT_REQUESTS = 3
+```
+
+## Import Order
+
+Organize imports in this order with blank lines between groups:
+
+```typescript
+// 1. Node/Next.js built-ins
+import { NextRequest, NextResponse } from 'next/server'
+
+// 2. External packages
+import Anthropic from '@anthropic-ai/sdk'
+import { motion } from 'framer-motion'
+
+// 3. Internal absolute imports (@/)
+import { prisma } from '@/lib/prisma'
+import { getSession } from '@/lib/github-auth'
+import type { AnalysisResult } from '@/types/analysis'
+
+// 4. Relative imports
+import { helperFunction } from './utils'
+```
+
+## Testing with Vitest
+
+### File Naming
+- Test files: `{name}.test.ts` or `{name}.test.tsx`
+- Located in `tests/` directory mirroring source structure.
+
+### Test Structure
+```typescript
+import { describe, it, expect, beforeEach, vi } from 'vitest'
+
+describe('functionName', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('should do expected behavior', () => {
+    const result = functionName(input)
+    expect(result).toBe(expected)
+  })
+
+  it('should handle edge case', () => {
+    expect(() => functionName(badInput)).toThrow()
+  })
+})
+```
+
+### Testing Philosophy
+- Write tests that challenge code, find edge cases, and reveal vulnerabilities.
+- Don't write tests just to pass; write tests to break code.
+- Test error paths as thoroughly as happy paths.
+- Mock external dependencies (Prisma, fetch, APIs).
+
+### Coverage
+- Aim for meaningful coverage, not 100%.
+- Prioritize testing: business logic > utils > components > API routes.
+
+## Code Style
+
+### Comments
+- Use `// =============================================================================` section headers for major code blocks in API routes.
+- Explain **why**, not **what** (code should be self-documenting).
+- No commented-out code; delete it.
+
+### Error Messages
+- User-facing: friendly, actionable ("Please sign in again")
+- Logs: technical, contextual ("GitHub API error: 401 - token expired")
+
+### Security
+- Never log secrets, tokens, or passwords.
+- Never commit API keys (use environment variables).
+- Validate all external input.
+- Use HTTPS for all external requests.
+
+## File Header Pattern
+
+For significant files, use this header:
+```typescript
+// =============================================================================
+// MODULE NAME - Brief description of purpose
+// =============================================================================
+// More detailed explanation if needed.
+// =============================================================================
+```
+
+## Forbidden Patterns
+
+- No `any` without explicit comment justifying it.
+- No `// @ts-ignore` or `// @ts-expect-error` without explanation.
+- No `console.log` in production code (use `console.error` for errors only).
+- No synchronous file I/O.
+- No secrets in code (use env vars).
+- No `.env` files committed to git.
