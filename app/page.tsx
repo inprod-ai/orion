@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react'
 import { motion } from 'framer-motion'
 import { useSession } from 'next-auth/react'
 import { useSearchParams } from 'next/navigation'
+import Link from 'next/link'
 import { Github, Zap, Shield, Gauge, CheckCircle2, AlertCircle, X } from 'lucide-react'
 import { extractRepoInfo } from '@/lib/utils'
 import AnalysisScreen from '@/components/AnalysisScreen'
@@ -78,16 +79,18 @@ function HomeContent() {
       <div className="relative z-10 min-h-screen flex flex-col">
         {/* Header */}
         <header className="p-6 flex justify-between items-center">
-          <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-2"
-          >
-            <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-green-600 rounded-lg flex items-center justify-center">
-              <CheckCircle2 className="w-5 h-5 text-white" />
-            </div>
-            <span className="font-bold text-xl">inprod.ai</span>
-          </motion.div>
+          <Link href="/">
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer"
+            >
+              <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-green-600 rounded-lg flex items-center justify-center">
+                <CheckCircle2 className="w-5 h-5 text-white" />
+              </div>
+              <span className="font-bold text-xl">inprod.ai</span>
+            </motion.div>
+          </Link>
           <UserMenu />
         </header>
 

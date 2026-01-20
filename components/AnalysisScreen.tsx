@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import Link from 'next/link'
 import { Loader2, CheckCircle, XCircle, AlertCircle, ChevronRight, ArrowLeft, Plus, Clock, Shield, Zap, Code, Lock, Crown, Github, Download } from 'lucide-react'
 import { cn, extractRepoInfo, getScoreColor, getScoreGrade } from '@/lib/utils'
 import type { AnalysisResult, AnalysisProgress, CategoryScore, Finding } from '@/types/analysis'
@@ -124,12 +125,12 @@ export default function AnalysisScreen({ repoUrl }: Props) {
             <ArrowLeft className="w-5 h-5" />
             Back
           </motion.button>
-          <div className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-green-600 rounded-lg flex items-center justify-center">
               <CheckCircle className="w-5 h-5 text-white" />
             </div>
             <span className="font-bold text-xl">inprod.ai</span>
-          </div>
+          </Link>
         </header>
 
         <main className="max-w-6xl mx-auto px-6 pb-12">
