@@ -1,19 +1,47 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { motion } from 'framer-motion'
 import { useSession } from 'next-auth/react'
-import { Github, Zap, Shield, Gauge, CheckCircle2 } from 'lucide-react'
+import { useSearchParams } from 'next/navigation'
+import { Github, Zap, Shield, Gauge, CheckCircle2, AlertCircle, X } from 'lucide-react'
 import { extractRepoInfo } from '@/lib/utils'
 import AnalysisScreen from '@/components/AnalysisScreen'
 import UserMenu from '@/components/UserMenu'
 import RepoSelector from '@/components/RepoSelector'
 
-export default function Home() {
+// Auth error messages
+const AUTH_ERRORS: Record<string, string> = {
+  Configuration: 'Authentication is misconfigured. Please try again.',
+  AccessDenied: 'You denied access to your GitHub account.',
+  Verification: 'The verification link has expired or already been used.',
+  OAuthSignin: 'Error starting the OAuth sign-in process.',
+  OAuthCallback: 'Error handling the OAuth callback.',
+  OAuthCreateAccount: 'Could not create your account.',
+  Callback: 'Error in the authentication callback.',
+  OAuthAccountNotLinked: 'This email is already linked to another account.',
+  SessionRequired: 'You need to be signed in to access this page.',
+  Default: 'An authentication error occurred. Please try again.',
+}
+
+// Wrapper to handle useSearchParams with Suspense
+function HomeContent() {
   const { data: session, status } = useSession()
+  const searchParams = useSearchParams()
   const [repoUrl, setRepoUrl] = useState('')
   const [error, setError] = useState('')
+  const [authError, setAuthError] = useState<string | null>(null)
   const [analyzing, setAnalyzing] = useState(false)
+
+  // Check for auth errors in URL
+  useEffect(() => {
+    const errorParam = searchParams.get('error')
+    if (errorParam) {
+      setAuthError(AUTH_ERRORS[errorParam] || AUTH_ERRORS.Default)
+      // Clear error from URL without refresh
+      window.history.replaceState({}, '', '/')
+    }
+  }, [searchParams])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -66,6 +94,29 @@ export default function Home() {
         {/* Main content */}
         <main className="flex-1 flex items-center justify-center px-6">
           <div className="max-w-4xl w-full">
+            {/* Auth Error Banner */}
+            {authError && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="max-w-2xl mx-auto mb-6"
+              >
+                <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="text-red-400 font-medium">Sign in failed</p>
+                    <p className="text-red-400/80 text-sm mt-1">{authError}</p>
+                  </div>
+                  <button
+                    onClick={() => setAuthError(null)}
+                    className="text-red-400/60 hover:text-red-400 transition-colors"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -159,5 +210,18 @@ export default function Home() {
       </main>
       </div>
     </div>
+  )
+}
+
+// Main export with Suspense boundary for useSearchParams
+export default function Home() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="animate-pulse text-gray-400">Loading...</div>
+      </div>
+    }>
+      <HomeContent />
+    </Suspense>
   )
 }
