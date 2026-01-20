@@ -2,7 +2,6 @@
 
 import { useState, useEffect, Suspense } from 'react'
 import { motion } from 'framer-motion'
-import { useSession } from 'next-auth/react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Github, Zap, Shield, Gauge, CheckCircle2, AlertCircle, X } from 'lucide-react'
@@ -11,35 +10,55 @@ import AnalysisScreen from '@/components/AnalysisScreen'
 import UserMenu from '@/components/UserMenu'
 import RepoSelector from '@/components/RepoSelector'
 
-// Auth error messages
-const AUTH_ERRORS: Record<string, string> = {
-  Configuration: 'Authentication is misconfigured. Please try again.',
-  AccessDenied: 'You denied access to your GitHub account.',
-  Verification: 'The verification link has expired or already been used.',
-  OAuthSignin: 'Error starting the OAuth sign-in process.',
-  OAuthCallback: 'Error handling the OAuth callback.',
-  OAuthCreateAccount: 'Could not create your account.',
-  Callback: 'Error in the authentication callback.',
-  OAuthAccountNotLinked: 'This email is already linked to another account.',
-  SessionRequired: 'You need to be signed in to access this page.',
-  Default: 'An authentication error occurred. Please try again.',
+interface UserData {
+  id: string
+  name: string | null
+  email: string | null
+  image: string | null
+  tier: 'FREE' | 'PRO' | 'ENTERPRISE'
+  monthlyScans: number
 }
 
 // Wrapper to handle useSearchParams with Suspense
 function HomeContent() {
-  const { data: session, status } = useSession()
   const searchParams = useSearchParams()
+  const [user, setUser] = useState<UserData | null>(null)
+  const [userLoading, setUserLoading] = useState(true)
   const [repoUrl, setRepoUrl] = useState('')
   const [error, setError] = useState('')
   const [authError, setAuthError] = useState<string | null>(null)
   const [analyzing, setAnalyzing] = useState(false)
 
-  // Check for auth errors in URL
+  // Fetch user on mount
+  useEffect(() => {
+    fetchUser()
+  }, [])
+
+  const fetchUser = async () => {
+    try {
+      const res = await fetch('/api/auth/me')
+      const data = await res.json()
+      setUser(data.user)
+    } catch (error) {
+      console.error('Failed to fetch user:', error)
+    } finally {
+      setUserLoading(false)
+    }
+  }
+
+  // Check for auth errors/success in URL
   useEffect(() => {
     const errorParam = searchParams.get('error')
+    const authSuccess = searchParams.get('auth')
+    
     if (errorParam) {
-      setAuthError(AUTH_ERRORS[errorParam] || AUTH_ERRORS.Default)
-      // Clear error from URL without refresh
+      setAuthError(decodeURIComponent(errorParam))
+      window.history.replaceState({}, '', '/')
+    }
+    
+    if (authSuccess === 'success') {
+      // Refresh user data after successful auth
+      fetchUser()
       window.history.replaceState({}, '', '/')
     }
   }, [searchParams])
@@ -66,7 +85,7 @@ function HomeContent() {
     return <AnalysisScreen repoUrl={repoUrl} />
   }
 
-  const isSignedIn = status === 'authenticated' && session?.user
+  const isSignedIn = !userLoading && user !== null
 
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden">

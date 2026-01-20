@@ -1,20 +1,36 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Check, Crown, Zap, Shield, Download } from 'lucide-react'
-import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { signIn } from 'next-auth/react'
+
+interface UserData {
+  id: string
+  name: string | null
+  email: string | null
+  image: string | null
+  tier: 'FREE' | 'PRO' | 'ENTERPRISE'
+  monthlyScans: number
+}
 
 export default function UpgradePage() {
-  const { data: session, status } = useSession()
   const router = useRouter()
+  const [user, setUser] = useState<UserData | null>(null)
+  const [userLoading, setUserLoading] = useState(true)
   const [loading, setLoading] = useState(false)
 
+  useEffect(() => {
+    fetch('/api/auth/me')
+      .then(res => res.json())
+      .then(data => setUser(data.user))
+      .catch(() => {})
+      .finally(() => setUserLoading(false))
+  }, [])
+
   const handleUpgrade = async () => {
-    if (!session) {
-      signIn('github')
+    if (!user) {
+      window.location.href = '/api/auth/login'
       return
     }
 
@@ -43,6 +59,11 @@ export default function UpgradePage() {
     { icon: Download, title: 'PDF Export', description: 'Download professional reports for stakeholders' },
     { icon: Crown, title: 'Priority Support', description: 'Get help when you need it' },
   ]
+
+  const isPro = user?.tier === 'PRO'
+  const buttonText = loading ? 'Loading...' : 
+    isPro ? 'Current Plan' : 
+    user ? 'Upgrade Now' : 'Sign in to Upgrade'
 
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden">
@@ -139,12 +160,10 @@ export default function UpgradePage() {
                 </ul>
                 <button
                   onClick={handleUpgrade}
-                  disabled={loading || (session?.user as any)?.tier === 'PRO'}
+                  disabled={loading || isPro || userLoading}
                   className="w-full mt-8 px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {loading ? 'Loading...' : 
-                   (session?.user as any)?.tier === 'PRO' ? 'Current Plan' : 
-                   session ? 'Upgrade Now' : 'Sign in to Upgrade'}
+                  {buttonText}
                 </button>
               </motion.div>
             </div>

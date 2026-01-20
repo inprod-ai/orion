@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { renderToBuffer } from '@react-pdf/renderer'
-import { auth } from '@/lib/auth'
+import { getSession } from '@/lib/github-auth'
 import { prisma } from '@/lib/prisma'
 import PDFReport from '@/components/PDFReport'
 import type { AnalysisResult } from '@/types/analysis'
@@ -13,15 +13,15 @@ export async function POST(request: NextRequest) {
       return new NextResponse('Request too large', { status: 413 })
     }
 
-    const session = await auth()
+    const session = await getSession()
     
-    if (!session?.user) {
+    if (!session?.userId) {
       return new NextResponse('Unauthorized', { status: 401 })
     }
     
     // Check if user is Pro
     const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
+      where: { id: session.userId },
       select: { tier: true }
     })
     
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     const scan = await prisma.scan.findFirst({
       where: { 
         id: scanId,
-        userId: session.user.id // CRITICAL: Only allow user's own scans
+        userId: session.userId // CRITICAL: Only allow user's own scans
       },
       select: {
         repoUrl: true,

@@ -1,45 +1,45 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@/lib/auth'
+import { getSession } from '@/lib/github-auth'
 import { stripe, PRICE_ID } from '@/lib/stripe'
 import { prisma } from '@/lib/prisma'
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth()
+    const session = await getSession()
     
-    if (!session?.user?.email) {
+    if (!session?.userId) {
       return new NextResponse('Unauthorized', { status: 401 })
     }
     
+    // Get user from database
+    const user = await prisma.user.findUnique({
+      where: { id: session.userId },
+      select: { id: true, email: true, stripeCustomerId: true }
+    })
+    
+    if (!user?.email) {
+      return new NextResponse('User not found', { status: 404 })
+    }
+    
     // Get or create Stripe customer
-    let stripeCustomerId = (session.user as any).stripeCustomerId
+    let stripeCustomerId = user.stripeCustomerId
     
     if (!stripeCustomerId) {
-      // Check if user exists in database
-      const user = await prisma.user.findUnique({
-        where: { id: session.user.id },
-        select: { stripeCustomerId: true }
+      // Create new Stripe customer
+      const customer = await stripe.customers.create({
+        email: user.email,
+        metadata: {
+          userId: user.id
+        }
       })
       
-      if (user?.stripeCustomerId) {
-        stripeCustomerId = user.stripeCustomerId
-      } else {
-        // Create new Stripe customer
-        const customer = await stripe.customers.create({
-          email: session.user.email,
-          metadata: {
-            userId: session.user.id
-          }
-        })
-        
-        // Update user with Stripe customer ID
-        await prisma.user.update({
-          where: { id: session.user.id },
-          data: { stripeCustomerId: customer.id }
-        })
-        
-        stripeCustomerId = customer.id
-      }
+      // Update user with Stripe customer ID
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { stripeCustomerId: customer.id }
+      })
+      
+      stripeCustomerId = customer.id
     }
     
     // Create checkout session
@@ -53,10 +53,10 @@ export async function POST(request: NextRequest) {
         },
       ],
       mode: 'subscription',
-      success_url: `${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/?upgraded=true`,
-      cancel_url: `${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/upgrade`,
+      success_url: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/?upgraded=true`,
+      cancel_url: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/upgrade`,
       metadata: {
-        userId: session.user.id,
+        userId: user.id,
       },
     })
     

@@ -1,8 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useSession, signOut } from 'next-auth/react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { 
   Lock, 
   Globe, 
@@ -33,6 +32,15 @@ interface Repo {
   defaultBranch: string
 }
 
+interface UserData {
+  id: string
+  name: string | null
+  email: string | null
+  image: string | null
+  tier: 'FREE' | 'PRO' | 'ENTERPRISE'
+  monthlyScans: number
+}
+
 // =============================================================================
 // REPO SELECTOR COMPONENT
 // =============================================================================
@@ -42,7 +50,7 @@ export default function RepoSelector({
 }: { 
   onSelectRepo: (repoUrl: string) => void 
 }) {
-  const { data: session, status } = useSession()
+  const [user, setUser] = useState<UserData | null>(null)
   const [repos, setRepos] = useState<Repo[]>([])
   const [filteredRepos, setFilteredRepos] = useState<Repo[]>([])
   const [loading, setLoading] = useState(true)
@@ -50,12 +58,29 @@ export default function RepoSelector({
   const [searchQuery, setSearchQuery] = useState('')
   const [showPrivateOnly, setShowPrivateOnly] = useState(false)
 
-  // Fetch repos on mount
+  // Fetch user and repos on mount
   useEffect(() => {
-    if (session?.user) {
-      fetchRepos()
+    fetchUserAndRepos()
+  }, [])
+
+  const fetchUserAndRepos = async () => {
+    setLoading(true)
+    try {
+      // Fetch user first
+      const userRes = await fetch('/api/auth/me')
+      const userData = await userRes.json()
+      
+      if (userData.user) {
+        setUser(userData.user)
+        // Then fetch repos
+        await fetchRepos()
+      }
+    } catch (err) {
+      setError('Failed to load data')
+    } finally {
+      setLoading(false)
     }
-  }, [session])
+  }
 
   // Filter repos when search/filter changes
   useEffect(() => {
@@ -100,13 +125,17 @@ export default function RepoSelector({
     onSelectRepo(repo.url)
   }
 
-  // Not authenticated
-  if (status === 'loading' || !session) {
+  const handleSignOut = async () => {
+    await fetch('/api/auth/logout', { method: 'POST' })
+    window.location.href = '/'
+  }
+
+  // Not authenticated or still loading
+  if (loading || !user) {
     return null
   }
 
   const privateCount = repos.filter((r) => r.private).length
-  const publicCount = repos.length - privateCount
 
   // Language color mapping
   const languageColors: Record<string, string> = {
@@ -131,15 +160,15 @@ export default function RepoSelector({
       {/* Header with user info */}
       <div className="p-4 border-b border-gray-800 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          {session.user.image && (
+          {user.image && (
             <img
-              src={session.user.image}
-              alt={session.user.name || 'User'}
+              src={user.image}
+              alt={user.name || 'User'}
               className="w-10 h-10 rounded-full border-2 border-gray-700"
             />
           )}
           <div>
-            <p className="font-semibold text-white">{session.user.name}</p>
+            <p className="font-semibold text-white">{user.name}</p>
             <p className="text-sm text-gray-400">
               {repos.length} repos • {privateCount} private
             </p>
@@ -155,7 +184,7 @@ export default function RepoSelector({
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           </button>
           <button
-            onClick={() => signOut()}
+            onClick={handleSignOut}
             className="flex items-center gap-2 px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
           >
             <LogOut className="w-4 h-4" />

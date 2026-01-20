@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { ANALYSIS_CATEGORIES } from '@/types/analysis'
 import type { AnalysisResult } from '@/types/analysis'
-import { auth } from '@/lib/auth'
+import { getSession } from '@/lib/github-auth'
 import { prisma } from '@/lib/prisma'
 import { parseGitHubUrl } from '@/lib/github'
 
@@ -56,13 +56,13 @@ export async function POST(request: NextRequest) {
     const repo = body.repo || parsedRepo.name
     
     // Get authenticated session
-    const session = await auth()
+    const session = await getSession()
     
     
     // Check if user has exceeded free tier limits
-    if (session?.user) {
+    if (session?.userId) {
       const user = await prisma.user.findUnique({
-        where: { id: session.user.id },
+        where: { id: session.userId },
         select: { tier: true, monthlyScans: true, lastResetAt: true }
       })
       
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
         const lastReset = new Date(user.lastResetAt)
         if (now.getMonth() !== lastReset.getMonth() || now.getFullYear() !== lastReset.getFullYear()) {
           await prisma.user.update({
-            where: { id: session.user.id },
+            where: { id: session.userId },
             data: { monthlyScans: 0, lastResetAt: now }
           })
           user.monthlyScans = 0
@@ -475,10 +475,10 @@ Respond in JSON:
 
           // Save scan to database
           let savedScan
-          if (session?.user) {
+          if (session?.userId) {
             savedScan = await prisma.scan.create({
               data: {
-                userId: session.user.id,
+                userId: session.userId,
                 repoUrl,
                 owner,
                 repo,
@@ -492,7 +492,7 @@ Respond in JSON:
             
             // Increment user's monthly scan count
             await prisma.user.update({
-              where: { id: session.user.id },
+              where: { id: session.userId },
               data: { monthlyScans: { increment: 1 } }
             })
           } else {
@@ -513,7 +513,11 @@ Respond in JSON:
           
           // Apply free tier restrictions if not authenticated or free user
           let finalResult = result
-          if (!session?.user || (session.user as any).tier === 'FREE') {
+          const currentUser = session?.userId 
+            ? await prisma.user.findUnique({ where: { id: session.userId }, select: { tier: true } })
+            : null
+          
+          if (!session?.userId || currentUser?.tier === 'FREE') {
             // Only show top 2 findings for free tier
             finalResult = {
               ...result,

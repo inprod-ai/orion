@@ -3,31 +3,21 @@
 // =============================================================================
 
 import { NextResponse } from 'next/server'
-import { auth } from '@/lib/auth'
-import { prisma } from '@/lib/prisma'
+import { getSession } from '@/lib/github-auth'
 
 export async function GET() {
   try {
     // Get authenticated session
-    const session = await auth()
+    const session = await getSession()
     
-    if (!session?.user) {
+    if (!session) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
     }
     
-    // Get user's GitHub access token from the account table
-    const account = await prisma.account.findFirst({
-      where: {
-        userId: session.user.id,
-        provider: 'github',
-      },
-      select: {
-        access_token: true,
-      },
-    })
+    const accessToken = session.accessToken
     
-    if (!account?.access_token) {
-      return NextResponse.json({ error: 'GitHub account not linked' }, { status: 401 })
+    if (!accessToken) {
+      return NextResponse.json({ error: 'GitHub token not found' }, { status: 401 })
     }
     
     // Fetch user's repos from GitHub API
@@ -35,7 +25,7 @@ export async function GET() {
       'https://api.github.com/user/repos?sort=updated&per_page=50&type=all',
       {
         headers: {
-          Authorization: `Bearer ${account.access_token}`,
+          Authorization: `Bearer ${accessToken}`,
           Accept: 'application/vnd.github.v3+json',
           'User-Agent': 'inprod.ai/1.0',
         },

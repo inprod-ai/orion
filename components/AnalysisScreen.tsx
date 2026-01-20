@@ -6,15 +6,22 @@ import Link from 'next/link'
 import { Loader2, CheckCircle, XCircle, AlertCircle, ChevronRight, ArrowLeft, Plus, Clock, Shield, Zap, Code, Lock, Crown, Github, Download } from 'lucide-react'
 import { cn, extractRepoInfo, getScoreColor, getScoreGrade } from '@/lib/utils'
 import type { AnalysisResult, AnalysisProgress, CategoryScore, Finding } from '@/types/analysis'
-import { useSession } from 'next-auth/react'
-import { signIn } from 'next-auth/react'
 
 interface Props {
   repoUrl: string
 }
 
+interface UserData {
+  id: string
+  name: string | null
+  email: string | null
+  image: string | null
+  tier: 'FREE' | 'PRO' | 'ENTERPRISE'
+  monthlyScans: number
+}
+
 export default function AnalysisScreen({ repoUrl }: Props) {
-  const { data: session } = useSession()
+  const [user, setUser] = useState<UserData | null>(null)
   const [progress, setProgress] = useState<AnalysisProgress>({
     stage: 'fetching',
     message: 'Fetching repository data...',
@@ -25,6 +32,14 @@ export default function AnalysisScreen({ repoUrl }: Props) {
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set())
   const [scanId, setScanId] = useState<string | null>(null)
   const [exporting, setExporting] = useState(false)
+
+  useEffect(() => {
+    // Fetch user on mount
+    fetch('/api/auth/me')
+      .then(res => res.json())
+      .then(data => setUser(data.user))
+      .catch(() => {})
+  }, [])
 
   useEffect(() => {
     analyzeRepository()
@@ -225,7 +240,7 @@ export default function AnalysisScreen({ repoUrl }: Props) {
                 )}
                 
                 {/* Export button for Pro users */}
-                {session?.user && (session.user as any).tier === 'PRO' && scanId && (
+                {user?.tier === 'PRO' && scanId && (
                   <button
                     onClick={async () => {
                       setExporting(true)
@@ -294,7 +309,7 @@ export default function AnalysisScreen({ repoUrl }: Props) {
                           <p className="text-gray-400 mb-6">
                             Unlock all findings, detailed recommendations, and PDF exports with Pro
                           </p>
-                          {session ? (
+                          {user ? (
                             <button
                               onClick={() => window.location.href = '/upgrade'}
                               className="px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-lg font-semibold hover:shadow-lg transition-shadow"
@@ -303,7 +318,7 @@ export default function AnalysisScreen({ repoUrl }: Props) {
                             </button>
                           ) : (
                             <button
-                              onClick={() => signIn('github')}
+                              onClick={() => window.location.href = '/api/auth/login'}
                               className="px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-lg font-semibold hover:shadow-lg transition-shadow flex items-center gap-2 mx-auto"
                             >
                               <Github className="w-5 h-5" />
