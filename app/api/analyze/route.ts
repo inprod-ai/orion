@@ -1,9 +1,10 @@
 import { NextRequest } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { ANALYSIS_CATEGORIES } from '@/types/analysis'
-import type { AnalysisResult, CategoryScore, Finding } from '@/types/analysis'
+import type { AnalysisResult } from '@/types/analysis'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { parseGitHubUrl } from '@/lib/github'
 
 // Increase timeout for AI analysis (Vercel Pro: up to 300s)
 export const maxDuration = 60
@@ -34,14 +35,25 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     
     // Basic input validation
-    if (!body.repoUrl || !body.owner || !body.repo) {
-      return new Response(JSON.stringify({ error: 'Missing required fields' }), {
+    if (!body.repoUrl) {
+      return new Response(JSON.stringify({ error: 'repoUrl is required' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       })
     }
 
-    const { repoUrl, owner, repo } = body
+    // SSRF-protected URL parsing
+    const parsedRepo = parseGitHubUrl(body.repoUrl)
+    if (!parsedRepo) {
+      return new Response(JSON.stringify({ error: 'Invalid GitHub URL format' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+    
+    const repoUrl = parsedRepo.url
+    const owner = body.owner || parsedRepo.owner
+    const repo = body.repo || parsedRepo.name
     
     // Get authenticated session
     const session = await auth()

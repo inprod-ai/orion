@@ -4,6 +4,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { analyzeCompleteness, getInstantFixGaps } from '@/lib/inprod/analyzer'
+import { fetchRepoFiles } from '@/lib/github'
 import { RepoFile, Gap, Category, GeneratedFile } from '@/lib/inprod/types'
 import { generateSecurityFixes } from '@/lib/inprod/generators/security'
 import { generateTests } from '@/lib/inprod/generators/testing'
@@ -16,12 +17,13 @@ interface GenerateRequest {
   categories?: Category[]
   gapsToFix?: string[] // Gap IDs to fix
   instantOnly?: boolean // Only auto-fixable gaps
+  accessToken?: string // For private repos
 }
 
 export async function POST(req: NextRequest) {
   try {
     const body: GenerateRequest = await req.json()
-    const { repoUrl, files, categories, gapsToFix, instantOnly } = body
+    const { repoUrl, files, categories, gapsToFix, instantOnly, accessToken } = body
     
     if (!repoUrl) {
       return NextResponse.json({ error: 'repoUrl is required' }, { status: 400 })
@@ -30,7 +32,8 @@ export async function POST(req: NextRequest) {
     // Get files if not provided
     let repoFiles: RepoFile[] = files || []
     if (repoFiles.length === 0) {
-      repoFiles = await fetchRepoFiles(repoUrl)
+      const result = await fetchRepoFiles(repoUrl, accessToken)
+      repoFiles = result.files
     }
     
     // Analyze the repo
@@ -130,84 +133,4 @@ export async function POST(req: NextRequest) {
   }
 }
 
-async function fetchRepoFiles(repoUrl: string): Promise<RepoFile[]> {
-  // Extract owner/repo from URL
-  const match = repoUrl.match(/github\.com\/([^\/]+)\/([^\/\s#?]+)/)
-  if (!match) {
-    throw new Error('Invalid GitHub URL')
-  }
-  
-  const [, owner, repo] = match
-  const cleanRepo = repo.replace(/\.git$/, '')
-  
-  // Fetch repo tree
-  const treeRes = await fetch(
-    `https://api.github.com/repos/${owner}/${cleanRepo}/git/trees/HEAD?recursive=1`,
-    {
-      headers: {
-        Accept: 'application/vnd.github.v3+json',
-        ...(process.env.GITHUB_TOKEN && {
-          Authorization: `token ${process.env.GITHUB_TOKEN}`,
-        }),
-      },
-    }
-  )
-  
-  if (!treeRes.ok) {
-    throw new Error(`Failed to fetch repo: ${treeRes.status}`)
-  }
-  
-  const tree = await treeRes.json()
-  
-  // Filter relevant files (same as complete endpoint)
-  const relevantFiles = tree.tree
-    .filter((item: { type: string; path: string; size?: number }) => 
-      item.type === 'blob' &&
-      !item.path.includes('node_modules') &&
-      !item.path.includes('.git/') &&
-      !item.path.includes('dist/') &&
-      !item.path.includes('build/') &&
-      !item.path.includes('.next/') &&
-      (item.size || 0) < 100000
-    )
-    .slice(0, 200)
-  
-  const files: RepoFile[] = []
-  
-  for (let i = 0; i < relevantFiles.length; i += 10) {
-    const batch = relevantFiles.slice(i, i + 10)
-    const contents = await Promise.all(
-      batch.map(async (item: { path: string; size?: number }) => {
-        try {
-          const contentRes = await fetch(
-            `https://api.github.com/repos/${owner}/${cleanRepo}/contents/${item.path}`,
-            {
-              headers: {
-                Accept: 'application/vnd.github.v3.raw',
-                ...(process.env.GITHUB_TOKEN && {
-                  Authorization: `token ${process.env.GITHUB_TOKEN}`,
-                }),
-              },
-            }
-          )
-          
-          if (!contentRes.ok) return null
-          
-          const content = await contentRes.text()
-          return {
-            path: item.path,
-            content,
-            size: item.size || content.length,
-          }
-        } catch {
-          return null
-        }
-      })
-    )
-    
-    files.push(...contents.filter(Boolean) as RepoFile[])
-  }
-  
-  return files
-}
 
