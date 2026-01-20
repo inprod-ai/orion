@@ -2,12 +2,15 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import { useSession } from 'next-auth/react'
 import { Github, Zap, Shield, Gauge, CheckCircle2 } from 'lucide-react'
 import { extractRepoInfo } from '@/lib/utils'
 import AnalysisScreen from '@/components/AnalysisScreen'
 import UserMenu from '@/components/UserMenu'
+import RepoSelector from '@/components/RepoSelector'
 
 export default function Home() {
+  const { data: session, status } = useSession()
   const [repoUrl, setRepoUrl] = useState('')
   const [error, setError] = useState('')
   const [analyzing, setAnalyzing] = useState(false)
@@ -25,9 +28,16 @@ export default function Home() {
     setAnalyzing(true)
   }
 
+  const handleSelectRepo = (url: string) => {
+    setRepoUrl(url)
+    setAnalyzing(true)
+  }
+
   if (analyzing && repoUrl) {
     return <AnalysisScreen repoUrl={repoUrl} />
   }
+
+  const isSignedIn = status === 'authenticated' && session?.user
 
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden">
@@ -71,46 +81,51 @@ export default function Home() {
               </p>
             </motion.div>
 
-            <motion.form
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              onSubmit={handleSubmit}
-              className="max-w-2xl mx-auto"
-            >
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl blur-lg opacity-50" />
-                <div className="relative bg-gray-900/90 backdrop-blur-xl rounded-xl p-2">
-                  <div className="flex items-center gap-2">
-                    <Github className="w-6 h-6 text-gray-400 ml-4" />
-                    <input
-                      type="text"
-                      value={repoUrl}
-                      onChange={(e) => setRepoUrl(e.target.value)}
-                      placeholder="https://github.com/username/repository"
-                      className="flex-1 bg-transparent text-white placeholder-gray-500 px-4 py-4 focus:outline-none"
-                    />
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      type="submit"
-                      className="bg-gradient-to-r from-purple-500 to-blue-500 text-white px-6 py-3 rounded-lg font-semibold mr-2 hover:shadow-lg transition-shadow"
-                    >
-                      Analyze
-                    </motion.button>
+            {/* Show RepoSelector when signed in, otherwise show URL input */}
+            {isSignedIn ? (
+              <RepoSelector onSelectRepo={handleSelectRepo} />
+            ) : (
+              <motion.form
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                onSubmit={handleSubmit}
+                className="max-w-2xl mx-auto"
+              >
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl blur-lg opacity-50" />
+                  <div className="relative bg-gray-900/90 backdrop-blur-xl rounded-xl p-2">
+                    <div className="flex items-center gap-2">
+                      <Github className="w-6 h-6 text-gray-400 ml-4" />
+                      <input
+                        type="text"
+                        value={repoUrl}
+                        onChange={(e) => setRepoUrl(e.target.value)}
+                        placeholder="https://github.com/username/repository"
+                        className="flex-1 bg-transparent text-white placeholder-gray-500 px-4 py-4 focus:outline-none"
+                      />
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        type="submit"
+                        className="bg-gradient-to-r from-purple-500 to-blue-500 text-white px-6 py-3 rounded-lg font-semibold mr-2 hover:shadow-lg transition-shadow"
+                      >
+                        Analyze
+                      </motion.button>
+                    </div>
                   </div>
                 </div>
-              </div>
-              {error && (
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-red-400 text-sm mt-3 text-center"
-                >
-                  {error}
-                </motion.p>
-              )}
-            </motion.form>
+                {error && (
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-red-400 text-sm mt-3 text-center"
+                  >
+                    {error}
+                  </motion.p>
+                )}
+              </motion.form>
+            )}
 
             <motion.div
               initial={{ opacity: 0 }}
