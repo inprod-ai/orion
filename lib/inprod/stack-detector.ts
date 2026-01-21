@@ -10,12 +10,17 @@ export function detectTechStack(files: RepoFile[]): TechStack {
   
   // Find package.json content
   const packageJsonFile = files.find(f => f.path === 'package.json')
-  const packageJson = packageJsonFile 
-    ? JSON.parse(packageJsonFile.content) 
-    : null
+  let packageJson: Record<string, unknown> | null = null
+  if (packageJsonFile) {
+    try {
+      packageJson = JSON.parse(packageJsonFile.content)
+    } catch {
+      packageJson = null
+    }
+  }
   
   const deps = packageJson 
-    ? { ...packageJson.dependencies, ...packageJson.devDependencies } 
+    ? { ...(packageJson.dependencies || {}), ...(packageJson.devDependencies || {}) } 
     : {}
 
   // Detect platform

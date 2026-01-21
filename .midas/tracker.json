@@ -1,0 +1,103 @@
+{
+  "lastUpdated": "2026-01-21T04:27:48.630Z",
+  "recentFiles": [
+    {
+      "path": "tests/inprod/security.test.ts",
+      "lastModified": 1768969662469.9148
+    },
+    {
+      "path": "lib/inprod/analyzers/security.ts",
+      "lastModified": 1768969641601.6213
+    },
+    {
+      "path": "lib/inprod/stack-detector.ts",
+      "lastModified": 1768969485519.7937
+    },
+    {
+      "path": "app/api/analyze/route.ts",
+      "lastModified": 1768969455169.0984
+    },
+    {
+      "path": "docs/codebase-index.md",
+      "lastModified": 1768968614497.714
+    },
+    {
+      "path": "tests/inprod/altitude.test.ts",
+      "lastModified": 1768968491013.8672
+    },
+    {
+      "path": "tests/inprod/analyzer.test.ts",
+      "lastModified": 1768968491013.867
+    }
+  ],
+  "recentToolCalls": [],
+  "gitActivity": {
+    "branch": "main",
+    "lastCommit": "5f4b3b2e50a48ef3f33f7e0aabef01c67b1540e2",
+    "lastCommitMessage": "Fix private repo scanning by using user access token",
+    "lastCommitTime": 1768969538000,
+    "uncommittedChanges": 3,
+    "recentCommits": [
+      "Fix private repo scanning by using user access token",
+      "Add codebase index with gap analysis",
+      "Add comprehensive test suite for analyzer, altitude, and security",
+      "Update cursorrules with Zod validation and Tailwind conventions",
+      "Add cursorrules for project conventions",
+      "Replace NextAuth with custom OAuth flow for reliable GitHub auth",
+      "make logo clickable to return to home page",
+      "fix auth error handling and add suspense for searchParams",
+      "add repo selector with github repos for signed in users",
+      "add comprehensive github integration with ssrf protection"
+    ]
+  },
+  "completionSignals": {
+    "testsExist": true,
+    "docsComplete": false
+  },
+  "inferredPhase": {
+    "phase": "PLAN",
+    "step": "BRAINLIFT"
+  },
+  "confidence": 70,
+  "gates": {
+    "compiles": null,
+    "compiledAt": null,
+    "testsPass": null,
+    "testedAt": null,
+    "lintsPass": null,
+    "lintedAt": null
+  },
+  "errorMemory": [],
+  "currentTask": null,
+  "suggestionHistory": [
+    {
+      "timestamp": 1768968792009,
+      "suggestion": "Read docs/codebase-index.md and summarize: 1) The main architectural patterns used, 2) Key dependencies between modules, 3) The top 3 implementation gaps that need addressing. Then update the index with any missing critical files or patterns you discover.",
+      "accepted": false
+    },
+    {
+      "timestamp": 1768968282118,
+      "suggestion": "Create a codebase index showing: 1) Key directories and their purposes, 2) Core user flows (analyze repo → view results → upgrade → export PDF), 3) API route organization pattern, 4) Component hierarchy, 5) Database schema relationships. Focus on identifying gaps between current implementation and PRD requirements.",
+      "accepted": false
+    },
+    {
+      "timestamp": 1768967902563,
+      "suggestion": "Create a comprehensive test suite starting with the core analyzer functions. Write tests for lib/inprod/analyzer.ts and lib/inprod/analyzers/security.ts using Vitest. Cover the analyzeRepository function, altitude calculations, and security gap detection. Include test cases for different tech stacks and missing implementations.",
+      "accepted": false
+    },
+    {
+      "timestamp": 1768948954884,
+      "suggestion": "Create .cursorrules for this Next.js/TypeScript project. Include: file naming conventions (kebab-case for files, PascalCase for components), import order (react → next → external → @/ aliases → relative), error handling patterns (try-catch with sanitized messages for production), TypeScript strict mode requirements, Tailwind class organization, API route structure with proper validation using Zod, and testing requirements with Vitest.",
+      "accepted": false
+    },
+    {
+      "timestamp": 1768948849179,
+      "suggestion": "Create a .cursorrules file for this Next.js/TypeScript project. Include: TypeScript strict mode conventions, React component patterns (prefer function components with TypeScript), API route error handling patterns, Prisma best practices, consistent naming (camelCase for functions/variables, PascalCase for components/types), import order conventions, and testing requirements with Vitest.",
+      "accepted": false
+    }
+  ],
+  "fileSnapshot": [],
+  "lastAnalysis": 1768968791993,
+  "phaseEnteredAt": null,
+  "lastProgressAt": null
+}

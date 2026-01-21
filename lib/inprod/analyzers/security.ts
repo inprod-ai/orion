@@ -70,11 +70,12 @@ export function analyzeSecurity(ctx: RepoContext): CategoryScore {
 
   // 3. Check for secrets in code (15 points)
   const secretPatterns = [
-    /sk[-_]live[-_][a-zA-Z0-9]{24,}/g, // Stripe
+    /sk[-_](live|test)[-_][a-zA-Z0-9]{20,}/g, // Stripe (live or test keys)
     /ghp_[a-zA-Z0-9]{36}/g, // GitHub
-    /sk-[a-zA-Z0-9]{48}/g, // OpenAI
+    /sk-[a-zA-Z0-9]{40,}/g, // OpenAI
     /AIza[0-9A-Za-z_-]{35}/g, // Google
     /password\s*[:=]\s*["'][^"']{8,}["']/gi,
+    /["']secret[-_]?key[-_]?[a-zA-Z0-9_]{20,}["']/gi, // Generic secret key pattern
   ]
   
   let hasHardcodedSecrets = false

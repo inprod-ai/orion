@@ -1,0 +1,1564 @@
+{
+  "version": 1,
+  "projectPath": "/Users/christiancattaneo/Projects/inprod",
+  "lastFullScan": 1768968765464,
+  "files": {
+    "app/api/analyze/route.ts": {
+      "hash": "b9d008511ccd",
+      "size": 22414,
+      "mtime": 1768947897741.099,
+      "lastIndexed": 1768948822367,
+      "symbols": [
+        "POST",
+        "fetchWithTimeout",
+        "maxDuration"
+      ],
+      "imports": [
+        "next/server",
+        "@anthropic-ai/sdk",
+        "@/types/analysis",
+        "@/lib/github-auth",
+        "@/lib/prisma",
+        "@/lib/github"
+      ],
+      "lineCount": 588,
+      "relevanceScore": 100,
+      "reasons": [
+        "core file",
+        "mentioned",
+        "recently modified"
+      ]
+    },
+    "app/api/auth/callback/route.ts": {
+      "hash": "50fa6d934dd4",
+      "size": 3206,
+      "mtime": 1768947897714.387,
+      "lastIndexed": 1768948822367,
+      "symbols": [
+        "GET"
+      ],
+      "imports": [
+        "next/server",
+        "@/lib/prisma"
+      ],
+      "lineCount": 105,
+      "relevanceScore": 100,
+      "reasons": [
+        "core file",
+        "mentioned",
+        "recently modified"
+      ]
+    },
+    "app/api/auth/login/route.ts": {
+      "hash": "5529fde267f1",
+      "size": 936,
+      "mtime": 1768947897714.1775,
+      "lastIndexed": 1768948822368,
+      "symbols": [
+        "GET"
+      ],
+      "imports": [
+        "next/server",
+        "@/lib/github-auth"
+      ],
+      "lineCount": 28,
+      "relevanceScore": 100,
+      "reasons": [
+        "core file",
+        "mentioned",
+        "recently modified"
+      ]
+    },
+    "app/api/auth/logout/route.ts": {
+      "hash": "eedd55101ecb",
+      "size": 550,
+      "mtime": 1768947897728.0586,
+      "lastIndexed": 1768948822368,
+      "symbols": [
+        "POST",
+        "GET"
+      ],
+      "imports": [
+        "next/server",
+        "@/lib/github-auth"
+      ],
+      "lineCount": 18,
+      "relevanceScore": 100,
+      "reasons": [
+        "core file",
+        "mentioned",
+        "recently modified"
+      ]
+    },
+    "app/api/auth/me/route.ts": {
+      "hash": "f4f7abfc35e0",
+      "size": 1009,
+      "mtime": 1768947897728.2634,
+      "lastIndexed": 1768948822368,
+      "symbols": [
+        "GET"
+      ],
+      "imports": [
+        "next/server",
+        "@/lib/github-auth",
+        "@/lib/prisma"
+      ],
+      "lineCount": 39,
+      "relevanceScore": 100,
+      "reasons": [
+        "core file",
+        "mentioned",
+        "recently modified"
+      ]
+    },
+    "app/api/cli/analyze/route.ts": {
+      "hash": "5f7e3f4dece2",
+      "size": 4927,
+      "mtime": 1767359024531.6458,
+      "lastIndexed": 1768948822369,
+      "symbols": [
+        "POST"
+      ],
+      "imports": [
+        "next/server",
+        "@anthropic-ai/sdk",
+        "@/lib/prisma"
+      ],
+      "lineCount": 171,
+      "relevanceScore": 100,
+      "reasons": [
+        "core file",
+        "mentioned"
+      ]
+    },
+    "app/api/cli/auth/callback/route.ts": {
+      "hash": "e3d2c5f72384",
+      "size": 6115,
+      "mtime": 1767359024531.6873,
+      "lastIndexed": 1768948822369,
+      "symbols": [
+        "GET",
+        "successPage",
+        "errorPage"
+      ],
+      "imports": [
+        "next/server",
+        "@/lib/prisma",
+        "crypto"
+      ],
+      "lineCount": 227,
+      "relevanceScore": 100,
+      "reasons": [
+        "core file",
+        "mentioned"
+      ]
+    },
+    "app/api/cli/auth/me/route.ts": {
+      "hash": "8e2eba4f9430",
+      "size": 1886,
+      "mtime": 1767359024531.82,
+      "lastIndexed": 1768948822372,
+      "symbols": [
+        "GET"
+      ],
+      "imports": [
+        "next/server",
+        "@/lib/prisma"
+      ],
+      "lineCount": 64,
+      "relevanceScore": 100,
+      "reasons": [
+        "core file",
+        "mentioned"
+      ]
+    },
+    "app/api/cli/auth/route.ts": {
+      "hash": "cfacbcb8ba48",
+      "size": 2475,
+      "mtime": 1767359024531.775,
+      "lastIndexed": 1768948822372,
+      "symbols": [
+        "GET",
+        "POST"
+      ],
+      "imports": [
+        "next/server",
+        "@/lib/prisma",
+        "crypto"
+      ],
+      "lineCount": 82,
+      "relevanceScore": 100,
+      "reasons": [
+        "core file",
+        "mentioned"
+      ]
+    },
+    "app/api/cli/complete/route.ts": {
+      "hash": "01d827898683",
+      "size": 5699,
+      "mtime": 1767359024531.6208,
+      "lastIndexed": 1768948822372,
+      "symbols": [
+        "POST"
+      ],
+      "imports": [
+        "next/server",
+        "@anthropic-ai/sdk",
+        "@/lib/prisma"
+      ],
+      "lineCount": 189,
+      "relevanceScore": 100,
+      "reasons": [
+        "core file",
+        "mentioned"
+      ]
+    },
+    "app/api/cli/fix/route.ts": {
+      "hash": "c915d5de95a9",
+      "size": 4201,
+      "mtime": 1767359024531.607,
+      "lastIndexed": 1768948822373,
+      "symbols": [
+        "POST"
+      ],
+      "imports": [
+        "next/server",
+        "@anthropic-ai/sdk",
+        "@/lib/prisma"
+      ],
+      "lineCount": 141,
+      "relevanceScore": 100,
+      "reasons": [
+        "core file",
+        "mentioned"
+      ]
+    },
+    "app/api/complete/route.ts": {
+      "hash": "207871404138",
+      "size": 1504,
+      "mtime": 1768935640928.366,
+      "lastIndexed": 1768948822373,
+      "symbols": [
+        "POST"
+      ],
+      "imports": [
+        "next/server",
+        "@/lib/inprod/analyzer",
+        "@/lib/github",
+        "@/lib/inprod/types"
+      ],
+      "lineCount": 48,
+      "relevanceScore": 100,
+      "reasons": [
+        "core file",
+        "mentioned",
+        "modified today"
+      ]
+    },
+    "app/api/export/pdf/route.ts": {
+      "hash": "7d4037d98ec8",
+      "size": 3147,
+      "mtime": 1768947897741.0852,
+      "lastIndexed": 1768948822373,
+      "symbols": [
+        "POST"
+      ],
+      "imports": [
+        "next/server",
+        "@react-pdf/renderer",
+        "@/lib/github-auth",
+        "@/lib/prisma",
+        "@/components/PDFReport",
+        "@/types/analysis"
+      ],
+      "lineCount": 102,
+      "relevanceScore": 100,
+      "reasons": [
+        "core file",
+        "mentioned",
+        "recently modified"
+      ]
+    },
+    "app/api/generate/route.ts": {
+      "hash": "09e463b75360",
+      "size": 4537,
+      "mtime": 1768935640928.3835,
+      "lastIndexed": 1768948822374,
+      "symbols": [
+        "POST"
+      ],
+      "imports": [
+        "next/server",
+        "@/lib/inprod/analyzer",
+        "@/lib/github",
+        "@/lib/inprod/types",
+        "@/lib/inprod/generators/security",
+        "@/lib/inprod/generators/testing",
+        "@/lib/inprod/generators/cicd",
+        "@/lib/inprod/generators/readme"
+      ],
+      "lineCount": 137,
+      "relevanceScore": 100,
+      "reasons": [
+        "core file",
+        "mentioned",
+        "modified today"
+      ]
+    },
+    "app/api/repos/route.ts": {
+      "hash": "cf80cf043ef6",
+      "size": 2076,
+      "mtime": 1768947897735.5159,
+      "lastIndexed": 1768948822374,
+      "symbols": [
+        "GET"
+      ],
+      "imports": [
+        "next/server",
+        "@/lib/github-auth"
+      ],
+      "lineCount": 69,
+      "relevanceScore": 100,
+      "reasons": [
+        "core file",
+        "mentioned",
+        "recently modified"
+      ]
+    },
+    "app/api/stripe/checkout/route.ts": {
+      "hash": "d58e9e318e9c",
+      "size": 1975,
+      "mtime": 1768947897741.0725,
+      "lastIndexed": 1768948822374,
+      "symbols": [
+        "POST"
+      ],
+      "imports": [
+        "next/server",
+        "@/lib/github-auth",
+        "@/lib/stripe",
+        "@/lib/prisma"
+      ],
+      "lineCount": 69,
+      "relevanceScore": 100,
+      "reasons": [
+        "core file",
+        "mentioned",
+        "recently modified"
+      ]
+    },
+    "app/api/stripe/webhook/route.ts": {
+      "hash": "c44f43befb42",
+      "size": 5002,
+      "mtime": 1757932933637.9075,
+      "lastIndexed": 1768948822375,
+      "symbols": [
+        "POST"
+      ],
+      "imports": [
+        "next/server",
+        "@/lib/stripe",
+        "@/lib/prisma",
+        "stripe"
+      ],
+      "lineCount": 149,
+      "relevanceScore": 100,
+      "reasons": [
+        "core file",
+        "mentioned"
+      ]
+    },
+    "app/page.tsx": {
+      "hash": "7fac09642c8f",
+      "size": 9770,
+      "mtime": 1768947897735.4949,
+      "lastIndexed": 1768948822376,
+      "symbols": [
+        "HomeContent",
+        "fetchUser",
+        "handleSubmit",
+        "handleSelectRepo",
+        "Home"
+      ],
+      "imports": [
+        "react",
+        "framer-motion",
+        "next/navigation",
+        "next/link",
+        "lucide-react",
+        "@/lib/utils",
+        "@/components/AnalysisScreen",
+        "@/components/UserMenu",
+        "@/components/RepoSelector"
+      ],
+      "lineCount": 249,
+      "relevanceScore": 95,
+      "reasons": [
+        "mentioned",
+        "recently modified"
+      ]
+    },
+    "app/upgrade/page.tsx": {
+      "hash": "0ab91a2ae687",
+      "size": 8009,
+      "mtime": 1768947897741.055,
+      "lastIndexed": 1768948822376,
+      "symbols": [
+        "UpgradePage",
+        "handleUpgrade"
+      ],
+      "imports": [
+        "react",
+        "framer-motion",
+        "lucide-react",
+        "next/navigation"
+      ],
+      "lineCount": 194,
+      "relevanceScore": 95,
+      "reasons": [
+        "mentioned",
+        "recently modified"
+      ]
+    },
+    "lib/auth.ts": {
+      "hash": "eba101b4c720",
+      "size": 2094,
+      "mtime": 1768946421428.3381,
+      "lastIndexed": 1768948822376,
+      "symbols": [],
+      "imports": [
+        "next-auth",
+        "next-auth/providers/github",
+        "@auth/prisma-adapter",
+        "./prisma",
+        "@prisma/client",
+        "next-auth/adapters"
+      ],
+      "lineCount": 80,
+      "relevanceScore": 95,
+      "reasons": [
+        "mentioned",
+        "recently modified"
+      ]
+    },
+    "lib/crypto.ts": {
+      "hash": "5ee2c1c41f39",
+      "size": 3995,
+      "mtime": 1768947776893.9004,
+      "lastIndexed": 1768948822377,
+      "symbols": [
+        "getEncryptionKey",
+        "encrypt",
+        "decrypt",
+        "encryptSession",
+        "decryptSession"
+      ],
+      "imports": [
+        "crypto"
+      ],
+      "lineCount": 121,
+      "relevanceScore": 95,
+      "reasons": [
+        "mentioned",
+        "recently modified"
+      ]
+    },
+    "lib/github-auth.ts": {
+      "hash": "0831d4265773",
+      "size": 6529,
+      "mtime": 1768947897714.1028,
+      "lastIndexed": 1768948822377,
+      "symbols": [
+        "getGitHubAuthUrl",
+        "exchangeCodeForToken",
+        "getGitHubUser",
+        "generateState",
+        "setOAuthState",
+        "verifyOAuthState",
+        "setSession",
+        "getSession",
+        "clearSession",
+        "getAccessToken",
+        "isOAuthConfigured",
+        "getConfigErrors",
+        "GitHubUser",
+        "GitHubTokenResponse",
+        "SessionUser"
+      ],
+      "imports": [
+        "next/headers",
+        "./crypto"
+      ],
+      "lineCount": 235,
+      "relevanceScore": 95,
+      "reasons": [
+        "mentioned",
+        "recently modified"
+      ]
+    },
+    "components/AnalysisScreen.tsx": {
+      "hash": "7cf6ed8f0669",
+      "size": 25999,
+      "mtime": 1768947897741.0552,
+      "lastIndexed": 1768948822378,
+      "symbols": [
+        "AnalysisScreen",
+        "analyzeRepository",
+        "toggleCategory",
+        "CategoryCard",
+        "FindingCard",
+        "getCategoryIcon",
+        "getEffortColor",
+        "getSeverityColor",
+        "BlurredFindingCard"
+      ],
+      "imports": [
+        "react",
+        "framer-motion",
+        "next/link",
+        "lucide-react",
+        "@/lib/utils",
+        "@/types/analysis"
+      ],
+      "lineCount": 637,
+      "relevanceScore": 90,
+      "reasons": [
+        "mentioned",
+        "recently modified"
+      ]
+    },
+    "components/Providers.tsx": {
+      "hash": "8072c20ba0f7",
+      "size": 180,
+      "mtime": 1768947897736.0273,
+      "lastIndexed": 1768948822379,
+      "symbols": [
+        "Providers"
+      ],
+      "imports": [],
+      "lineCount": 7,
+      "relevanceScore": 90,
+      "reasons": [
+        "mentioned",
+        "recently modified"
+      ]
+    },
+    "components/RepoSelector.tsx": {
+      "hash": "b8f5eeace14e",
+      "size": 10505,
+      "mtime": 1768947897728.4524,
+      "lastIndexed": 1768948822379,
+      "symbols": [
+        "RepoSelector",
+        "fetchUserAndRepos",
+        "fetchRepos",
+        "handleSelectRepo",
+        "handleSignOut"
+      ],
+      "imports": [
+        "react",
+        "framer-motion"
+      ],
+      "lineCount": 315,
+      "relevanceScore": 90,
+      "reasons": [
+        "mentioned",
+        "recently modified"
+      ]
+    },
+    "components/UserMenu.tsx": {
+      "hash": "1a722c909fc1",
+      "size": 4755,
+      "mtime": 1768947897728.441,
+      "lastIndexed": 1768948822379,
+      "symbols": [
+        "UserMenu",
+        "fetchUser",
+        "handleSignIn",
+        "handleSignOut"
+      ],
+      "imports": [
+        "react",
+        "framer-motion",
+        "lucide-react",
+        "next/link"
+      ],
+      "lineCount": 150,
+      "relevanceScore": 90,
+      "reasons": [
+        "mentioned",
+        "recently modified"
+      ]
+    },
+    "lib/github/index.ts": {
+      "hash": "a060e5aa1dbb",
+      "size": 16761,
+      "mtime": 1768935640924.5212,
+      "lastIndexed": 1768948822380,
+      "symbols": [
+        "implements",
+        "parseGitHubUrl",
+        "isReservedName",
+        "fetchWithAuth",
+        "getRepoInfo",
+        "getRepoTree",
+        "shouldScanFile",
+        "fetchFileContent",
+        "fetchRepoFiles",
+        "findKeyFiles",
+        "validateRepoAccess",
+        "getGitHubUser",
+        "LIMITS",
+        "GitHubRepo",
+        "FetchProgressEvent",
+        "FetchRepoResult",
+        "KeyFiles"
+      ],
+      "imports": [
+        "@/lib/inprod/types"
+      ],
+      "lineCount": 622,
+      "relevanceScore": 85,
+      "reasons": [
+        "core file",
+        "modified today"
+      ]
+    },
+    "app/altitude-demo/page.tsx": {
+      "hash": "6c72b1fd51a8",
+      "size": 299,
+      "mtime": 1767394543301.5674,
+      "lastIndexed": 1768948822381,
+      "symbols": [
+        "AltitudeDemoPage",
+        "metadata"
+      ],
+      "imports": [
+        "@/components/RocketVisualization"
+      ],
+      "lineCount": 12,
+      "relevanceScore": 80,
+      "reasons": [
+        "mentioned"
+      ]
+    },
+    "lib/inprod/analyzers/index.ts": {
+      "hash": "652ede16dcab",
+      "size": 801,
+      "mtime": 1767380959438.0881,
+      "lastIndexed": 1768948822381,
+      "symbols": [
+        "analyzeFrontend",
+        "analyzeBackend",
+        "analyzeDatabase",
+        "analyzeAuthentication",
+        "analyzeApiIntegrations",
+        "analyzeStateManagement",
+        "analyzeDesignUx",
+        "analyzeTesting",
+        "analyzeSecurity",
+        "analyzeErrorHandling",
+        "analyzeVersionControl",
+        "analyzeDeployment"
+      ],
+      "imports": [],
+      "lineCount": 18,
+      "relevanceScore": 75,
+      "reasons": [
+        "core file"
+      ]
+    },
+    "lib/inprod/generators/index.ts": {
+      "hash": "1abad69f5547",
+      "size": 384,
+      "mtime": 1767380959529.079,
+      "lastIndexed": 1768948822382,
+      "symbols": [
+        "generateSecurityFixes",
+        "SECURITY_TEMPLATES",
+        "generateTests",
+        "generateCICD",
+        "generateReadme"
+      ],
+      "imports": [],
+      "lineCount": 10,
+      "relevanceScore": 75,
+      "reasons": [
+        "core file"
+      ]
+    },
+    "lib/inprod/types.ts": {
+      "hash": "f210c98d47d2",
+      "size": 13888,
+      "mtime": 1767395023691.7183,
+      "lastIndexed": 1768948822382,
+      "symbols": [
+        "for",
+        "UX",
+        "Category",
+        "CATEGORIES",
+        "CATEGORY_LABELS",
+        "PLATFORM_CATEGORIES",
+        "PLATFORM_OVERRIDES",
+        "Severity",
+        "Confidence",
+        "FixType",
+        "Gap",
+        "CategoryScore",
+        "TechStack",
+        "CompletenessAnalysis",
+        "RepoFile",
+        "RepoContext",
+        "GeneratedFile",
+        "CompletionPlan",
+        "AltitudeZone",
+        "AltitudeLevel",
+        "ALTITUDE_ZONES",
+        "CategoryUserLimits",
+        "CATEGORY_USER_LIMITS",
+        "AltitudeResult"
+      ],
+      "imports": [],
+      "lineCount": 364,
+      "relevanceScore": 75,
+      "reasons": [
+        "core file"
+      ]
+    },
+    "lib/utils.ts": {
+      "hash": "aab77b33fbca",
+      "size": 1326,
+      "mtime": 1757833281593.9038,
+      "lastIndexed": 1768948822382,
+      "symbols": [
+        "cn",
+        "extractRepoInfo",
+        "formatScore",
+        "getScoreColor",
+        "getScoreGrade"
+      ],
+      "imports": [
+        "clsx",
+        "tailwind-merge"
+      ],
+      "lineCount": 52,
+      "relevanceScore": 75,
+      "reasons": [
+        "core file"
+      ]
+    },
+    ".env.example": {
+      "hash": "d8ce4d2b9076",
+      "size": 673,
+      "mtime": 1767378443962.5833,
+      "lastIndexed": 1768948822383,
+      "symbols": [],
+      "imports": [],
+      "lineCount": 25,
+      "relevanceScore": 60,
+      "reasons": [
+        "config"
+      ]
+    },
+    "Dockerfile": {
+      "hash": "a5e363af7ef4",
+      "size": 894,
+      "mtime": 1767388070548.6372,
+      "lastIndexed": 1768948822383,
+      "symbols": [],
+      "imports": [],
+      "lineCount": 44,
+      "relevanceScore": 60,
+      "reasons": [
+        "config"
+      ]
+    },
+    "next.config.js": {
+      "hash": "b2de414c0009",
+      "size": 726,
+      "mtime": 1757932640194.1292,
+      "lastIndexed": 1768948822383,
+      "symbols": [],
+      "imports": [],
+      "lineCount": 35,
+      "relevanceScore": 60,
+      "reasons": [
+        "config"
+      ]
+    },
+    "package.json": {
+      "hash": "d5de2050aeec",
+      "size": 1342,
+      "mtime": 1767387011733.9814,
+      "lastIndexed": 1768948822383,
+      "symbols": [],
+      "imports": [],
+      "lineCount": 52,
+      "relevanceScore": 60,
+      "reasons": [
+        "config"
+      ]
+    },
+    "playwright.config.ts": {
+      "hash": "dae8352e5080",
+      "size": 571,
+      "mtime": 1767388070548.9792,
+      "lastIndexed": 1768948822384,
+      "symbols": [],
+      "imports": [
+        "@playwright/test"
+      ],
+      "lineCount": 27,
+      "relevanceScore": 60,
+      "reasons": [
+        "config"
+      ]
+    },
+    "postcss.config.mjs": {
+      "hash": "ef3ba2a81ba1",
+      "size": 80,
+      "mtime": 1757833621644.8625,
+      "lastIndexed": 1768948822384,
+      "symbols": [],
+      "imports": [],
+      "lineCount": 7,
+      "relevanceScore": 60,
+      "reasons": [
+        "config"
+      ]
+    },
+    "tailwind.config.js": {
+      "hash": "f7cd6ba7f286",
+      "size": 252,
+      "mtime": 1757833604418.257,
+      "lastIndexed": 1768948822384,
+      "symbols": [],
+      "imports": [],
+      "lineCount": 12,
+      "relevanceScore": 60,
+      "reasons": [
+        "config"
+      ]
+    },
+    "tsconfig.json": {
+      "hash": "5c61689ee06d",
+      "size": 797,
+      "mtime": 1767388070549.8442,
+      "lastIndexed": 1768948822384,
+      "symbols": [],
+      "imports": [],
+      "lineCount": 47,
+      "relevanceScore": 60,
+      "reasons": [
+        "config"
+      ]
+    },
+    "vitest.config.ts": {
+      "hash": "898ea11fd630",
+      "size": 468,
+      "mtime": 1767383832867.689,
+      "lastIndexed": 1768948822385,
+      "symbols": [],
+      "imports": [
+        "vitest/config",
+        "@vitejs/plugin-react",
+        "path"
+      ],
+      "lineCount": 21,
+      "relevanceScore": 60,
+      "reasons": [
+        "config"
+      ]
+    },
+    "app/layout.tsx": {
+      "hash": "34f0f0fc468f",
+      "size": 1132,
+      "mtime": 1757926201947.4148,
+      "lastIndexed": 1768948822385,
+      "symbols": [
+        "RootLayout",
+        "metadata"
+      ],
+      "imports": [
+        "next",
+        "next/font/google",
+        "@/components/Providers"
+      ],
+      "lineCount": 36,
+      "relevanceScore": 55,
+      "reasons": []
+    },
+    "lib/inprod/altitude.ts": {
+      "hash": "206e0e9fc44d",
+      "size": 8300,
+      "mtime": 1767395023685.2107,
+      "lastIndexed": 1768948822385,
+      "symbols": [
+        "getCategoryMaxUsers",
+        "getAltitudeZone",
+        "formatUserCount",
+        "calculateAltitude",
+        "getAltitudeMessage",
+        "getAltitudeProgress",
+        "getAltitudeGradient",
+        "getStarsVisibility"
+      ],
+      "imports": [],
+      "lineCount": 253,
+      "relevanceScore": 55,
+      "reasons": []
+    },
+    "lib/inprod/analyzer.ts": {
+      "hash": "5b23761da448",
+      "size": 8131,
+      "mtime": 1767396418331.1292,
+      "lastIndexed": 1768948822386,
+      "symbols": [
+        "analyzeRepository",
+        "getAltitudeSummary",
+        "analyzeCompleteness",
+        "formatAnalysisSummary",
+        "getInstantFixGaps",
+        "generateCompletionPlan",
+        "FullAnalysisResult"
+      ],
+      "imports": [
+        "./stack-detector",
+        "./altitude"
+      ],
+      "lineCount": 252,
+      "relevanceScore": 55,
+      "reasons": []
+    },
+    "lib/inprod/analyzers/api-integrations.ts": {
+      "hash": "58c9328b7006",
+      "size": 4616,
+      "mtime": 1767380959480.0554,
+      "lastIndexed": 1768948822386,
+      "symbols": [
+        "analyzeApiIntegrations"
+      ],
+      "imports": [
+        "../types"
+      ],
+      "lineCount": 156,
+      "relevanceScore": 55,
+      "reasons": []
+    },
+    "lib/inprod/analyzers/authentication.ts": {
+      "hash": "94c6d174ece0",
+      "size": 4351,
+      "mtime": 1767380959451.5508,
+      "lastIndexed": 1768948822386,
+      "symbols": [
+        "analyzeAuthentication"
+      ],
+      "imports": [
+        "../types"
+      ],
+      "lineCount": 151,
+      "relevanceScore": 55,
+      "reasons": []
+    },
+    "lib/inprod/analyzers/backend.ts": {
+      "hash": "51898a336452",
+      "size": 4799,
+      "mtime": 1767380959449.375,
+      "lastIndexed": 1768948822387,
+      "symbols": [
+        "analyzeBackend"
+      ],
+      "imports": [
+        "../types"
+      ],
+      "lineCount": 172,
+      "relevanceScore": 55,
+      "reasons": []
+    },
+    "lib/inprod/analyzers/database.ts": {
+      "hash": "006a8aa5d41a",
+      "size": 4280,
+      "mtime": 1767388070612.8213,
+      "lastIndexed": 1768948822387,
+      "symbols": [
+        "analyzeDatabase"
+      ],
+      "imports": [
+        "../types"
+      ],
+      "lineCount": 149,
+      "relevanceScore": 55,
+      "reasons": []
+    },
+    "lib/inprod/analyzers/deployment.ts": {
+      "hash": "83e719bd5002",
+      "size": 4552,
+      "mtime": 1767380959513.095,
+      "lastIndexed": 1768948822387,
+      "symbols": [
+        "analyzeDeployment"
+      ],
+      "imports": [
+        "../types"
+      ],
+      "lineCount": 150,
+      "relevanceScore": 55,
+      "reasons": []
+    },
+    "lib/inprod/analyzers/design-ux.ts": {
+      "hash": "5ca2132244af",
+      "size": 3635,
+      "mtime": 1767380959480.209,
+      "lastIndexed": 1768948822387,
+      "symbols": [
+        "analyzeDesignUx"
+      ],
+      "imports": [
+        "../types"
+      ],
+      "lineCount": 128,
+      "relevanceScore": 55,
+      "reasons": []
+    },
+    "lib/inprod/analyzers/error-handling.ts": {
+      "hash": "f4fe530a73c8",
+      "size": 4772,
+      "mtime": 1767380959513.0564,
+      "lastIndexed": 1768948822388,
+      "symbols": [
+        "analyzeErrorHandling"
+      ],
+      "imports": [
+        "../types"
+      ],
+      "lineCount": 153,
+      "relevanceScore": 55,
+      "reasons": []
+    },
+    "lib/inprod/analyzers/frontend.ts": {
+      "hash": "8fc52fc7ac75",
+      "size": 4925,
+      "mtime": 1767380959449.3364,
+      "lastIndexed": 1768948822388,
+      "symbols": [
+        "analyzeFrontend"
+      ],
+      "imports": [
+        "../types"
+      ],
+      "lineCount": 171,
+      "relevanceScore": 55,
+      "reasons": []
+    },
+    "lib/inprod/analyzers/security.ts": {
+      "hash": "e9e60e89b117",
+      "size": 6203,
+      "mtime": 1767388070548.6184,
+      "lastIndexed": 1768948822388,
+      "symbols": [
+        "analyzeSecurity"
+      ],
+      "imports": [
+        "../types"
+      ],
+      "lineCount": 206,
+      "relevanceScore": 55,
+      "reasons": []
+    },
+    "lib/inprod/analyzers/state-management.ts": {
+      "hash": "0d3fe822471a",
+      "size": 3658,
+      "mtime": 1767388070607.0662,
+      "lastIndexed": 1768948822389,
+      "symbols": [
+        "analyzeStateManagement"
+      ],
+      "imports": [
+        "../types"
+      ],
+      "lineCount": 117,
+      "relevanceScore": 55,
+      "reasons": []
+    },
+    "lib/inprod/analyzers/testing.ts": {
+      "hash": "c3f075e93732",
+      "size": 4135,
+      "mtime": 1767380959480.1606,
+      "lastIndexed": 1768948822389,
+      "symbols": [
+        "analyzeTesting"
+      ],
+      "imports": [
+        "../types"
+      ],
+      "lineCount": 141,
+      "relevanceScore": 55,
+      "reasons": []
+    },
+    "lib/inprod/analyzers/version-control.ts": {
+      "hash": "46f5184ee16e",
+      "size": 4841,
+      "mtime": 1767380959513.0562,
+      "lastIndexed": 1768948822389,
+      "symbols": [
+        "analyzeVersionControl"
+      ],
+      "imports": [
+        "../types"
+      ],
+      "lineCount": 169,
+      "relevanceScore": 55,
+      "reasons": []
+    },
+    "lib/inprod/generators/cicd.ts": {
+      "hash": "5d3f121e08fd",
+      "size": 8380,
+      "mtime": 1767380959529.1494,
+      "lastIndexed": 1768948822390,
+      "symbols": [
+        "generateCICD",
+        "generateGitHubActions",
+        "generateDockerfile"
+      ],
+      "imports": [
+        "../types"
+      ],
+      "lineCount": 375,
+      "relevanceScore": 55,
+      "reasons": []
+    },
+    "lib/inprod/generators/readme.ts": {
+      "hash": "da39447e7616",
+      "size": 4074,
+      "mtime": 1767380959529.1707,
+      "lastIndexed": 1768948822390,
+      "symbols": [
+        "generateReadme"
+      ],
+      "imports": [
+        "../types"
+      ],
+      "lineCount": 127,
+      "relevanceScore": 55,
+      "reasons": []
+    },
+    "lib/inprod/generators/security.ts": {
+      "hash": "641cf99e2211",
+      "size": 17898,
+      "mtime": 1767380959529.1287,
+      "lastIndexed": 1768948822391,
+      "symbols": [
+        "generateSecurityFixes",
+        "generateSecurityHeaders",
+        "securityHeaders",
+        "import",
+        "generateEncryptSession",
+        "getKey",
+        "encrypt",
+        "decrypt",
+        "secureCompare",
+        "generateToken",
+        "hashValue",
+        "verifyHash",
+        "generateSecureCookies",
+        "createSecureCookie",
+        "generateEnvExample",
+        "generateXSSSanitization",
+        "escapeHtml",
+        "sanitizeHtml",
+        "sanitizeUrl",
+        "safeJsonParse",
+        "stripHtml",
+        "generateExtractSecret",
+        "SECURITY_TEMPLATES",
+        "securityConfig",
+        "SECURE_COOKIE_OPTIONS",
+        "SENSITIVE_COOKIE_OPTIONS",
+        "COOKIE_NAMES"
+      ],
+      "imports": [
+        "../types",
+        "express",
+        "next",
+        "./next.config.security",
+        "vitest",
+        "@/lib/crypto",
+        "next/dist/compiled/@edge-runtime/cookies"
+      ],
+      "lineCount": 660,
+      "relevanceScore": 55,
+      "reasons": []
+    },
+    "lib/inprod/generators/testing.ts": {
+      "hash": "10308626a963",
+      "size": 7045,
+      "mtime": 1767380959529.164,
+      "lastIndexed": 1768948822391,
+      "symbols": [
+        "generateTests",
+        "generateVitestSetup",
+        "generatePlaywrightSetup"
+      ],
+      "imports": [
+        "../types",
+        "vitest/config",
+        "@vitejs/plugin-react",
+        "path",
+        "vitest",
+        "@testing-library/react",
+        "@/components/MyComponent",
+        "@playwright/test"
+      ],
+      "lineCount": 268,
+      "relevanceScore": 55,
+      "reasons": []
+    },
+    "lib/inprod/stack-detector.ts": {
+      "hash": "2b329a483294",
+      "size": 10730,
+      "mtime": 1768968491027.0088,
+      "lastIndexed": 1768968765461,
+      "symbols": [
+        "detectTechStack",
+        "detectPlatform",
+        "detectLanguages",
+        "detectFrameworks",
+        "detectPackageManager",
+        "detectDatabase",
+        "detectTestFramework",
+        "detectCIProvider",
+        "detectDeploymentPlatform",
+        "detectMaturityLevel"
+      ],
+      "imports": [
+        "./types"
+      ],
+      "lineCount": 313,
+      "relevanceScore": 95,
+      "reasons": [
+        "mentioned",
+        "recently modified"
+      ]
+    },
+    "lib/prisma.ts": {
+      "hash": "d655e942742a",
+      "size": 279,
+      "mtime": 1757926118498.5417,
+      "lastIndexed": 1768948822392,
+      "symbols": [
+        "prisma"
+      ],
+      "imports": [
+        "@prisma/client"
+      ],
+      "lineCount": 10,
+      "relevanceScore": 55,
+      "reasons": []
+    },
+    "lib/sandbox.ts": {
+      "hash": "7530d82a46f1",
+      "size": 7726,
+      "mtime": 1767359024538.2642,
+      "lastIndexed": 1768948822392,
+      "symbols": [
+        "runInSandbox",
+        "getInstallCommand",
+        "getBuildCommand",
+        "getTestCommand",
+        "parseCoverage",
+        "validateGeneratedCode",
+        "SandboxResult",
+        "SandboxOptions"
+      ],
+      "imports": [
+        "e2b"
+      ],
+      "lineCount": 300,
+      "relevanceScore": 55,
+      "reasons": []
+    },
+    "lib/stripe.ts": {
+      "hash": "b1fc708466af",
+      "size": 393,
+      "mtime": 1757932507907.6191,
+      "lastIndexed": 1768948822392,
+      "symbols": [
+        "stripe",
+        "PRICE_ID"
+      ],
+      "imports": [
+        "stripe"
+      ],
+      "lineCount": 14,
+      "relevanceScore": 55,
+      "reasons": []
+    },
+    "components/AltitudeDisplay.tsx": {
+      "hash": "f8d5691bdc9f",
+      "size": 10589,
+      "mtime": 1767395023696.4932,
+      "lastIndexed": 1768948822392,
+      "symbols": [
+        "AltitudeDisplay",
+        "AltitudeBadge",
+        "AltitudeBackground"
+      ],
+      "imports": [
+        "framer-motion",
+        "react",
+        "@/lib/inprod/types",
+        "@/lib/inprod/altitude"
+      ],
+      "lineCount": 270,
+      "relevanceScore": 50,
+      "reasons": []
+    },
+    "components/PDFReport.tsx": {
+      "hash": "00b8f82f6cb0",
+      "size": 5295,
+      "mtime": 1757926557300.324,
+      "lastIndexed": 1768948822393,
+      "symbols": [
+        "PDFReport"
+      ],
+      "imports": [
+        "react",
+        "@react-pdf/renderer",
+        "@/types/analysis"
+      ],
+      "lineCount": 191,
+      "relevanceScore": 50,
+      "reasons": []
+    },
+    "components/RocketVisualization.tsx": {
+      "hash": "e572e603c8a8",
+      "size": 29520,
+      "mtime": 1767396418331.3733,
+      "lastIndexed": 1768948822394,
+      "symbols": [
+        "getAltitudeProgress",
+        "getAltitudeGradient",
+        "getStarsVisibility",
+        "RocketVisualization",
+        "RocketSVG",
+        "getPartColor",
+        "CategoryList",
+        "Leaderboard",
+        "AltitudeDemo"
+      ],
+      "imports": [
+        "react",
+        "framer-motion"
+      ],
+      "lineCount": 724,
+      "relevanceScore": 50,
+      "reasons": []
+    },
+    "next-env.d.ts": {
+      "hash": "2a74d3909800",
+      "size": 247,
+      "mtime": 1767358843530.7336,
+      "lastIndexed": 1768948822394,
+      "symbols": [],
+      "imports": [],
+      "lineCount": 7,
+      "relevanceScore": 50,
+      "reasons": []
+    },
+    "prisma/migrations/0_init/migration.sql": {
+      "hash": "a5435c781cac",
+      "size": 73,
+      "mtime": 1767388070548.9841,
+      "lastIndexed": 1768948822394,
+      "symbols": [],
+      "imports": [],
+      "lineCount": 4,
+      "relevanceScore": 50,
+      "reasons": []
+    },
+    "scripts/add-webhook-secret.sh": {
+      "hash": "3879bcacb3ce",
+      "size": 880,
+      "mtime": 1757931303176.506,
+      "lastIndexed": 1768948822395,
+      "symbols": [],
+      "imports": [],
+      "lineCount": 27,
+      "relevanceScore": 50,
+      "reasons": []
+    },
+    "scripts/compare-analyzers.ts": {
+      "hash": "401e151f9064",
+      "size": 7428,
+      "mtime": 1767389873148.189,
+      "lastIndexed": 1768948822395,
+      "symbols": [
+        "fetchRepoFiles",
+        "analyzeWithClaude",
+        "main"
+      ],
+      "imports": [
+        "@anthropic-ai/sdk",
+        "../lib/inprod/analyzer",
+        "../lib/inprod/types"
+      ],
+      "lineCount": 221,
+      "relevanceScore": 50,
+      "reasons": []
+    },
+    "scripts/setup-database.sh": {
+      "hash": "09fdbe08a359",
+      "size": 792,
+      "mtime": 1757926873074.2703,
+      "lastIndexed": 1768948822395,
+      "symbols": [],
+      "imports": [],
+      "lineCount": 30,
+      "relevanceScore": 50,
+      "reasons": []
+    },
+    "scripts/setup-vercel-env.sh": {
+      "hash": "5596a20d80fb",
+      "size": 3054,
+      "mtime": 1757927277512.2305,
+      "lastIndexed": 1768948822395,
+      "symbols": [],
+      "imports": [],
+      "lineCount": 90,
+      "relevanceScore": 50,
+      "reasons": []
+    },
+    "types/analysis.ts": {
+      "hash": "e233a937c270",
+      "size": 2215,
+      "mtime": 1757926303574.166,
+      "lastIndexed": 1768948822396,
+      "symbols": [
+        "CategoryScore",
+        "SubCategory",
+        "Finding",
+        "AnalysisResult",
+        "AnalysisProgress",
+        "ANALYSIS_CATEGORIES"
+      ],
+      "imports": [],
+      "lineCount": 74,
+      "relevanceScore": 50,
+      "reasons": []
+    },
+    "vitest.setup.ts": {
+      "hash": "aaa3e162e7f1",
+      "size": 476,
+      "mtime": 1767383832850.263,
+      "lastIndexed": 1768948822396,
+      "symbols": [],
+      "imports": [
+        "vitest"
+      ],
+      "lineCount": 19,
+      "relevanceScore": 50,
+      "reasons": []
+    },
+    "e2e/home.spec.ts": {
+      "hash": "140ad0d3b0f6",
+      "size": 336,
+      "mtime": 1767388070548.9924,
+      "lastIndexed": 1768948822396,
+      "symbols": [],
+      "imports": [
+        "@playwright/test"
+      ],
+      "lineCount": 14,
+      "relevanceScore": 40,
+      "reasons": []
+    },
+    "tests/inprod/analyzer.test.ts": {
+      "hash": "af1979249dba",
+      "size": 9120,
+      "mtime": 1768968491013.867,
+      "lastIndexed": 1768968765462,
+      "symbols": [
+        "createPackageJson",
+        "Home",
+        "createContext"
+      ],
+      "imports": [
+        "vitest",
+        "@/lib/inprod/stack-detector",
+        "@/lib/inprod/types"
+      ],
+      "lineCount": 212,
+      "relevanceScore": 80,
+      "reasons": [
+        "mentioned",
+        "recently modified"
+      ]
+    },
+    "tests/inprod/stack-detector.test.ts": {
+      "hash": "bf4621c04661",
+      "size": 3531,
+      "mtime": 1767383832899.1748,
+      "lastIndexed": 1768948822396,
+      "symbols": [
+        "Home",
+        "Layout"
+      ],
+      "imports": [
+        "vitest",
+        "@/lib/inprod/stack-detector",
+        "@/lib/inprod/types"
+      ],
+      "lineCount": 107,
+      "relevanceScore": 40,
+      "reasons": []
+    },
+    "tests/inprod/altitude.test.ts": {
+      "hash": "f80594a4663b",
+      "size": 8926,
+      "mtime": 1768968491013.8672,
+      "lastIndexed": 1768968765462,
+      "symbols": [
+        "createCategoryScore"
+      ],
+      "imports": [
+        "vitest",
+        "@/lib/inprod/types"
+      ],
+      "lineCount": 288,
+      "relevanceScore": 80,
+      "reasons": [
+        "mentioned",
+        "recently modified"
+      ]
+    },
+    "tests/inprod/security.test.ts": {
+      "hash": "9be19a1d2004",
+      "size": 12133,
+      "mtime": 1768968491013.9387,
+      "lastIndexed": 1768968765462,
+      "symbols": [
+        "createContext",
+        "Home",
+        "apiUrl"
+      ],
+      "imports": [
+        "vitest",
+        "@/lib/inprod/analyzers/security",
+        "@/lib/inprod/types",
+        "dompurify",
+        "@prisma/client",
+        "drizzle-orm",
+        "crypto",
+        "bcrypt"
+      ],
+      "lineCount": 352,
+      "relevanceScore": 80,
+      "reasons": [
+        "mentioned",
+        "recently modified"
+      ]
+    }
+  },
+  "totalFiles": 80,
+  "totalSymbols": 249
+}

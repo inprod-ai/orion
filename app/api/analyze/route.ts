@@ -151,14 +151,19 @@ export async function POST(request: NextRequest) {
           }) + '\n'))
 
           // Fetch GitHub data with timeout and validation
-          const fetchWithTimeout = (url: string, timeout = 10000) => {
+          // Use access token for private repos when user is authenticated
+          const accessToken = session?.accessToken
+          const fetchWithTimeout = (url: string, timeout = 15000) => {
+            const headers: Record<string, string> = {
+              'User-Agent': 'InProd-AI-Security-Scanner',
+              'Accept': 'application/vnd.github.v3+json'
+            }
+            // Add auth header for private repo access
+            if (accessToken) {
+              headers['Authorization'] = `Bearer ${accessToken}`
+            }
             return Promise.race([
-              fetch(url, {
-                headers: {
-                  'User-Agent': 'InProd-AI-Security-Scanner',
-                  'Accept': 'application/vnd.github.v3+json'
-                }
-              }),
+              fetch(url, { headers }),
               new Promise<never>((_, reject) => 
                 setTimeout(() => reject(new Error('Request timeout')), timeout)
               )
@@ -174,7 +179,15 @@ export async function POST(request: NextRequest) {
           ])
 
           if (!repoResponse.ok) {
-            throw new Error('Repository not found')
+            if (repoResponse.status === 404) {
+              // Could be private repo without access or doesn't exist
+              if (!accessToken) {
+                throw new Error('Repository not found. If this is a private repo, please sign in first.')
+              } else {
+                throw new Error('Repository not found or you don\'t have access to this private repo.')
+              }
+            }
+            throw new Error(`GitHub API error: ${repoResponse.status}`)
           }
 
           controller.enqueue(encoder.encode(JSON.stringify({ 

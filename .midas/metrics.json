@@ -1,0 +1,28 @@
+{
+  "totalSessions": 1,
+  "totalToolCalls": 0,
+  "totalTornadoCycles": 0,
+  "totalJournalsSaved": 0,
+  "phaseHistory": [
+    {
+      "phase": "BUILD:RULES",
+      "enteredAt": "2026-01-20T22:40:49.177Z"
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "1768948638245-4hxs",
+      "startTime": "2026-01-20T22:37:18.245Z",
+      "startPhase": {
+        "phase": "IDLE"
+      },
+      "toolCalls": 0,
+      "tornadoCycles": 0,
+      "journalsSaved": 0,
+      "promptsCopied": 4
+    }
+  ],
+  "averageSessionMinutes": 0,
+  "currentStreak": 1,
+  "lastSessionDate": "2026-01-20"
+}
