@@ -3,13 +3,20 @@
 // =============================================================================
 
 import { CategoryScore, Gap, RepoContext } from '../types'
+import { checkPlatformApplicability, getCategoryLabel } from '../platform'
 
 export function analyzeDatabase(ctx: RepoContext): CategoryScore {
+  const { files, techStack, packageJson } = ctx
+  const label = getCategoryLabel('database', techStack.platform, 'Database')
+  
+  // Check platform applicability
+  const platformCheck = checkPlatformApplicability('database', label, techStack.platform)
+  if (platformCheck) return platformCheck
+  
   const gaps: Gap[] = []
   const detected: string[] = []
   let score = 0
   
-  const { files, techStack, packageJson } = ctx
   const deps = packageJson ? { 
     ...((packageJson.dependencies as Record<string, string>) || {}),
     ...((packageJson.devDependencies as Record<string, string>) || {})
@@ -18,7 +25,7 @@ export function analyzeDatabase(ctx: RepoContext): CategoryScore {
   if (!techStack.database) {
     return {
       category: 'database',
-      label: 'Database',
+      label,
       score: 100, // N/A
       detected: ['No database detected'],
       gaps: [],
@@ -138,7 +145,7 @@ export function analyzeDatabase(ctx: RepoContext): CategoryScore {
 
   return {
     category: 'database',
-    label: 'Database',
+    label,
     score: Math.min(100, score),
     detected,
     gaps,

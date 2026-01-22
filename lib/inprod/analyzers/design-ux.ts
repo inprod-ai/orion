@@ -3,13 +3,20 @@
 // =============================================================================
 
 import { CategoryScore, Gap, RepoContext } from '../types'
+import { checkPlatformApplicability, getCategoryLabel } from '../platform'
 
 export function analyzeDesignUx(ctx: RepoContext): CategoryScore {
+  const { files, techStack, packageJson } = ctx
+  const label = getCategoryLabel('designUx', techStack.platform, 'Design/UX')
+  
+  // Check platform applicability
+  const platformCheck = checkPlatformApplicability('designUx', label, techStack.platform)
+  if (platformCheck) return platformCheck
+  
   const gaps: Gap[] = []
   const detected: string[] = []
   let score = 0
   
-  const { files, techStack, packageJson } = ctx
   const deps = packageJson ? { 
     ...((packageJson.dependencies as Record<string, string>) || {}),
     ...((packageJson.devDependencies as Record<string, string>) || {})
@@ -21,7 +28,7 @@ export function analyzeDesignUx(ctx: RepoContext): CategoryScore {
   if (!hasUI) {
     return {
       category: 'designUx',
-      label: 'Design/UX',
+      label,
       score: 100, // N/A
       detected: ['No UI detected'],
       gaps: [],
@@ -117,7 +124,7 @@ export function analyzeDesignUx(ctx: RepoContext): CategoryScore {
 
   return {
     category: 'designUx',
-    label: 'Design/UX',
+    label,
     score: Math.min(100, score),
     detected,
     gaps,

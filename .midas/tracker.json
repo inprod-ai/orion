@@ -1,44 +1,100 @@
 {
-  "lastUpdated": "2026-01-21T04:27:48.630Z",
+  "lastUpdated": "2026-01-22T17:45:02.880Z",
   "recentFiles": [
     {
-      "path": "tests/inprod/security.test.ts",
-      "lastModified": 1768969662469.9148
+      "path": "e2e/api.spec.ts",
+      "lastModified": 1769103898636.2783
+    },
+    {
+      "path": "tsconfig.tsbuildinfo",
+      "lastModified": 1769103842990.522
+    },
+    {
+      "path": "lib/inprod/analyzers/database.ts",
+      "lastModified": 1769103817727.763
+    },
+    {
+      "path": "lib/inprod/analyzers/authentication.ts",
+      "lastModified": 1769103803628.266
+    },
+    {
+      "path": "lib/inprod/analyzers/testing.ts",
+      "lastModified": 1769103798342.1313
     },
     {
       "path": "lib/inprod/analyzers/security.ts",
-      "lastModified": 1768969641601.6213
+      "lastModified": 1769103795047.9248
     },
     {
-      "path": "lib/inprod/stack-detector.ts",
-      "lastModified": 1768969485519.7937
+      "path": "lib/inprod/analyzers/api-integrations.ts",
+      "lastModified": 1769103792704.4368
     },
     {
-      "path": "app/api/analyze/route.ts",
-      "lastModified": 1768969455169.0984
+      "path": "lib/inprod/analyzers/state-management.ts",
+      "lastModified": 1769103790179.84
     },
     {
-      "path": "docs/codebase-index.md",
-      "lastModified": 1768968614497.714
+      "path": "lib/inprod/analyzers/design-ux.ts",
+      "lastModified": 1769103785153.8013
     },
     {
-      "path": "tests/inprod/altitude.test.ts",
-      "lastModified": 1768968491013.8672
+      "path": "lib/inprod/analyzers/error-handling.ts",
+      "lastModified": 1769103781176.072
     },
     {
-      "path": "tests/inprod/analyzer.test.ts",
-      "lastModified": 1768968491013.867
+      "path": "lib/inprod/analyzers/version-control.ts",
+      "lastModified": 1769103777045.2927
+    },
+    {
+      "path": "lib/inprod/analyzers/deployment.ts",
+      "lastModified": 1769103748208.052
+    },
+    {
+      "path": "tests/inprod/analyzers.test.ts",
+      "lastModified": 1769103701134.9724
+    },
+    {
+      "path": "lib/inprod/generators/index.ts",
+      "lastModified": 1769103497721.373
+    },
+    {
+      "path": "lib/inprod/generators/backend.ts",
+      "lastModified": 1769103479105.0806
+    },
+    {
+      "path": "lib/inprod/generators/error-handling.ts",
+      "lastModified": 1769103424160.0376
+    },
+    {
+      "path": "lib/inprod/generators/database.ts",
+      "lastModified": 1769103356487.8657
+    },
+    {
+      "path": "lib/inprod/generators/authentication.ts",
+      "lastModified": 1769103292287.8577
+    },
+    {
+      "path": "lib/inprod/analyzers/backend.ts",
+      "lastModified": 1769102811058.9143
+    },
+    {
+      "path": "lib/inprod/analyzers/frontend.ts",
+      "lastModified": 1769102784105.6135
+    },
+    {
+      "path": "lib/inprod/platform.ts",
+      "lastModified": 1769102763064.8135
     }
   ],
   "recentToolCalls": [],
   "gitActivity": {
     "branch": "main",
-    "lastCommit": "5f4b3b2e50a48ef3f33f7e0aabef01c67b1540e2",
-    "lastCommitMessage": "Fix private repo scanning by using user access token",
-    "lastCommitTime": 1768969538000,
-    "uncommittedChanges": 3,
+    "lastCommit": "8df254225d32f9dcbcd3c09fc677c564ea8eb3a6",
+    "lastCommitMessage": "Update codebase index with comprehensive gap analysis",
+    "lastCommitTime": 1769098371000,
+    "uncommittedChanges": 26,
     "recentCommits": [
-      "Fix private repo scanning by using user access token",
+      "Update codebase index with comprehensive gap analysis",
       "Add codebase index with gap analysis",
       "Add comprehensive test suite for analyzer, altitude, and security",
       "Update cursorrules with Zod validation and Tailwind conventions",
@@ -71,6 +127,26 @@
   "currentTask": null,
   "suggestionHistory": [
     {
+      "timestamp": 1769102797917,
+      "suggestion": "Run vitest to see test failures. Focus on the actual error messages - likely issues with imports, TypeScript types, or test setup. Run with: npm test",
+      "accepted": false
+    },
+    {
+      "timestamp": 1769102718180,
+      "suggestion": "Run 'npm test' to execute the test suite. If tests fail, analyze the failures and fix them. Once passing, run 'npm run test:watch' in coverage mode to check test coverage percentage and identify untested code paths.",
+      "accepted": false
+    },
+    {
+      "timestamp": 1769098304024,
+      "suggestion": "Run 'npm test' to verify all tests pass. Fix any failing tests, focusing on the analyzer, altitude, and security test suites. Ensure TypeScript compilation succeeds with 'npm run typecheck'.",
+      "accepted": false
+    },
+    {
+      "timestamp": 1769024999129,
+      "suggestion": "Create a comprehensive codebase index showing: 1) Component dependency graph 2) API endpoint mapping 3) Database schema relationships 4) Test coverage gaps. Focus on identifying which analyzers are incomplete and which generators need implementation.",
+      "accepted": false
+    },
+    {
       "timestamp": 1768968792009,
       "suggestion": "Read docs/codebase-index.md and summarize: 1) The main architectural patterns used, 2) Key dependencies between modules, 3) The top 3 implementation gaps that need addressing. Then update the index with any missing critical files or patterns you discover.",
       "accepted": false
@@ -97,7 +173,7 @@
     }
   ],
   "fileSnapshot": [],
-  "lastAnalysis": 1768968791993,
+  "lastAnalysis": 1769102797904,
   "phaseEnteredAt": null,
   "lastProgressAt": null
 }

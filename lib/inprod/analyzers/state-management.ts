@@ -3,13 +3,20 @@
 // =============================================================================
 
 import { CategoryScore, Gap, RepoContext } from '../types'
+import { checkPlatformApplicability, getCategoryLabel } from '../platform'
 
 export function analyzeStateManagement(ctx: RepoContext): CategoryScore {
+  const { files, techStack, packageJson } = ctx
+  const label = getCategoryLabel('stateManagement', techStack.platform, 'State Management')
+  
+  // Check platform applicability
+  const platformCheck = checkPlatformApplicability('stateManagement', label, techStack.platform)
+  if (platformCheck) return platformCheck
+  
   const gaps: Gap[] = []
   const detected: string[] = []
   let score = 0
   
-  const { files, techStack, packageJson } = ctx
   const deps = packageJson ? { 
     ...((packageJson.dependencies as Record<string, string>) || {}),
     ...((packageJson.devDependencies as Record<string, string>) || {})
@@ -23,7 +30,7 @@ export function analyzeStateManagement(ctx: RepoContext): CategoryScore {
   if (!hasFrontend) {
     return {
       category: 'stateManagement',
-      label: 'State Management',
+      label,
       score: 100, // N/A
       detected: ['No frontend state management needed'],
       gaps: [],
@@ -106,7 +113,7 @@ export function analyzeStateManagement(ctx: RepoContext): CategoryScore {
 
   return {
     category: 'stateManagement',
-    label: 'State Management',
+    label,
     score: Math.min(100, score),
     detected,
     gaps,

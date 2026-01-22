@@ -3,13 +3,23 @@
 // =============================================================================
 
 import { CategoryScore, Gap, RepoContext } from '../types'
+import { checkPlatformApplicability, getCategoryLabel, getPlatformChecks } from '../platform'
 
 export function analyzeTesting(ctx: RepoContext): CategoryScore {
+  const { files, techStack, packageJson } = ctx
+  const label = getCategoryLabel('testing', techStack.platform, 'Testing')
+  
+  // Check platform applicability (testing applies to all platforms)
+  const platformCheck = checkPlatformApplicability('testing', label, techStack.platform)
+  if (platformCheck) return platformCheck
+  
+  // Get platform-specific test framework expectations
+  const platformChecks = getPlatformChecks('testing', techStack.platform)
+  
   const gaps: Gap[] = []
   const detected: string[] = []
   let score = 0
   
-  const { files, techStack, packageJson } = ctx
   const deps = packageJson ? { 
     ...((packageJson.dependencies as Record<string, string>) || {}),
     ...((packageJson.devDependencies as Record<string, string>) || {})
@@ -130,7 +140,7 @@ export function analyzeTesting(ctx: RepoContext): CategoryScore {
 
   return {
     category: 'testing',
-    label: 'Testing',
+    label,
     score: Math.min(100, score),
     detected,
     gaps,

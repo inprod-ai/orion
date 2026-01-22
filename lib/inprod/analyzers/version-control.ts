@@ -3,13 +3,20 @@
 // =============================================================================
 
 import { CategoryScore, Gap, RepoContext } from '../types'
+import { checkPlatformApplicability, getCategoryLabel } from '../platform'
 
 export function analyzeVersionControl(ctx: RepoContext): CategoryScore {
+  const { files, techStack, packageJson } = ctx
+  const label = getCategoryLabel('versionControl', techStack.platform, 'Version Control')
+  
+  // Check platform applicability (applies to all platforms)
+  const platformCheck = checkPlatformApplicability('versionControl', label, techStack.platform)
+  if (platformCheck) return platformCheck
+  
   const gaps: Gap[] = []
   const detected: string[] = []
   let score = 0
   
-  const { files, packageJson } = ctx
   const deps = packageJson ? { 
     ...((packageJson.dependencies as Record<string, string>) || {}),
     ...((packageJson.devDependencies as Record<string, string>) || {})
@@ -158,7 +165,7 @@ export function analyzeVersionControl(ctx: RepoContext): CategoryScore {
 
   return {
     category: 'versionControl',
-    label: 'Version Control',
+    label,
     score: Math.min(100, score),
     detected,
     gaps,

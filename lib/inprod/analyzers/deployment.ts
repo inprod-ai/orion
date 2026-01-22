@@ -3,13 +3,20 @@
 // =============================================================================
 
 import { CategoryScore, Gap, RepoContext } from '../types'
+import { checkPlatformApplicability, getCategoryLabel } from '../platform'
 
 export function analyzeDeployment(ctx: RepoContext): CategoryScore {
+  const { files, techStack, packageJson } = ctx
+  const label = getCategoryLabel('deployment', techStack.platform, 'Deployment')
+  
+  // Check platform applicability
+  const platformCheck = checkPlatformApplicability('deployment', label, techStack.platform)
+  if (platformCheck) return platformCheck
+  
   const gaps: Gap[] = []
   const detected: string[] = []
   let score = 0
   
-  const { files, techStack, packageJson } = ctx
   const deps = packageJson ? { 
     ...((packageJson.dependencies as Record<string, string>) || {}),
     ...((packageJson.devDependencies as Record<string, string>) || {})
@@ -139,7 +146,7 @@ export function analyzeDeployment(ctx: RepoContext): CategoryScore {
 
   return {
     category: 'deployment',
-    label: 'Deployment',
+    label,
     score: Math.min(100, score),
     detected,
     gaps,

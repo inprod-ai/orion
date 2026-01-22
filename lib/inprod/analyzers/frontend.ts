@@ -3,13 +3,20 @@
 // =============================================================================
 
 import { CategoryScore, Gap, RepoContext } from '../types'
+import { checkPlatformApplicability, getCategoryLabel } from '../platform'
 
 export function analyzeFrontend(ctx: RepoContext): CategoryScore {
+  const { files, techStack, packageJson } = ctx
+  const label = getCategoryLabel('frontend', techStack.platform, 'Frontend')
+  
+  // Check platform applicability
+  const platformCheck = checkPlatformApplicability('frontend', label, techStack.platform)
+  if (platformCheck) return platformCheck
+  
   const gaps: Gap[] = []
   const detected: string[] = []
   let score = 0
   
-  const { files, techStack, packageJson } = ctx
   const deps = packageJson ? { 
     ...((packageJson.dependencies as Record<string, string>) || {}),
     ...((packageJson.devDependencies as Record<string, string>) || {})
@@ -23,7 +30,7 @@ export function analyzeFrontend(ctx: RepoContext): CategoryScore {
   if (!hasFrontend) {
     return {
       category: 'frontend',
-      label: 'Frontend',
+      label,
       score: 100, // N/A
       detected: ['No frontend detected'],
       gaps: [],
@@ -160,7 +167,7 @@ export function analyzeFrontend(ctx: RepoContext): CategoryScore {
 
   return {
     category: 'frontend',
-    label: 'Frontend',
+    label,
     score: Math.min(100, score),
     detected,
     gaps,

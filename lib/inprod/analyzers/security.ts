@@ -3,13 +3,23 @@
 // =============================================================================
 
 import { CategoryScore, Gap, RepoContext } from '../types'
+import { checkPlatformApplicability, getCategoryLabel, getPlatformChecks } from '../platform'
 
 export function analyzeSecurity(ctx: RepoContext): CategoryScore {
+  const { files, techStack, packageJson } = ctx
+  const label = getCategoryLabel('security', techStack.platform, 'Security')
+  
+  // Check platform applicability (security applies to all platforms)
+  const platformCheck = checkPlatformApplicability('security', label, techStack.platform)
+  if (platformCheck) return platformCheck
+  
+  // Get platform-specific security checks
+  const platformChecks = getPlatformChecks('security', techStack.platform)
+  
   const gaps: Gap[] = []
   const detected: string[] = []
   let score = 0
   
-  const { files, packageJson } = ctx
   const deps = packageJson ? { 
     ...((packageJson.dependencies as Record<string, string>) || {}),
     ...((packageJson.devDependencies as Record<string, string>) || {})
@@ -196,7 +206,7 @@ export function analyzeSecurity(ctx: RepoContext): CategoryScore {
 
   return {
     category: 'security',
-    label: 'Security',
+    label,
     score: Math.min(100, score),
     detected,
     gaps,

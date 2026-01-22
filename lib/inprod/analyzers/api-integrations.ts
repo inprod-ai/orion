@@ -3,13 +3,20 @@
 // =============================================================================
 
 import { CategoryScore, Gap, RepoContext } from '../types'
+import { checkPlatformApplicability, getCategoryLabel } from '../platform'
 
 export function analyzeApiIntegrations(ctx: RepoContext): CategoryScore {
+  const { files, techStack, packageJson } = ctx
+  const label = getCategoryLabel('apiIntegrations', techStack.platform, 'API Integrations')
+  
+  // Check platform applicability
+  const platformCheck = checkPlatformApplicability('apiIntegrations', label, techStack.platform)
+  if (platformCheck) return platformCheck
+  
   const gaps: Gap[] = []
   const detected: string[] = []
   let score = 0
   
-  const { files, packageJson } = ctx
   const deps = packageJson ? { 
     ...((packageJson.dependencies as Record<string, string>) || {}),
     ...((packageJson.devDependencies as Record<string, string>) || {})
@@ -27,7 +34,7 @@ export function analyzeApiIntegrations(ctx: RepoContext): CategoryScore {
   if (!hasExternalApis) {
     return {
       category: 'apiIntegrations',
-      label: 'API Integrations',
+      label,
       score: 100, // N/A
       detected: ['No external API integrations detected'],
       gaps: [],
@@ -145,7 +152,7 @@ export function analyzeApiIntegrations(ctx: RepoContext): CategoryScore {
 
   return {
     category: 'apiIntegrations',
-    label: 'API Integrations',
+    label,
     score: Math.min(100, score),
     detected,
     gaps,

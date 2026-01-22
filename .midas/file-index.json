@@ -1,13 +1,13 @@
 {
   "version": 1,
   "projectPath": "/Users/christiancattaneo/Projects/inprod",
-  "lastFullScan": 1768968765464,
+  "lastFullScan": 1769102768679,
   "files": {
     "app/api/analyze/route.ts": {
-      "hash": "b9d008511ccd",
-      "size": 22414,
-      "mtime": 1768947897741.099,
-      "lastIndexed": 1768948822367,
+      "hash": "094af69baabf",
+      "size": 23149,
+      "mtime": 1768969714163.8286,
+      "lastIndexed": 1769024967191,
       "symbols": [
         "POST",
         "fetchWithTimeout",
@@ -21,12 +21,11 @@
         "@/lib/prisma",
         "@/lib/github"
       ],
-      "lineCount": 588,
-      "relevanceScore": 100,
+      "lineCount": 601,
+      "relevanceScore": 85,
       "reasons": [
         "core file",
-        "mentioned",
-        "recently modified"
+        "modified today"
       ]
     },
     "app/api/auth/callback/route.ts": {
@@ -1051,19 +1050,21 @@
       "reasons": []
     },
     "lib/inprod/analyzers/security.ts": {
-      "hash": "e9e60e89b117",
-      "size": 6203,
-      "mtime": 1767388070548.6184,
-      "lastIndexed": 1768948822388,
+      "hash": "7482de5cb1ef",
+      "size": 6315,
+      "mtime": 1768969714164.2058,
+      "lastIndexed": 1769024967193,
       "symbols": [
         "analyzeSecurity"
       ],
       "imports": [
         "../types"
       ],
-      "lineCount": 206,
-      "relevanceScore": 55,
-      "reasons": []
+      "lineCount": 207,
+      "relevanceScore": 65,
+      "reasons": [
+        "modified today"
+      ]
     },
     "lib/inprod/analyzers/state-management.ts": {
       "hash": "0d3fe822471a",
@@ -1214,10 +1215,10 @@
       "reasons": []
     },
     "lib/inprod/stack-detector.ts": {
-      "hash": "2b329a483294",
-      "size": 10730,
-      "mtime": 1768968491027.0088,
-      "lastIndexed": 1768968765461,
+      "hash": "30dd96a39672",
+      "size": 10746,
+      "mtime": 1768969714164.544,
+      "lastIndexed": 1769024967193,
       "symbols": [
         "detectTechStack",
         "detectPlatform",
@@ -1234,10 +1235,9 @@
         "./types"
       ],
       "lineCount": 313,
-      "relevanceScore": 95,
+      "relevanceScore": 65,
       "reasons": [
-        "mentioned",
-        "recently modified"
+        "modified today"
       ]
     },
     "lib/prisma.ts": {
@@ -1532,10 +1532,10 @@
       ]
     },
     "tests/inprod/security.test.ts": {
-      "hash": "9be19a1d2004",
-      "size": 12133,
-      "mtime": 1768968491013.9387,
-      "lastIndexed": 1768968765462,
+      "hash": "8c41bb4d12ee",
+      "size": 12118,
+      "mtime": 1768969714164.887,
+      "lastIndexed": 1769024967195,
       "symbols": [
         "createContext",
         "Home",
@@ -1552,13 +1552,34 @@
         "bcrypt"
       ],
       "lineCount": 352,
-      "relevanceScore": 80,
+      "relevanceScore": 50,
+      "reasons": [
+        "modified today"
+      ]
+    },
+    "lib/inprod/platform.ts": {
+      "hash": "a0693b6c444b",
+      "size": 2096,
+      "mtime": 1769102763064.8135,
+      "lastIndexed": 1769102768676,
+      "symbols": [
+        "isCategoryApplicable",
+        "getCategoryLabel",
+        "getPlatformChecks",
+        "notApplicableScore",
+        "checkPlatformApplicability"
+      ],
+      "imports": [
+        "./types"
+      ],
+      "lineCount": 79,
+      "relevanceScore": 95,
       "reasons": [
         "mentioned",
         "recently modified"
       ]
     }
   },
-  "totalFiles": 80,
-  "totalSymbols": 249
+  "totalFiles": 81,
+  "totalSymbols": 254
 }

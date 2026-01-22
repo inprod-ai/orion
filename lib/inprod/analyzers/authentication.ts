@@ -3,13 +3,20 @@
 // =============================================================================
 
 import { CategoryScore, Gap, RepoContext } from '../types'
+import { checkPlatformApplicability, getCategoryLabel } from '../platform'
 
 export function analyzeAuthentication(ctx: RepoContext): CategoryScore {
+  const { files, techStack, packageJson } = ctx
+  const label = getCategoryLabel('authentication', techStack.platform, 'Authentication')
+  
+  // Check platform applicability
+  const platformCheck = checkPlatformApplicability('authentication', label, techStack.platform)
+  if (platformCheck) return platformCheck
+  
   const gaps: Gap[] = []
   const detected: string[] = []
   let score = 0
   
-  const { files, packageJson } = ctx
   const deps = packageJson ? { 
     ...((packageJson.dependencies as Record<string, string>) || {}),
     ...((packageJson.devDependencies as Record<string, string>) || {})
@@ -23,7 +30,7 @@ export function analyzeAuthentication(ctx: RepoContext): CategoryScore {
   if (!hasAuth) {
     return {
       category: 'authentication',
-      label: 'Authentication',
+      label,
       score: 100, // N/A
       detected: ['No authentication detected'],
       gaps: [],
@@ -140,7 +147,7 @@ export function analyzeAuthentication(ctx: RepoContext): CategoryScore {
 
   return {
     category: 'authentication',
-    label: 'Authentication',
+    label,
     score: Math.min(100, score),
     detected,
     gaps,

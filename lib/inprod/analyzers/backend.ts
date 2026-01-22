@@ -3,13 +3,20 @@
 // =============================================================================
 
 import { CategoryScore, Gap, RepoContext } from '../types'
+import { checkPlatformApplicability, getCategoryLabel } from '../platform'
 
 export function analyzeBackend(ctx: RepoContext): CategoryScore {
+  const { files, techStack, packageJson } = ctx
+  const label = getCategoryLabel('backend', techStack.platform, 'Backend')
+  
+  // Check platform applicability
+  const platformCheck = checkPlatformApplicability('backend', label, techStack.platform)
+  if (platformCheck) return platformCheck
+  
   const gaps: Gap[] = []
   const detected: string[] = []
   let score = 0
   
-  const { files, techStack, packageJson } = ctx
   const deps = packageJson ? { 
     ...((packageJson.dependencies as Record<string, string>) || {}),
     ...((packageJson.devDependencies as Record<string, string>) || {})
@@ -26,7 +33,7 @@ export function analyzeBackend(ctx: RepoContext): CategoryScore {
   if (!hasBackend) {
     return {
       category: 'backend',
-      label: 'Backend',
+      label,
       score: 100, // N/A
       detected: ['No backend detected'],
       gaps: [],
@@ -161,7 +168,7 @@ export function analyzeBackend(ctx: RepoContext): CategoryScore {
 
   return {
     category: 'backend',
-    label: 'Backend',
+    label,
     score: Math.min(100, score),
     detected,
     gaps,

@@ -3,13 +3,20 @@
 // =============================================================================
 
 import { CategoryScore, Gap, RepoContext } from '../types'
+import { checkPlatformApplicability, getCategoryLabel } from '../platform'
 
 export function analyzeErrorHandling(ctx: RepoContext): CategoryScore {
+  const { files, techStack, packageJson } = ctx
+  const label = getCategoryLabel('errorHandling', techStack.platform, 'Error Handling')
+  
+  // Check platform applicability
+  const platformCheck = checkPlatformApplicability('errorHandling', label, techStack.platform)
+  if (platformCheck) return platformCheck
+  
   const gaps: Gap[] = []
   const detected: string[] = []
   let score = 0
   
-  const { files, packageJson } = ctx
   const deps = packageJson ? { 
     ...((packageJson.dependencies as Record<string, string>) || {}),
     ...((packageJson.devDependencies as Record<string, string>) || {})
@@ -142,7 +149,7 @@ export function analyzeErrorHandling(ctx: RepoContext): CategoryScore {
 
   return {
     category: 'errorHandling',
-    label: 'Error Handling',
+    label,
     score: Math.min(100, score),
     detected,
     gaps,
