@@ -1,498 +1,332 @@
-# inprod.ai Codebase Index
+# Codebase Index
 
-**Generated:** January 2026
-**Status:** Active Development
-
----
-
-## 1. Key Directories and Their Purposes
-
-```
-inprod/
-├── app/                          # Next.js 16 App Router
-│   ├── api/                      # API Routes
-│   │   ├── analyze/              # AI-powered repo analysis
-│   │   ├── auth/                 # Custom GitHub OAuth (login, callback, me, logout)
-│   │   ├── cli/                  # CLI-specific endpoints
-│   │   ├── complete/             # Code generation endpoint
-│   │   ├── export/pdf/           # PDF report generation
-│   │   ├── generate/             # File generation
-│   │   ├── repos/                # User's GitHub repositories
-│   │   └── stripe/               # Billing (checkout, webhook)
-│   ├── altitude-demo/            # Altitude visualization demo
-│   ├── upgrade/                  # Pro upgrade page
-│   └── page.tsx                  # Home page (repo input + analysis)
-│
-├── components/                   # React Components
-│   ├── AltitudeDisplay.tsx       # Altitude visualization
-│   ├── AnalysisScreen.tsx        # Analysis results display
-│   ├── PDFReport.tsx             # PDF generation component
-│   ├── Providers.tsx             # App providers wrapper
-│   ├── RepoSelector.tsx          # GitHub repo selection UI
-│   ├── RocketVisualization.tsx   # Rocket building animation
-│   └── UserMenu.tsx              # Auth menu (sign in/out)
-│
-├── lib/                          # Core Libraries
-│   ├── inprod/                   # Analysis Engine
-│   │   ├── analyzer.ts           # Main orchestrator
-│   │   ├── altitude.ts           # Max users calculator
-│   │   ├── stack-detector.ts     # Tech stack detection
-│   │   ├── types.ts              # Core type definitions
-│   │   ├── analyzers/            # 12 Category Analyzers
-│   │   └── generators/           # Code Generators
-│   ├── github/                   # GitHub API integration
-│   ├── github-auth.ts            # Custom OAuth implementation
-│   ├── crypto.ts                 # AES-256-GCM encryption
-│   ├── prisma.ts                 # Database client
-│   ├── stripe.ts                 # Billing integration
-│   └── utils.ts                  # Shared utilities
-│
-├── types/                        # TypeScript Definitions
-│   └── analysis.ts               # API response types
-│
-├── tests/                        # Vitest Tests
-│   └── inprod/                   # Core analyzer tests
-│       ├── analyzer.test.ts      # 20 tests
-│       ├── altitude.test.ts      # 28 tests
-│       ├── security.test.ts      # 28 tests
-│       └── stack-detector.test.ts # 6 tests
-│
-├── prisma/                       # Database
-│   └── schema.prisma             # Data model
-│
-├── docs/                         # Documentation
-│   ├── prd.md                    # Product Requirements
-│   ├── altitude-system.md        # Altitude design
-│   └── technical_spec.md         # Technical specification
-│
-└── scripts/                      # Automation Scripts
-```
+**Generated**: 2026-01-22
+**Purpose**: Technical reference for understanding system architecture, identifying gaps, and planning work.
 
 ---
 
-## 2. Core User Flows
+## 1. Component Dependency Graph
 
-### Flow A: Analyze Repository (Primary)
-
-```
-User Journey:
-┌─────────────────────────────────────────────────────────────────────────┐
-│  1. LANDING                                                             │
-│     ├── Anonymous: Enter GitHub URL → [Analyze]                        │
-│     └── Authenticated: Select from repo list → [Scan]                  │
-│                                                                         │
-│  2. ANALYSIS (Streaming)                                                │
-│     ├── Fetching repository... (10%)                                   │
-│     ├── Detecting tech stack... (20%)                                  │
-│     ├── Analyzing categories... (30-90%)                               │
-│     └── Calculating altitude... (100%)                                  │
-│                                                                         │
-│  3. RESULTS                                                             │
-│     ├── Overall Score: 67/100                                          │
-│     ├── Altitude: 10K users (Cruising)                                 │
-│     ├── 12 Category Breakdown                                          │
-│     └── Gap Details + Fix Suggestions                                  │
-└─────────────────────────────────────────────────────────────────────────┘
-
-Technical Flow:
-┌──────────────────┐    ┌──────────────────┐    ┌──────────────────┐
-│  app/page.tsx    │ → │ POST /api/analyze │ → │ lib/inprod/      │
-│  AnalysisScreen  │    │ (streaming SSE)  │    │ analyzer.ts      │
-└──────────────────┘    └──────────────────┘    └──────────────────┘
-         │                                              │
-         │                                              ▼
-         │                                      ┌──────────────────┐
-         │                                      │ 12 Analyzers     │
-         │                                      │ + calculateAltitude
-         │                                      └──────────────────┘
-         │                                              │
-         ▼                                              ▼
-┌──────────────────┐                            ┌──────────────────┐
-│ Display Results  │ ← ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ │ Save to Scan DB  │
-└──────────────────┘                            └──────────────────┘
-```
-
-### Flow B: Sign In with GitHub
+### Page Components
 
 ```
-┌─────────────────────────────────────────────────────────────────────────┐
-│  1. Click "Sign in with GitHub"                                         │
-│  2. Redirect to /api/auth/login                                         │
-│  3. Redirect to GitHub OAuth (state param for CSRF)                     │
-│  4. User authorizes app                                                 │
-│  5. GitHub redirects to /api/auth/callback                              │
-│  6. Exchange code for access token                                      │
-│  7. Upsert user in database                                             │
-│  8. Set encrypted session cookie                                        │
-│  9. Redirect to home with ?auth=success                                 │
-│  10. Fetch /api/auth/me → Display user repos                            │
-└─────────────────────────────────────────────────────────────────────────┘
-```
-
-### Flow C: Upgrade to Pro
-
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│  1. User on Free tier sees "Upgrade to Pro" CTA                         │
-│  2. Navigate to /upgrade                                                │
-│  3. Click "Upgrade Now"                                                 │
-│  4. POST /api/stripe/checkout creates Stripe session                    │
-│  5. Redirect to Stripe Checkout                                         │
-│  6. User completes payment                                              │
-│  7. Stripe webhook POST /api/stripe/webhook                             │
-│  8. Update user.tier = 'PRO' in database                                │
-│  9. Redirect to home with ?upgraded=true                                │
-└─────────────────────────────────────────────────────────────────────────┘
-```
-
-### Flow D: Export PDF (Pro only)
-
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│  1. Pro user views analysis results                                     │
-│  2. Click "Export PDF" button                                           │
-│  3. POST /api/export/pdf with scanId                                    │
-│  4. Verify user is Pro + owns scan                                      │
-│  5. Render PDFReport component with @react-pdf/renderer                 │
-│  6. Return PDF blob                                                     │
-│  7. Browser downloads file                                              │
-└─────────────────────────────────────────────────────────────────────────┘
-```
-
----
-
-## 3. API Route Organization Pattern
-
-All API routes follow this consistent structure:
-
-```typescript
-// =============================================================================
-// API: /api/{endpoint} - Brief description
-// =============================================================================
-
-import { NextRequest, NextResponse } from 'next/server'
-import { z } from 'zod'
-import { getSession } from '@/lib/github-auth'
-import { prisma } from '@/lib/prisma'
-
-// Optional: Zod schema for request validation
-const RequestSchema = z.object({ ... })
-
-export async function POST(request: NextRequest) {
-  try {
-    // 1. Request size validation
-    // 2. Authentication check (if needed)
-    // 3. Input validation with Zod
-    // 4. Business logic
-    // 5. Database operations
-    // 6. Return response
-  } catch (error) {
-    console.error('Route error:', error)
-    return NextResponse.json({ error: 'User-friendly message' }, { status: 500 })
-  }
-}
-```
-
-### API Route Inventory
-
-| Endpoint | Method | Auth | Purpose |
-|----------|--------|------|---------|
-| `/api/analyze` | POST | Optional | AI-powered repo analysis (streaming) |
-| `/api/auth/login` | GET | No | Redirect to GitHub OAuth |
-| `/api/auth/callback` | GET | No | Handle OAuth callback |
-| `/api/auth/me` | GET | Optional | Get current user |
-| `/api/auth/logout` | GET/POST | No | Clear session |
-| `/api/repos` | GET | Required | List user's GitHub repos |
-| `/api/complete` | POST | Optional | Generate completion files |
-| `/api/generate` | POST | Optional | Generate specific fixes |
-| `/api/export/pdf` | POST | Pro | Export analysis as PDF |
-| `/api/stripe/checkout` | POST | Required | Create Stripe checkout session |
-| `/api/stripe/webhook` | POST | No | Handle Stripe events |
-| `/api/cli/analyze` | POST | Token | CLI analysis endpoint |
-| `/api/cli/auth` | GET | No | CLI OAuth initiation |
-| `/api/cli/auth/callback` | GET | No | CLI OAuth callback |
-| `/api/cli/auth/me` | GET | Token | CLI user info |
-| `/api/cli/complete` | POST | Token | CLI code generation |
-| `/api/cli/fix` | POST | Token | CLI single fix |
-
----
-
-## 4. Component Hierarchy
-
-```
-app/layout.tsx
-└── Providers
-    └── {children}
-
-app/page.tsx (HomeContent)
-├── UserMenu                     # Top-right auth menu
-├── [Anonymous] URL Input Form
-│   └── Button: "Analyze"
-├── [Authenticated] RepoSelector
-│   ├── User profile header
-│   ├── Search input
-│   ├── Filter buttons
-│   └── Repo list → "Scan" buttons
-└── AnalysisScreen              # When analyzing=true
-    ├── Progress indicator
-    ├── Category scores grid
-    ├── Gaps list
-    ├── Altitude display
-    └── [Pro] Export PDF button
+app/page.tsx (Home)
+├── components/UserMenu.tsx
+├── components/RepoSelector.tsx
+├── components/AnalysisScreen.tsx
+│   └── @/lib/utils (extractRepoInfo, getScoreColor, getScoreGrade)
+│   └── @/types/analysis (AnalysisResult, AnalysisProgress, CategoryScore, Finding)
+└── @/lib/utils (extractRepoInfo)
 
 app/upgrade/page.tsx
-├── Pricing cards (Free vs Pro)
-└── Upgrade button → Stripe
+└── Standalone (uses fetch for /api/stripe/checkout)
 
 app/altitude-demo/page.tsx
-└── AltitudeDisplay
-    ├── Background gradient
-    ├── Stars overlay
-    └── RocketVisualization
+├── components/AltitudeDisplay.tsx
+│   └── components/RocketVisualization.tsx
+│   └── @/lib/inprod/altitude (getAltitudeGradient, getStarsVisibility)
+└── @/lib/inprod/types (CategoryScore, AltitudeResult)
 ```
 
-### Component Dependencies
+### Core Library Dependencies
 
-| Component | Dependencies | State |
-|-----------|--------------|-------|
-| UserMenu | fetch /api/auth/me | user, loading |
-| RepoSelector | fetch /api/repos | repos, search, filter |
-| AnalysisScreen | fetch /api/analyze (streaming) | progress, result, error |
-| AltitudeDisplay | props: altitude result | animated progress |
+```
+lib/inprod/analyzer.ts
+├── lib/inprod/stack-detector.ts
+├── lib/inprod/altitude.ts
+├── lib/inprod/types.ts
+└── lib/inprod/analyzers/index.ts
+    ├── frontend.ts
+    ├── backend.ts
+    ├── database.ts
+    ├── authentication.ts
+    ├── api-integrations.ts
+    ├── state-management.ts
+    ├── design-ux.ts
+    ├── testing.ts
+    ├── security.ts
+    ├── error-handling.ts
+    ├── version-control.ts
+    └── deployment.ts
+
+lib/inprod/generators/index.ts
+├── security.ts (660 lines - most complete)
+├── cicd.ts (374 lines)
+├── testing.ts (267 lines)
+└── readme.ts (126 lines)
+```
+
+### Authentication Flow
+
+```
+lib/github-auth.ts
+├── lib/crypto.ts (AES-256-GCM encryption)
+└── lib/prisma.ts (User lookup)
+
+lib/github/index.ts
+└── SSRF protection + repo cloning
+```
 
 ---
 
-## 5. Database Schema Relationships
+## 2. API Endpoint Mapping
+
+### Authentication (Custom OAuth)
+| Endpoint | Method | Auth | Description |
+|----------|--------|------|-------------|
+| `/api/auth/login` | GET | None | Initiates GitHub OAuth, redirects to GitHub |
+| `/api/auth/callback` | GET | None | Handles OAuth callback, creates session |
+| `/api/auth/me` | GET | Session | Returns current user data |
+| `/api/auth/logout` | POST/GET | Session | Clears session cookie |
+
+### Analysis
+| Endpoint | Method | Auth | Description |
+|----------|--------|------|-------------|
+| `/api/analyze` | POST | Optional | AI-powered repo analysis (streaming) |
+| `/api/complete` | POST | Required | Generate completion plan for gaps |
+| `/api/generate` | POST | Required | Generate fix files for specific gaps |
+
+### CLI-specific
+| Endpoint | Method | Auth | Description |
+|----------|--------|------|-------------|
+| `/api/cli/auth` | GET | None | CLI OAuth flow init |
+| `/api/cli/auth/callback` | GET | None | CLI OAuth callback |
+| `/api/cli/auth/me` | GET | Token | Verify CLI token |
+| `/api/cli/analyze` | POST | Token | CLI analysis endpoint |
+| `/api/cli/complete` | POST | Token | CLI completion plan |
+| `/api/cli/fix` | POST | Token | CLI fix generation |
+
+### Billing
+| Endpoint | Method | Auth | Description |
+|----------|--------|------|-------------|
+| `/api/stripe/checkout` | POST | Required | Create Stripe checkout session |
+| `/api/stripe/webhook` | POST | Stripe sig | Handle Stripe events |
+
+### Utilities
+| Endpoint | Method | Auth | Description |
+|----------|--------|------|-------------|
+| `/api/repos` | GET | Required | List user's GitHub repos |
+| `/api/export/pdf` | POST | Pro | Generate PDF report |
+
+---
+
+## 3. Database Schema Relationships
 
 ```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                           DATABASE SCHEMA                                │
-├─────────────────────────────────────────────────────────────────────────┤
-│                                                                          │
-│  ┌──────────────────┐       ┌──────────────────┐                        │
-│  │      User        │ 1───∞ │     Account      │                        │
-│  ├──────────────────┤       ├──────────────────┤                        │
-│  │ id (PK)          │       │ id (PK)          │                        │
-│  │ email            │       │ userId (FK)      │                        │
-│  │ name             │       │ provider         │                        │
-│  │ image            │       │ access_token     │                        │
-│  │ githubId         │       │ ...              │                        │
-│  │ tier (enum)      │       └──────────────────┘                        │
-│  │ stripeCustomerId │                                                   │
-│  │ monthlyScans     │       ┌──────────────────┐                        │
-│  │ lastResetAt      │ 1───∞ │     Session      │                        │
-│  └──────────────────┘       ├──────────────────┤                        │
-│          │                  │ id (PK)          │                        │
-│          │                  │ userId (FK)      │                        │
-│          │                  │ sessionToken     │                        │
-│          │                  │ expires          │                        │
-│          │                  └──────────────────┘                        │
-│          │                                                               │
-│          │ 1───∞            ┌──────────────────┐                        │
-│          └─────────────────→│      Scan        │                        │
-│                             ├──────────────────┤                        │
-│                             │ id (PK)          │                        │
-│                             │ userId (FK)?     │ Nullable for anon      │
-│                             │ repoUrl          │                        │
-│                             │ owner, repo      │                        │
-│                             │ overallScore     │                        │
-│                             │ categories (JSON)│                        │
-│                             │ findings (JSON)  │                        │
-│                             │ confidence (JSON)│                        │
-│                             │ source           │ "web" | "cli"          │
-│                             └──────────────────┘                        │
-│                                                                          │
-│  ┌──────────────────┐                                                   │
-│  │   Subscription   │ User 1───∞ Subscription                           │
-│  ├──────────────────┤                                                   │
-│  │ id (PK)          │                                                   │
-│  │ userId (FK)      │                                                   │
-│  │ stripeSubId      │                                                   │
-│  │ status (enum)    │                                                   │
-│  └──────────────────┘                                                   │
-│                                                                          │
-│  ┌──────────────────┐                                                   │
-│  │   RateLimit      │ Standalone table for rate limiting                │
-│  ├──────────────────┤                                                   │
-│  │ key              │ IP or user ID                                     │
-│  │ count            │                                                   │
-│  │ resetAt          │                                                   │
-│  └──────────────────┘                                                   │
-│                                                                          │
-└─────────────────────────────────────────────────────────────────────────┘
+┌─────────────────┐       ┌─────────────────┐
+│      User       │       │    RateLimit    │
+├─────────────────┤       ├─────────────────┤
+│ id (cuid)       │       │ id (cuid)       │
+│ email (unique)  │       │ key (unique)    │
+│ name            │       │ count           │
+│ image           │       │ resetAt         │
+│ githubId        │       └─────────────────┘
+│ tier (enum)     │
+│ stripeCustomerId│
+│ monthlyScans    │
+│ lastResetAt     │
+└────────┬────────┘
+         │
+    ┌────┴────┬─────────────┬──────────────┐
+    │         │             │              │
+    ▼         ▼             ▼              ▼
+┌────────┐ ┌────────┐ ┌──────────┐ ┌──────────────┐
+│Account │ │Session │ │   Scan   │ │ Subscription │
+├────────┤ ├────────┤ ├──────────┤ ├──────────────┤
+│userId  │ │userId  │ │userId?   │ │userId        │
+│provider│ │token   │ │repoUrl   │ │stripeSubId   │
+│tokens  │ │expires │ │scores    │ │stripePriceId │
+└────────┘ └────────┘ │findings  │ │status (enum) │
+                      │summary   │ └──────────────┘
+                      │source    │
+                      └──────────┘
 ```
 
 ### Enums
+- **UserTier**: FREE, PRO, ENTERPRISE
+- **SubscriptionStatus**: active, canceled, incomplete, incomplete_expired, past_due, trialing, unpaid
 
-- **UserTier:** FREE | PRO | ENTERPRISE
-- **SubscriptionStatus:** active | canceled | incomplete | past_due | trialing | unpaid
+### Indexes
+- `Scan`: userId, createdAt, source
+- `RateLimit`: identifier, createdAt, resetAt
 
 ---
 
-## 6. Gap Analysis: Current Implementation vs PRD
+## 4. Test Coverage Analysis
 
-### Implemented (Phase 1 MVP)
+### Current Test Files (4 files, 82 tests)
 
-| PRD Requirement | Status | Files |
-|-----------------|--------|-------|
-| 12 Category Analyzers | ✅ Complete | lib/inprod/analyzers/*.ts |
-| Security Gap Detection | ✅ Complete | analyzers/security.ts |
-| Tech Stack Detection | ✅ Complete | stack-detector.ts |
-| Altitude Calculation | ✅ Complete | altitude.ts |
-| GitHub OAuth | ✅ Complete | github-auth.ts, app/api/auth/* |
-| Stripe Billing | ✅ Complete | lib/stripe.ts, app/api/stripe/* |
-| PDF Export (Pro) | ✅ Complete | app/api/export/pdf |
-| CLI Auth Endpoints | ✅ Complete | app/api/cli/* |
-| Repo Selector UI | ✅ Complete | components/RepoSelector.tsx |
-| Altitude Visualization | ✅ Complete | components/AltitudeDisplay.tsx |
+| File | Tests | Coverage Focus |
+|------|-------|----------------|
+| `security.test.ts` | 28 | Security analyzer: headers, secrets, XSS, SQLi |
+| `altitude.test.ts` | 28 | Altitude calculations, zones, formatting |
+| `analyzer.test.ts` | 20 | Main analyzer, summary, completion plan |
+| `stack-detector.test.ts` | 6 | Tech stack detection |
 
-### Missing (Phase 2: Full Generation)
+### Coverage Gaps (Not Tested)
 
-| PRD Requirement | Status | Priority | Estimated Effort |
-|-----------------|--------|----------|------------------|
-| Security Fix Generation (full) | 🟡 Partial | High | 2 days |
-| Test Generation Engine | 🟡 Partial | High | 3 days |
-| CI/CD Generation | 🟡 Partial | Medium | 1 day |
-| README Generation | 🟡 Partial | Medium | 1 day |
-| PR Creation via GitHub API | ❌ Missing | High | 2 days |
-| ZIP Download | ❌ Missing | Medium | 1 day |
-| Multi-file Validation | ❌ Missing | Medium | 2 days |
-| Quality Scoring for Generated Files | ❌ Missing | Low | 1 day |
+**Analyzers without dedicated tests:**
+- [ ] `frontend.ts` - Framework detection, SSR checks
+- [ ] `backend.ts` - API structure, middleware
+- [ ] `database.ts` - Connection pooling, migrations
+- [ ] `authentication.ts` - Auth provider detection
+- [ ] `api-integrations.ts` - External API handling
+- [ ] `state-management.ts` - State library detection
+- [ ] `design-ux.ts` - Accessibility, responsive design
+- [ ] `error-handling.ts` - Error boundaries, logging
+- [ ] `version-control.ts` - Git workflow analysis
+- [ ] `deployment.ts` - CI/CD detection
+- [ ] `testing.ts` - Test framework detection
 
-### Missing (Phase 3: Enterprise)
+**Generators without tests:**
+- [ ] `security.ts` - Security fix templates
+- [ ] `testing.ts` - Test file generation
+- [ ] `cicd.ts` - CI/CD workflow generation
+- [ ] `readme.ts` - README generation
 
-| PRD Requirement | Status | Priority |
-|-----------------|--------|----------|
-| Go CLI Binary | ❌ Missing | High |
-| brew install inprod | ❌ Missing | High |
-| GitHub App Installation Flow | ❌ Missing | High |
-| Private Repo Access via GitHub App | ❌ Missing | High |
-| Slopometer Deep Link Integration | ❌ Missing | Medium |
-| Custom Security Policies | ❌ Missing | Low |
-| Team/Org Features | ❌ Missing | Low |
-| SSO | ❌ Missing | Low |
+**Components without tests:**
+- [ ] `AnalysisScreen.tsx`
+- [ ] `UserMenu.tsx`
+- [ ] `RepoSelector.tsx`
+- [ ] `AltitudeDisplay.tsx`
+- [ ] `RocketVisualization.tsx`
 
-### Database Schema Gaps
+**API routes without tests:**
+- [ ] All API routes (use E2E or integration tests)
 
-PRD specifies additional tables not yet implemented:
+---
 
-```sql
--- Missing: completions table
-CREATE TABLE completions (
-  id UUID PRIMARY KEY,
-  user_id UUID REFERENCES users(id),
-  scan_id UUID REFERENCES scans(id),
-  completeness_score INTEGER,
-  category_scores JSONB,
-  gaps JSONB,
-  files_generated INTEGER,
-  pr_url TEXT,
-  zip_url TEXT
-);
+## 5. Analyzer Completeness Matrix
 
--- Missing: generated_files table
-CREATE TABLE generated_files (
-  id UUID PRIMARY KEY,
-  completion_id UUID REFERENCES completions(id),
-  file_path TEXT,
-  file_content TEXT,
-  language TEXT,
-  category TEXT,
-  confidence INTEGER,
-  validated BOOLEAN
-);
+| Analyzer | Lines | Score Logic | Gap Detection | Platform-aware | Status |
+|----------|-------|-------------|---------------|----------------|--------|
+| security.ts | 206 | ✅ 7 factors | ✅ 8 gap types | ❌ | **Complete** |
+| backend.ts | 171 | ✅ 6 factors | ✅ 6 gap types | ❌ | **Complete** |
+| frontend.ts | 170 | ✅ 6 factors | ✅ 5 gap types | ❌ | **Complete** |
+| version-control.ts | 168 | ✅ 5 factors | ✅ 4 gap types | ❌ | **Complete** |
+| api-integrations.ts | 155 | ✅ 5 factors | ✅ 4 gap types | ❌ | **Complete** |
+| error-handling.ts | 152 | ✅ 5 factors | ✅ 4 gap types | ❌ | **Complete** |
+| authentication.ts | 150 | ✅ 5 factors | ✅ 4 gap types | ❌ | **Complete** |
+| deployment.ts | 149 | ✅ 5 factors | ✅ 4 gap types | ❌ | **Complete** |
+| database.ts | 148 | ✅ 5 factors | ✅ 4 gap types | ❌ | **Complete** |
+| testing.ts | 140 | ✅ 4 factors | ✅ 3 gap types | ❌ | **Complete** |
+| design-ux.ts | 127 | ✅ 4 factors | ✅ 3 gap types | ❌ | **Minimal** |
+| state-management.ts | 116 | ✅ 3 factors | ✅ 2 gap types | ❌ | **Minimal** |
 
--- Missing: generation_credits table
-CREATE TABLE generation_credits (
-  id UUID PRIMARY KEY,
-  user_id UUID REFERENCES users(id),
-  credits_used INTEGER,
-  generation_type TEXT,
-  completion_id UUID
-);
+### Platform Support Gap
+
+All analyzers currently lack platform-specific logic. The types define `PLATFORM_CATEGORIES` and `PLATFORM_OVERRIDES` but analyzers don't use them:
+
+```typescript
+// types.ts defines this but analyzers ignore it:
+PLATFORM_CATEGORIES: {
+  ios: ['designUx', 'testing', 'security', 'errorHandling', ...],
+  android: [...],
+  cli: [...],
+  library: [...]
+}
 ```
 
-### Generator Implementation Status
-
-| Generator | File | Status |
-|-----------|------|--------|
-| Security | generators/security.ts | ✅ Implemented |
-| Testing | generators/testing.ts | ✅ Implemented |
-| CI/CD | generators/cicd.ts | ✅ Implemented |
-| README | generators/readme.ts | ✅ Implemented |
-| Database Migrations | - | ❌ Missing |
-| Error Boundaries | - | ❌ Missing |
-| API Docs | - | ❌ Missing |
-
-### Platform Support Gaps
-
-| Platform | PRD Target | Current Status |
-|----------|------------|----------------|
-| Web/React/Next.js | ✅ Primary | ✅ Implemented |
-| Python/FastAPI | ✅ Planned | 🟡 Detection only |
-| Go | ✅ Planned | 🟡 Detection only |
-| iOS/SwiftUI | ✅ Planned | ❌ Missing |
-| Android/Kotlin | ✅ Planned | ❌ Missing |
-| Rust | ✅ Planned | ❌ Missing |
+**Required work**: Each analyzer should check `ctx.techStack.platform` and:
+1. Skip non-applicable checks
+2. Apply platform-specific scoring rules
+3. Return platform-relevant gaps
 
 ---
 
-## 7. Recommendations
+## 6. Generator Completeness Matrix
 
-### Immediate Priorities (Week 1-2)
+| Generator | Lines | Templates | AI-powered | Categories Covered | Status |
+|-----------|-------|-----------|------------|-------------------|--------|
+| security.ts | 660 | ✅ 15+ templates | ✅ | security | **Production** |
+| cicd.ts | 374 | ✅ 5 templates | ✅ | deployment | **Production** |
+| testing.ts | 267 | ✅ 3 templates | ✅ | testing | **Production** |
+| readme.ts | 126 | ✅ 1 template | ✅ | versionControl | **Minimal** |
 
-1. **PR Creation** - High-impact feature, enables one-click shipping
-2. **ZIP Download** - Alternative output for users without GitHub
-3. **Completions Table** - Track generation history for credits
+### Missing Generators (High Priority)
 
-### Medium-term (Week 3-4)
-
-4. **Go CLI Binary** - Cross-platform distribution
-5. **GitHub App Installation** - Private repo access
-6. **Multi-file Validation** - Ensure generated code compiles
-
-### Tech Debt
-
-- lib/auth.ts is now unused (replaced by github-auth.ts) - delete
-- Session table may be unused with custom OAuth - verify and clean
-- Some generators may need testing in isolation
+| Category | Generator Needed | Suggested Templates |
+|----------|------------------|---------------------|
+| **authentication** | `auth.ts` | NextAuth config, session handling, CSRF |
+| **database** | `database.ts` | Migration files, connection pooling, indexes |
+| **errorHandling** | `error-handling.ts` | Error boundaries, Sentry setup, logging |
+| **backend** | `backend.ts` | Rate limiting, validation middleware |
+| **frontend** | `frontend.ts` | Performance optimizations, meta tags |
+| **apiIntegrations** | `api-client.ts` | Retry logic, circuit breakers, timeouts |
+| **stateManagement** | `state.ts` | Zustand/Redux setup, React Query config |
+| **designUx** | `a11y.ts` | Accessibility fixes, ARIA labels |
 
 ---
 
-## Quick Reference
+## 7. Priority Fixes
 
-### Environment Variables Required
+### Critical (Blocking Features)
 
-```env
-# Database
-DATABASE_URL=
-DATABASE_URL_UNPOOLED=
+1. **Platform-aware analyzers** - iOS/Android/CLI projects get wrong scores
+2. **Missing generators** - Can't auto-fix 8/12 categories
+3. **E2E tests** - No API route testing
 
-# Auth
-GITHUB_CLIENT_ID=
-GITHUB_CLIENT_SECRET=
-NEXTAUTH_SECRET=
-NEXTAUTH_URL=
+### High Priority
 
-# AI
-ANTHROPIC_API_KEY=
+4. **Analyzer unit tests** - 11/12 analyzers untested
+5. **Generator tests** - All 4 generators untested
+6. **Component tests** - UI regression risk
 
-# Billing
-STRIPE_SECRET_KEY=
-STRIPE_WEBHOOK_SECRET=
-STRIPE_PRICE_ID=
+### Medium Priority
 
-# Optional
-E2B_API_KEY=
-GITHUB_TOKEN=
+7. **CLI testing** - No CLI command tests
+8. **Rate limiting tests** - Security-critical untested
+9. **Stripe webhook tests** - Billing-critical untested
+
+---
+
+## 8. File Size Analysis (Complexity Indicators)
+
+### Largest Files (Potential Refactoring Candidates)
+
+```
+lib/inprod/generators/security.ts    660 lines (OK - template-heavy)
+lib/inprod/generators/cicd.ts        374 lines (OK - template-heavy)
+app/api/analyze/route.ts             ~590 lines (REVIEW - streaming logic)
+lib/inprod/types.ts                  363 lines (OK - type definitions)
+lib/inprod/generators/testing.ts     267 lines (OK)
 ```
 
-### Key Commands
+### Suggested Refactoring
 
+1. **`app/api/analyze/route.ts`** - Extract GitHub fetching logic into `lib/github/fetch.ts`
+2. **`lib/inprod/types.ts`** - Split into `types/` directory with category-specific files
+
+---
+
+## 9. Quick Reference
+
+### Running Locally
 ```bash
-npm run dev          # Start development
-npm run build        # Production build
-npm test             # Run 82 tests
-npm run lint         # ESLint
-vercel --prod        # Deploy
+npm run dev        # Start dev server
+npm test           # Run Vitest tests  
+npm run build      # Type check + build
+npx prisma studio  # Database GUI
 ```
+
+### Key Environment Variables
+```
+DATABASE_URL           # Neon Postgres
+GITHUB_CLIENT_ID       # OAuth app ID
+GITHUB_CLIENT_SECRET   # OAuth app secret
+ANTHROPIC_API_KEY      # Claude API
+STRIPE_SECRET_KEY      # Stripe billing
+ENCRYPTION_SECRET      # Session encryption (64 chars)
+```
+
+### Adding a New Analyzer
+1. Create `lib/inprod/analyzers/{category}.ts`
+2. Export function matching `(ctx: RepoContext) => CategoryScore`
+3. Add to `lib/inprod/analyzers/index.ts`
+4. Add tests in `tests/inprod/{category}.test.ts`
+
+### Adding a New Generator
+1. Create `lib/inprod/generators/{category}.ts`
+2. Export function matching `(ctx: RepoContext, gaps: Gap[]) => Promise<GeneratedFile[]>`
+3. Add to `lib/inprod/generators/index.ts`
+4. Wire into `/api/generate/route.ts`
