@@ -30,6 +30,7 @@ export async function generateCICD(
 
 /**
  * Generate GitHub Actions workflows
+ * Only generates CI steps for scripts that actually exist in package.json
  */
 function generateGitHubActions(ctx: RepoContext): GeneratedFile[] {
   const packageManager = ctx.techStack.packageManager || 'npm'
@@ -37,6 +38,127 @@ function generateGitHubActions(ctx: RepoContext): GeneratedFile[] {
   const installCmd = packageManager === 'pnpm' ? 'pnpm install' : 
                      packageManager === 'yarn' ? 'yarn install --frozen-lockfile' : 
                      'npm ci'
+  
+  // Check which scripts actually exist in the target repo
+  const scripts = (ctx.packageJson?.scripts as Record<string, string> | undefined) || {}
+  const hasLint = scripts['lint'] !== undefined
+  const hasTypecheck = scripts['typecheck'] !== undefined
+  const hasTest = scripts['test'] !== undefined
+  const hasBuild = scripts['build'] !== undefined
+  const isTypeScript = ctx.techStack.languages.includes('typescript')
+  
+  // Build lint job steps dynamically based on available scripts
+  const lintSteps: string[] = []
+  if (hasLint) {
+    lintSteps.push(`      - name: Run ESLint
+        run: ${runCmd} lint`)
+  }
+  if (hasTypecheck) {
+    lintSteps.push(`      - name: Type Check
+        run: ${runCmd} typecheck`)
+  } else if (isTypeScript) {
+    // Fallback for TypeScript repos without typecheck script
+    lintSteps.push(`      - name: Type Check
+        run: npx tsc --noEmit`)
+  }
+  
+  // Build jobs array dynamically
+  const jobs: string[] = []
+  
+  // Only add lint job if there are linting/typecheck steps
+  if (lintSteps.length > 0) {
+    jobs.push(`  lint:
+    name: Lint & Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: \${{ env.NODE_VERSION }}
+          cache: '${packageManager}'
+      
+      - name: Install dependencies
+        run: ${installCmd}
+      
+${lintSteps.join('\n\n')}`)
+  }
+  
+  // Only add test job if test script exists
+  if (hasTest) {
+    jobs.push(`  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: \${{ env.NODE_VERSION }}
+          cache: '${packageManager}'
+      
+      - name: Install dependencies
+        run: ${installCmd}
+      
+      - name: Run Tests
+        run: ${runCmd} test
+        env:
+          CI: true
+      
+      - name: Upload Coverage
+        uses: codecov/codecov-action@v4
+        if: always()
+        continue-on-error: true`)
+  }
+  
+  // Only add build job if build script exists
+  if (hasBuild) {
+    // Build job depends on lint and test if they exist
+    const deps: string[] = []
+    if (lintSteps.length > 0) deps.push('lint')
+    if (hasTest) deps.push('test')
+    const needsLine = deps.length > 0 ? `\n    needs: [${deps.join(', ')}]` : ''
+    
+    jobs.push(`  build:
+    name: Build
+    runs-on: ubuntu-latest${needsLine}
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: \${{ env.NODE_VERSION }}
+          cache: '${packageManager}'
+      
+      - name: Install dependencies
+        run: ${installCmd}
+      
+      - name: Build
+        run: ${runCmd} build
+        env:
+          SKIP_ENV_VALIDATION: true`)
+  }
+  
+  // If no jobs were generated, create a minimal CI that just installs deps
+  if (jobs.length === 0) {
+    jobs.push(`  install:
+    name: Install Dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: \${{ env.NODE_VERSION }}
+          cache: '${packageManager}'
+      
+      - name: Install dependencies
+        run: ${installCmd}`)
+  }
   
   return [{
     path: '.github/workflows/ci.yml',
@@ -61,72 +183,7 @@ env:
   NODE_VERSION: '20'
 
 jobs:
-  lint:
-    name: Lint & Type Check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: \${{ env.NODE_VERSION }}
-          cache: '${packageManager}'
-      
-      - name: Install dependencies
-        run: ${installCmd}
-      
-      - name: Run ESLint
-        run: ${runCmd} lint
-      
-      - name: Type Check
-        run: ${runCmd} typecheck || npx tsc --noEmit
-
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: \${{ env.NODE_VERSION }}
-          cache: '${packageManager}'
-      
-      - name: Install dependencies
-        run: ${installCmd}
-      
-      - name: Run Tests
-        run: ${runCmd} test
-        env:
-          CI: true
-      
-      - name: Upload Coverage
-        uses: codecov/codecov-action@v4
-        if: always()
-        continue-on-error: true
-
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    needs: [lint, test]
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: \${{ env.NODE_VERSION }}
-          cache: '${packageManager}'
-      
-      - name: Install dependencies
-        run: ${installCmd}
-      
-      - name: Build
-        run: ${runCmd} build
-        env:
-          SKIP_ENV_VALIDATION: true
+${jobs.join('\n\n')}
 `,
     language: 'yaml',
     category: 'deployment',
