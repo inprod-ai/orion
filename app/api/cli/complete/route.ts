@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
       if (completionsThisMonth >= 3) {
         return NextResponse.json({ 
           error: 'Monthly CLI limit reached. Upgrade to Pro for unlimited.',
-          upgradeUrl: 'https://inprod.ai/upgrade'
+          upgradeUrl: 'https://orion.archi/upgrade'
         }, { status: 403 })
       }
     }

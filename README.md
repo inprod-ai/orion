@@ -1,15 +1,16 @@
-# inprod.ai
+# Orion
 
-Release readiness analysis for GitHub repositories.
+**The stars are the limit.** Release readiness analysis that measures how high your code can fly.
 
 ## Features
 
-- Instant 0-100 release readiness score
-- Actionable findings showing exactly how many points each fix adds
-- Focus on Security (40%), Performance (30%), and Best Practices (30%)
-- Confidence scoring based on available repository data
+- **Altitude scoring** - measures max concurrent users your codebase can handle (from Runway to Interplanetary)
+- **12 category analysis** - Frontend, Backend, Database, Auth, Security, Testing, Deployment, and more
+- **Gap detection** - blockers, critical issues, and warnings with fix suggestions
+- **Compile verification** - optional sandbox-based build verification via E2B
+- **Space-themed visualization** - rocket that climbs through atmosphere layers as your code improves
 - Clean, futuristic UI with real-time progress updates
-- Perfect for pre-launch gates and due diligence
+- PDF export for stakeholder reports
 
 ## Setup
 

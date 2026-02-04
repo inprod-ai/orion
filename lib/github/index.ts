@@ -280,7 +280,7 @@ interface GitHubRepoResponse {
 async function fetchWithAuth(url: string, accessToken?: string): Promise<Response> {
   const headers: Record<string, string> = {
     Accept: 'application/vnd.github.v3+json',
-    'User-Agent': 'inprod.ai/1.0',
+    'User-Agent': 'orion.archi/1.0',
   }
   
   // Use provided access token, or fall back to server token for public repos

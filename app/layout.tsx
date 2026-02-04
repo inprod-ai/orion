@@ -5,15 +5,15 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "inprod.ai - Release Readiness Analysis",
+  title: "Orion - Release Readiness Analysis",
   description: "Instant 0-100 release readiness score with actionable fixes. See exactly how many points each improvement adds. Perfect for pre-launch gates and due diligence.",
   keywords: "release readiness, code analysis, github, repository analysis, security audit, performance check, pre-launch, due diligence",
-  authors: [{ name: "inprod.ai" }],
+  authors: [{ name: "Orion" }],
   openGraph: {
-    title: "inprod.ai - Is Your Code Release Ready?",
+    title: "Orion - Is Your Code Release Ready?",
     description: "Instant release readiness score with quantified remediation path",
     type: "website",
-    url: "https://inprod.ai",
+    url: "https://orion.archi",
   },
 };
 

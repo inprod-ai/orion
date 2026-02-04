@@ -27,7 +27,7 @@ export async function GET() {
         headers: {
           Authorization: `Bearer ${accessToken}`,
           Accept: 'application/vnd.github.v3+json',
-          'User-Agent': 'inprod.ai/1.0',
+          'User-Agent': 'orion.archi/1.0',
         },
         cache: 'no-store',
       }
