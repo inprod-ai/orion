@@ -16,7 +16,7 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.62.0",
     "@auth/prisma-adapter": "^2.11.1",
-    "@prisma/client": "^6.19.2",
+    "@prisma/client": "^6.16.1",
     "@react-pdf/renderer": "^4.3.0",
     "@stripe/stripe-js": "^7.9.0",
     "axios": "^1.12.1",

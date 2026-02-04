@@ -1,5 +1,12 @@
 /** @type {import('next').NextConfig} */
+const path = require('path')
+
 const nextConfig = {
+  // Fix workspace root inference issue
+  outputFileTracingRoot: path.join(__dirname, './'),
+  turbopack: {
+    root: path.join(__dirname, './')
+  },
   async headers() {
     return [
       {

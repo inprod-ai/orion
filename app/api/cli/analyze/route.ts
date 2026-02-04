@@ -37,8 +37,7 @@ export async function POST(request: NextRequest) {
       const completionsThisMonth = await prisma.scan.count({
         where: {
           userId: user.id,
-          createdAt: { gte: thisMonth },
-          source: 'cli'
+          createdAt: { gte: thisMonth }
         }
       })
       
@@ -144,7 +143,6 @@ Be specific with file paths and line numbers. Confidence should reflect certaint
         repoUrl: path,
         owner: 'local',
         repo: path.split('/').pop() || 'unknown',
-        source: 'cli',
         overallScore: analysisData.overallScore,
         categories: analysisData.categoryScores,
         findings: [...analysisData.blockers, ...analysisData.warnings, ...analysisData.info],

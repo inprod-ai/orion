@@ -50,7 +50,6 @@ model Scan {
   categories   Json
   findings     Json
   summary      Json
-  source       String?  @default("web")
   createdAt    DateTime @default(now())
   User         User?    @relation(fields: [userId], references: [id])
 
