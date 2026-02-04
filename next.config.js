@@ -7,6 +7,8 @@ const nextConfig = {
   turbopack: {
     root: path.join(__dirname, './')
   },
+  // Prevent Prisma client from being bundled - use as external module
+  serverExternalPackages: ['@prisma/client', 'prisma'],
   async headers() {
     return [
       {
