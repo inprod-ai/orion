@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
-import { Loader2, CheckCircle, XCircle, AlertCircle, ChevronRight, ArrowLeft, Plus, Clock, Shield, Zap, Code, Lock, Crown, Github, Download } from 'lucide-react'
+import { Loader2, CheckCircle, XCircle, AlertCircle, ChevronRight, ArrowLeft, Plus, Clock, Shield, Zap, Code, Lock, Crown, Github, Download, Hammer } from 'lucide-react'
 import { cn, extractRepoInfo, getScoreColor, getScoreGrade } from '@/lib/utils'
 import type { AnalysisResult, AnalysisProgress, CategoryScore, Finding } from '@/types/analysis'
 
@@ -20,6 +20,17 @@ interface UserData {
   monthlyScans: number
 }
 
+interface VerificationResult {
+  level: string
+  compile?: {
+    success: boolean
+    errorCount: number
+    warningCount: number
+    errors: Array<{ file: string; line?: number; message: string; severity: string }>
+    duration: number
+  }
+}
+
 export default function AnalysisScreen({ repoUrl }: Props) {
   const [user, setUser] = useState<UserData | null>(null)
   const [progress, setProgress] = useState<AnalysisProgress>({
@@ -32,6 +43,7 @@ export default function AnalysisScreen({ repoUrl }: Props) {
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set())
   const [scanId, setScanId] = useState<string | null>(null)
   const [exporting, setExporting] = useState(false)
+  const [verification, setVerification] = useState<VerificationResult | null>(null)
 
   useEffect(() => {
     // Fetch user on mount
@@ -86,6 +98,10 @@ export default function AnalysisScreen({ repoUrl }: Props) {
               // Save scanId if returned
               if (data.scanId) {
                 setScanId(data.scanId)
+              }
+              // Save verification result if returned
+              if (data.verification) {
+                setVerification(data.verification)
               }
             }
           } catch (e) {
@@ -235,6 +251,30 @@ export default function AnalysisScreen({ repoUrl }: Props) {
                       result.confidence.level === 'medium' ? 'text-yellow-400' : 'text-orange-400'
                     )}>
                       {result.confidence.level.charAt(0).toUpperCase() + result.confidence.level.slice(1)}
+                    </span>
+                  </div>
+                )}
+                
+                {/* Verification Badge */}
+                {verification?.compile && (
+                  <div className={cn(
+                    "mt-4 ml-2 inline-flex items-center gap-2 px-4 py-2 rounded-full",
+                    verification.compile.success 
+                      ? "bg-green-500/10 border border-green-500/30" 
+                      : "bg-red-500/10 border border-red-500/30"
+                  )}>
+                    <Hammer className={cn(
+                      "w-4 h-4",
+                      verification.compile.success ? "text-green-400" : "text-red-400"
+                    )} />
+                    <span className={cn(
+                      "text-sm font-semibold",
+                      verification.compile.success ? "text-green-400" : "text-red-400"
+                    )}>
+                      {verification.compile.success ? "COMPILED ✓" : `BUILD FAILED (${verification.compile.errorCount} errors)`}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      {(verification.compile.duration / 1000).toFixed(1)}s
                     </span>
                   </div>
                 )}
