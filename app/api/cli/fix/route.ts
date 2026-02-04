@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     const token = authHeader.slice(7)
     const session = await prisma.session.findFirst({
       where: { sessionToken: token },
-      include: { user: true }
+      include: { User: true }
     })
 
     if (!session || session.expires < new Date()) {

@@ -82,7 +82,7 @@ export async function GET(request: NextRequest) {
     // Find or create user
     let user = await prisma.user.findFirst({
       where: {
-        accounts: {
+        Account: {
           some: {
             provider: 'github',
             providerAccountId: String(githubUser.id)
@@ -98,7 +98,7 @@ export async function GET(request: NextRequest) {
           name: githubUser.name || githubUser.login,
           email: primaryEmail,
           image: githubUser.avatar_url,
-          accounts: {
+          Account: {
             create: {
               type: 'oauth',
               provider: 'github',

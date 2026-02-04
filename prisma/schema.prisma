@@ -50,6 +50,7 @@ model Scan {
   categories   Json
   findings     Json
   summary      Json
+  source       String?  @default("web")
   createdAt    DateTime @default(now())
   User         User?    @relation(fields: [userId], references: [id])
 
@@ -73,7 +74,7 @@ model Subscription {
   stripeCurrentPeriodEnd DateTime
   status                 SubscriptionStatus
   createdAt              DateTime           @default(now())
-  updatedAt              DateTime
+  updatedAt              DateTime           @updatedAt
   User                   User               @relation(fields: [userId], references: [id])
 }
 
@@ -88,7 +89,7 @@ model User {
   monthlyScans     Int            @default(0)
   lastResetAt      DateTime       @default(now())
   createdAt        DateTime       @default(now())
-  updatedAt        DateTime
+  updatedAt        DateTime       @updatedAt
   Account          Account[]
   Scan             Scan[]
   Session          Session[]
