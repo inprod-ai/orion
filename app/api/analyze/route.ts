@@ -4,7 +4,13 @@ import { ANALYSIS_CATEGORIES } from '@/types/analysis'
 import type { AnalysisResult } from '@/types/analysis'
 import { getSession } from '@/lib/github-auth'
 import { prisma } from '@/lib/prisma'
-import { parseGitHubUrl } from '@/lib/github'
+import { parseGitHubUrl, fetchRepoFiles } from '@/lib/github'
+import { verifyCompilation } from '@/lib/inprod/verifiers/compile'
+import { detectTechStack } from '@/lib/inprod/stack-detector'
+import type { CompileResult } from '@/lib/inprod/verifiers/types'
+
+// Verification levels: static (default), compile, test, mutation, load, full
+type VerificationLevel = 'static' | 'compile' | 'test' | 'mutation' | 'load' | 'full'
 
 // Increase timeout for AI analysis (Vercel Pro: up to 300s)
 export const maxDuration = 60
@@ -54,6 +60,12 @@ export async function POST(request: NextRequest) {
     const repoUrl = parsedRepo.url
     const owner = body.owner || parsedRepo.owner
     const repo = body.repo || parsedRepo.name
+    
+    // Parse verification level (default: static)
+    const verificationLevel: VerificationLevel = 
+      ['static', 'compile', 'test', 'mutation', 'load', 'full'].includes(body.verification)
+        ? body.verification
+        : 'static'
     
     // Get authenticated session
     const session = await getSession()
@@ -524,6 +536,51 @@ Respond in JSON:
             })
           }
           
+          // Run compile verification if requested
+          let compileResult: CompileResult | undefined
+          
+          if (verificationLevel !== 'static') {
+            controller.enqueue(encoder.encode(JSON.stringify({ 
+              progress: { 
+                stage: 'verifying', 
+                message: 'Running compile verification in sandbox...', 
+                percentage: 92 
+              } 
+            }) + '\n'))
+            
+            try {
+              // Fetch full repo files for verification
+              const repoFiles = await fetchRepoFiles(repoUrl, session?.accessToken)
+              const techStack = detectTechStack(repoFiles.files)
+              
+              // Run compile verification
+              compileResult = await verifyCompilation(repoFiles.files, techStack)
+              
+              controller.enqueue(encoder.encode(JSON.stringify({ 
+                progress: { 
+                  stage: 'verifying', 
+                  message: compileResult.success 
+                    ? 'Compile verification passed!' 
+                    : `Compile verification failed: ${compileResult.errors.length} errors`,
+                  percentage: 98 
+                } 
+              }) + '\n'))
+            } catch (verifyError) {
+              console.error('Verification error:', verifyError)
+              compileResult = {
+                success: false,
+                errors: [{
+                  file: '',
+                  message: verifyError instanceof Error ? verifyError.message : 'Verification failed',
+                  severity: 'error'
+                }],
+                warnings: [],
+                duration: 0,
+                evidence: ''
+              }
+            }
+          }
+          
           // Apply free tier restrictions if not authenticated or free user
           let finalResult = result
           const currentUser = session?.userId 
@@ -549,7 +606,26 @@ Respond in JSON:
             } 
           }) + '\n'))
 
-          controller.enqueue(encoder.encode(JSON.stringify({ result: finalResult, scanId: savedScan.id }) + '\n'))
+          // Build response with verification data if available
+          const responseData: Record<string, unknown> = { 
+            result: finalResult, 
+            scanId: savedScan.id 
+          }
+          
+          if (compileResult) {
+            responseData.verification = {
+              level: verificationLevel,
+              compile: {
+                success: compileResult.success,
+                errorCount: compileResult.errors.length,
+                warningCount: compileResult.warnings.length,
+                errors: compileResult.errors.slice(0, 10), // Limit to 10 errors
+                duration: compileResult.duration
+              }
+            }
+          }
+          
+          controller.enqueue(encoder.encode(JSON.stringify(responseData) + '\n'))
           controller.close()
 
         } catch (error) {
