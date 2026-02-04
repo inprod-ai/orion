@@ -62,7 +62,7 @@ describe('verifyCompilation', () => {
       process.env.E2B_API_KEY = 'test-key'
     })
 
-    it('creates sandbox with correct template for Node.js', async () => {
+    it('creates sandbox for Node.js projects', async () => {
       mockSandbox.commands.run.mockResolvedValue({
         exitCode: 0,
         stdout: '',
@@ -87,10 +87,11 @@ describe('verifyCompilation', () => {
 
       await verifyCompilation(files, stack)
 
-      expect(Sandbox.create).toHaveBeenCalledWith('node-20', expect.any(Object))
+      // E2B base sandbox used (no template ID)
+      expect(Sandbox.create).toHaveBeenCalledWith(expect.objectContaining({ timeoutMs: expect.any(Number) }))
     })
 
-    it('creates sandbox with correct template for Python', async () => {
+    it('creates sandbox for Python projects', async () => {
       mockSandbox.commands.run.mockResolvedValue({
         exitCode: 0,
         stdout: '',
@@ -115,10 +116,10 @@ describe('verifyCompilation', () => {
 
       await verifyCompilation(files, stack)
 
-      expect(Sandbox.create).toHaveBeenCalledWith('python-3.11', expect.any(Object))
+      expect(Sandbox.create).toHaveBeenCalledWith(expect.objectContaining({ timeoutMs: expect.any(Number) }))
     })
 
-    it('creates sandbox with correct template for Go', async () => {
+    it('creates sandbox for Go projects', async () => {
       mockSandbox.commands.run.mockResolvedValue({
         exitCode: 0,
         stdout: '',
@@ -143,7 +144,7 @@ describe('verifyCompilation', () => {
 
       await verifyCompilation(files, stack)
 
-      expect(Sandbox.create).toHaveBeenCalledWith('golang-1.21', expect.any(Object))
+      expect(Sandbox.create).toHaveBeenCalledWith(expect.objectContaining({ timeoutMs: expect.any(Number) }))
     })
 
     it('writes all files to sandbox', async () => {

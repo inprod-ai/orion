@@ -163,14 +163,14 @@ export async function POST(request: NextRequest) {
           }) + '\n'))
 
           // Fetch GitHub data with timeout and validation
-          // Use access token for private repos when user is authenticated
-          const accessToken = session?.accessToken
+          // Use access token for private repos, fall back to GITHUB_TOKEN for rate limits
+          const accessToken = session?.accessToken || process.env.GITHUB_TOKEN
           const fetchWithTimeout = (url: string, timeout = 15000) => {
             const headers: Record<string, string> = {
               'User-Agent': 'InProd-AI-Security-Scanner',
               'Accept': 'application/vnd.github.v3+json'
             }
-            // Add auth header for private repo access
+            // Add auth header for API access
             if (accessToken) {
               headers['Authorization'] = `Bearer ${accessToken}`
             }

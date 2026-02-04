@@ -12,13 +12,8 @@ import type { CompileResult, CompileError } from './types'
 // CONSTANTS
 // =============================================================================
 
-const SANDBOX_TEMPLATES: Record<string, string> = {
-  node: 'node-20',
-  python: 'python-3.11',
-  go: 'golang-1.21',
-  rust: 'rust-1.75',
-}
-
+// E2B base sandbox includes: Node.js 20, Python 3.11, Go, Rust
+// No template ID needed - use base sandbox which has everything
 const INSTALL_TIMEOUT_MS = 120_000  // 2 minutes
 const BUILD_TIMEOUT_MS = 180_000    // 3 minutes
 
@@ -54,29 +49,14 @@ export async function verifyCompilation(
     }
   }
 
-  // Determine sandbox type from stack
+  // Determine sandbox type from stack (for command selection)
   const sandboxType = getSandboxType(stack)
-  const template = SANDBOX_TEMPLATES[sandboxType]
-
-  if (!template) {
-    return {
-      success: false,
-      errors: [{
-        file: '',
-        message: `Unsupported platform: ${stack.platform}. Supported: node, python, go, rust`,
-        severity: 'error'
-      }],
-      warnings: [],
-      duration: Date.now() - startTime,
-      evidence: 'Unsupported platform'
-    }
-  }
 
   let sandbox: Sandbox | null = null
 
   try {
-    // Create sandbox
-    sandbox = await Sandbox.create(template, {
+    // Create sandbox using E2B base image (has Node, Python, Go, Rust)
+    sandbox = await Sandbox.create({
       timeoutMs: BUILD_TIMEOUT_MS + INSTALL_TIMEOUT_MS
     })
 

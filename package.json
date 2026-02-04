@@ -8,6 +8,7 @@
     "start": "next start",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:e2e": "playwright test",
     "typecheck": "tsc --noEmit",
     "postinstall": "prisma generate",
     "prepare": "husky"
@@ -15,7 +16,7 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.62.0",
     "@auth/prisma-adapter": "^2.11.1",
-    "@prisma/client": "^6.16.1",
+    "@prisma/client": "^6.19.2",
     "@react-pdf/renderer": "^4.3.0",
     "@stripe/stripe-js": "^7.9.0",
     "axios": "^1.12.1",

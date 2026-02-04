@@ -1,38 +1,11 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DATABASE_URL_UNPOOLED")
-}
-
-model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  name          String?
-  image         String?
-  githubId      String?   @unique
-  
-  // Subscription info
-  tier          UserTier  @default(FREE)
-  stripeCustomerId String? @unique
-  
-  // Usage tracking
-  monthlyScans  Int       @default(0)
-  lastResetAt   DateTime  @default(now())
-  
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  
-  accounts      Account[]
-  sessions      Session[]
-  scans         Scan[]
-  subscriptions Subscription[]
 }
 
 model Account {
@@ -41,17 +14,47 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
-  
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  User              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@unique([provider, providerAccountId])
+}
+
+model RateLimit {
+  id         String   @id @default(cuid())
+  identifier String?
+  createdAt  DateTime @default(now())
+  count      Int      @default(0)
+  key        String   @unique
+  resetAt    DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([identifier])
+  @@index([resetAt])
+}
+
+model Scan {
+  id           String   @id @default(cuid())
+  userId       String?
+  repoUrl      String
+  owner        String
+  repo         String
+  overallScore Float
+  confidence   Json?
+  categories   Json
+  findings     Json
+  summary      Json
+  createdAt    DateTime @default(now())
+  User         User?    @relation(fields: [userId], references: [id])
+
+  @@index([createdAt])
+  @@index([userId])
 }
 
 model Session {
@@ -59,51 +62,37 @@ model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model Scan {
-  id          String   @id @default(cuid())
-  userId      String?  // Nullable for anonymous scans
-  repoUrl     String
-  owner       String
-  repo        String
-  source      String   @default("web") // "web" or "cli"
-  
-  // Results
-  overallScore Float
-  confidence   Json?    // {level, score, factors}
-  categories   Json     // Array of category scores
-  findings     Json     // Array of findings
-  summary      Json     // {strengths, weaknesses, topPriorities}
-  
-  createdAt   DateTime @default(now())
-  
-  user        User?    @relation(fields: [userId], references: [id])
-  
-  @@index([userId])
-  @@index([createdAt])
-  @@index([source])
+  User         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Subscription {
-  id                   String             @id @default(cuid())
-  userId               String
-  stripeSubscriptionId String             @unique
-  stripePriceId        String
+  id                     String             @id @default(cuid())
+  userId                 String
+  stripeSubscriptionId   String             @unique
+  stripePriceId          String
   stripeCurrentPeriodEnd DateTime
-  status               SubscriptionStatus
-  
-  createdAt            DateTime           @default(now())
-  updatedAt            DateTime           @updatedAt
-  
-  user                 User               @relation(fields: [userId], references: [id])
+  status                 SubscriptionStatus
+  createdAt              DateTime           @default(now())
+  updatedAt              DateTime
+  User                   User               @relation(fields: [userId], references: [id])
 }
 
-enum UserTier {
-  FREE
-  PRO
-  ENTERPRISE
+model User {
+  id               String         @id @default(cuid())
+  email            String         @unique
+  name             String?
+  image            String?
+  githubId         String?        @unique
+  tier             UserTier       @default(FREE)
+  stripeCustomerId String?        @unique
+  monthlyScans     Int            @default(0)
+  lastResetAt      DateTime       @default(now())
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime
+  Account          Account[]
+  Scan             Scan[]
+  Session          Session[]
+  Subscription     Subscription[]
 }
 
 enum SubscriptionStatus {
@@ -116,15 +105,8 @@ enum SubscriptionStatus {
   unpaid
 }
 
-model RateLimit {
-  id         String   @id @default(cuid())
-  key        String   @unique // Unique identifier (IP, user ID, or state key)
-  identifier String?  // IP address or user ID (deprecated, use key)
-  count      Int      @default(0)
-  resetAt    DateTime @default(now())
-  createdAt  DateTime @default(now())
-  
-  @@index([identifier])
-  @@index([createdAt])
-  @@index([resetAt])
+enum UserTier {
+  FREE
+  PRO
+  ENTERPRISE
 }
