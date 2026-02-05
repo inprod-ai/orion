@@ -4,6 +4,11 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Check, Crown, Rocket, Shield, Download, Sparkles } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import dynamic from 'next/dynamic'
+import GlowingCard from '@/components/space/GlowingCard'
+
+const StarField3D = dynamic(() => import('@/components/space/StarField3D'), { ssr: false })
+const ShootingStars = dynamic(() => import('@/components/space/ShootingStar'), { ssr: false })
 
 interface UserData {
   id: string
@@ -66,22 +71,9 @@ export default function UpgradePage() {
     user ? 'Become Commander' : 'Sign in to Upgrade'
 
   return (
-    <div className="min-h-screen text-white relative overflow-hidden" style={{ background: 'var(--orion-void)' }}>
-      <div className="stars-layer" />
-      <div className="nebula-bg absolute inset-0" />
-      
-      {/* Animated nebula clouds */}
-      <motion.div
-        animate={{ 
-          opacity: [0.2, 0.4, 0.2],
-          scale: [1, 1.1, 1],
-        }}
-        transition={{ duration: 15, repeat: Infinity }}
-        className="absolute top-0 left-0 w-full h-full pointer-events-none"
-        style={{
-          background: 'radial-gradient(ellipse 50% 40% at 30% 40%, rgba(139,92,246,0.15), transparent)',
-        }}
-      />
+    <div className="min-h-screen text-white relative overflow-hidden" style={{ background: '#030014' }}>
+      <StarField3D />
+      <ShootingStars />
       
       <div className="relative z-10 min-h-screen flex flex-col">
         <header className="p-6">
@@ -209,21 +201,20 @@ export default function UpgradePage() {
 
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
               {features.map((feature, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 + i * 0.1 }}
-                  whileHover={{ y: -4 }}
-                  className="text-center cosmic-card rounded-xl p-6"
-                >
-                  <div className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3"
-                       style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.3) 0%, rgba(59,130,246,0.2) 100%)' }}>
-                    <feature.icon className="w-6 h-6 text-purple-300" />
-                  </div>
-                  <h3 className="text-lg font-semibold mb-2 text-white">{feature.title}</h3>
-                  <p className="text-sm text-gray-400">{feature.description}</p>
-                </motion.div>
+                <GlowingCard key={i} className="p-6 text-center">
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 + i * 0.1 }}
+                  >
+                    <div className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3"
+                         style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.3) 0%, rgba(59,130,246,0.2) 100%)' }}>
+                      <feature.icon className="w-6 h-6 text-purple-300" />
+                    </div>
+                    <h3 className="text-lg font-semibold mb-2 text-white">{feature.title}</h3>
+                    <p className="text-sm text-gray-400">{feature.description}</p>
+                  </motion.div>
+                </GlowingCard>
               ))}
             </div>
             

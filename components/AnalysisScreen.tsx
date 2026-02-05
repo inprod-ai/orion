@@ -3,9 +3,14 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import { Loader2, CheckCircle, XCircle, AlertCircle, ChevronRight, ArrowLeft, Plus, Clock, Shield, Zap, Code, Lock, Crown, Github, Download, Hammer, Rocket, Sparkles } from 'lucide-react'
 import { cn, extractRepoInfo, getScoreColor, getScoreGrade } from '@/lib/utils'
+import { OrionLogo } from '@/components/space'
 import type { AnalysisResult, AnalysisProgress, CategoryScore, Finding } from '@/types/analysis'
+
+const StarField3D = dynamic(() => import('@/components/space/StarField3D'), { ssr: false })
+const ShootingStars = dynamic(() => import('@/components/space/ShootingStar'), { ssr: false })
 
 interface Props {
   repoUrl: string
@@ -126,9 +131,8 @@ export default function AnalysisScreen({ repoUrl }: Props) {
 
   if (error) {
     return (
-      <div className="min-h-screen text-white flex items-center justify-center relative" style={{ background: 'var(--orion-void)' }}>
-        <div className="stars-layer" />
-        <div className="nebula-bg absolute inset-0" />
+      <div className="min-h-screen text-white flex items-center justify-center relative" style={{ background: '#030014' }}>
+        <StarField3D />
         <div className="relative z-10 text-center">
           <XCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
           <h2 className="text-2xl font-bold mb-2">Mission Aborted</h2>
@@ -145,9 +149,9 @@ export default function AnalysisScreen({ repoUrl }: Props) {
   }
 
   return (
-    <div className="min-h-screen text-white relative" style={{ background: 'var(--orion-void)' }}>
-      <div className="stars-layer" />
-      <div className="nebula-bg absolute inset-0" />
+    <div className="min-h-screen text-white relative" style={{ background: '#030014' }}>
+      <StarField3D />
+      <ShootingStars />
       
       <div className="relative z-10">
         <header className="p-6 flex justify-between items-center">
@@ -160,43 +164,7 @@ export default function AnalysisScreen({ repoUrl }: Props) {
             Back to Base
           </motion.button>
           <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity group">
-            {/* Orion constellation logo - 3 stars of Orion's belt */}
-            <div className="relative w-8 h-8">
-              <motion.div
-                animate={{ 
-                  boxShadow: [
-                    '0 0 8px 2px rgba(139,92,246,0.6)',
-                    '0 0 12px 3px rgba(139,92,246,0.8)',
-                    '0 0 8px 2px rgba(139,92,246,0.6)',
-                  ]
-                }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="absolute w-1.5 h-1.5 bg-white rounded-full top-1 left-0"
-              />
-              <motion.div
-                animate={{ 
-                  boxShadow: [
-                    '0 0 10px 3px rgba(165,216,255,0.8)',
-                    '0 0 16px 5px rgba(165,216,255,1)',
-                    '0 0 10px 3px rgba(165,216,255,0.8)',
-                  ]
-                }}
-                transition={{ duration: 2.5, repeat: Infinity, delay: 0.3 }}
-                className="absolute w-2 h-2 rounded-full top-3 left-3"
-                style={{ background: 'linear-gradient(135deg, #fff 0%, #a5d8ff 100%)' }}
-              />
-              <motion.div
-                animate={{ 
-                  boxShadow: [
-                    '0 0 8px 2px rgba(139,92,246,0.6)',
-                    '0 0 12px 3px rgba(139,92,246,0.8)',
-                    '0 0 8px 2px rgba(139,92,246,0.6)',
-                  ]
-                }}
-                transition={{ duration: 2, repeat: Infinity, delay: 0.6 }}
-                className="absolute w-1.5 h-1.5 bg-white rounded-full bottom-1 right-0"
-              />
-            </div>
+            <OrionLogo size="sm" />
             <span className="font-bold text-xl tracking-[0.2em] text-white group-hover:text-purple-200 transition-colors">ORION</span>
           </Link>
         </header>
