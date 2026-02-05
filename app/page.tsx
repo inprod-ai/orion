@@ -187,11 +187,11 @@ function HomeContent() {
                 transition={{ duration: 0.8, delay: 0.4 }}
               >
                 <span className="bg-gradient-to-r from-purple-200 via-blue-200 to-cyan-200 bg-clip-text text-transparent">
-                  Reach for
+                  How high can
                 </span>
                 <br />
                 <span className="bg-gradient-to-r from-purple-400 via-violet-400 to-blue-400 bg-clip-text text-transparent">
-                  the Stars
+                  your code fly?
                 </span>
               </motion.h1>
               
@@ -201,9 +201,8 @@ function HomeContent() {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.8, delay: 0.6 }}
               >
-                Analyze your repository&apos;s production readiness. 
-                <span className="text-purple-300/80"> Navigate from launch to orbit </span>
-                with intelligent insights across security, performance, and scalability.
+                Orion measures your <span className="text-purple-300/90">altitude</span> -- the max concurrent users your codebase can handle.
+                Paste a repo. See what&apos;s holding you back. Fix it and climb.
               </motion.p>
             </motion.div>
 
@@ -287,9 +286,9 @@ function HomeContent() {
               className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-20"
             >
               {[
-                { icon: Shield, title: 'Heat Shield', desc: 'Security audit covering authentication, encryption, and vulnerability detection', color: '#8b5cf6', glow: 'rgba(139,92,246,0.3)' },
-                { icon: Rocket, title: 'Propulsion', desc: 'Performance analysis for speed, scalability, and concurrent user capacity', color: '#3b82f6', glow: 'rgba(59,130,246,0.3)' },
-                { icon: Sparkles, title: 'Navigation', desc: 'Code quality, testing coverage, and deployment readiness evaluation', color: '#06b6d4', glow: 'rgba(6,182,212,0.3)' },
+                { icon: Shield, title: 'Heat Shield', desc: 'Your security layer. Auth, encryption, headers, secrets. If the shield fails, you never reach orbit.', color: '#8b5cf6', glow: 'rgba(139,92,246,0.3)' },
+                { icon: Rocket, title: 'Engines', desc: 'Backend, database, deployment. The infrastructure that determines how many users you can carry.', color: '#3b82f6', glow: 'rgba(59,130,246,0.3)' },
+                { icon: Sparkles, title: 'Pre-flight', desc: 'Tests, error handling, code quality. The checks that tell you whether it is actually safe to launch.', color: '#06b6d4', glow: 'rgba(6,182,212,0.3)' },
               ].map((feature, i) => (
                 <GlowingCard key={feature.title} glowColor={feature.glow} className="p-7 text-center">
                   <motion.div
@@ -316,9 +315,9 @@ function HomeContent() {
               className="mt-20 grid grid-cols-3 gap-8 max-w-2xl mx-auto"
             >
               {[
-                { label: 'Categories', value: '12', icon: BarChart3 },
-                { label: 'Checks', value: '200+', icon: Zap },
-                { label: 'Altitude Levels', value: '8', icon: Globe },
+                { label: 'Rocket Components', value: '12', icon: BarChart3 },
+                { label: 'Production Checks', value: '200+', icon: Zap },
+                { label: 'Altitude Zones', value: '11', icon: Globe },
               ].map((stat) => (
                 <div key={stat.label} className="text-center">
                   <stat.icon className="w-5 h-5 text-purple-400/60 mx-auto mb-2" />
@@ -335,7 +334,7 @@ function HomeContent() {
               transition={{ delay: 1.5 }}
               className="mt-16 text-center"
             >
-              <p className="text-gray-600 text-sm mb-4">Your altitude awaits</p>
+              <p className="text-gray-600 text-sm mb-4">from runway to deep space</p>
               <div className="flex justify-center items-center gap-2 flex-wrap">
                 {['Runway', 'Takeoff', 'Cruising', 'Stratosphere', 'Karman Line', 'Orbit', 'Voyager'].map((level, i) => (
                   <motion.span

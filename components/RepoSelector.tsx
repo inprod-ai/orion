@@ -170,7 +170,7 @@ export default function RepoSelector({
           <div>
             <p className="font-semibold text-white">{user.name}</p>
             <p className="text-sm text-gray-400">
-              {repos.length} vessels • {privateCount} classified
+              {repos.length} repos • {privateCount} private
             </p>
           </div>
         </div>
@@ -199,7 +199,7 @@ export default function RepoSelector({
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-purple-400/50" />
           <input
             type="text"
-            placeholder="Search vessels..."
+            placeholder="Search repositories..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-10 pr-4 py-2 rounded-lg text-white placeholder-gray-500 focus:outline-none transition-colors"
@@ -220,10 +220,10 @@ export default function RepoSelector({
             style={!showPrivateOnly ? { background: 'var(--orion-deep)' } : {}}
           >
             <Lock className="w-3.5 h-3.5" />
-            Classified only ({privateCount})
+            Private only ({privateCount})
           </button>
           <span className="text-sm text-gray-500">
-            {filteredRepos.length} vessels
+            {filteredRepos.length} repos
           </span>
         </div>
       </div>
@@ -233,7 +233,7 @@ export default function RepoSelector({
         {loading ? (
           <div className="flex items-center justify-center gap-3 p-8 text-gray-400">
             <Loader2 className="w-5 h-5 animate-spin text-purple-400" />
-            <span>Scanning your fleet...</span>
+            <span>Loading repositories...</span>
           </div>
         ) : error ? (
           <div className="p-8 text-center">
@@ -242,12 +242,12 @@ export default function RepoSelector({
               onClick={fetchRepos}
               className="text-sm text-purple-400 hover:text-purple-300"
             >
-              Retry scan
+              Retry
             </button>
           </div>
         ) : filteredRepos.length === 0 ? (
           <div className="p-8 text-center text-gray-500">
-            {searchQuery ? 'No vessels match your search' : 'No vessels found'}
+            {searchQuery ? 'No repos match your search' : 'No repositories found'}
           </div>
         ) : (
           <div className="p-2">
@@ -271,7 +271,7 @@ export default function RepoSelector({
                       </span>
                       {repo.private && (
                         <span className="px-1.5 py-0.5 text-xs bg-purple-500/20 text-purple-300 rounded border border-purple-500/20">
-                          Classified
+                          Private
                         </span>
                       )}
                     </div>
@@ -305,7 +305,7 @@ export default function RepoSelector({
                     </div>
                   </div>
                   <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2">
-                    <span className="text-sm text-cyan-400 font-medium">Launch</span>
+                    <span className="text-sm text-cyan-400 font-medium">Analyze</span>
                     <ChevronRight className="w-4 h-4 text-cyan-400" />
                   </div>
                 </div>

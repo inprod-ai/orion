@@ -135,13 +135,13 @@ export default function AnalysisScreen({ repoUrl }: Props) {
         <StarField3D />
         <div className="relative z-10 text-center">
           <XCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold mb-2">Mission Aborted</h2>
+          <h2 className="text-2xl font-bold mb-2">Analysis Failed</h2>
           <p className="text-gray-400">{error}</p>
           <button
             onClick={() => window.location.reload()}
             className="mt-6 px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg font-semibold hover:from-purple-500 hover:to-blue-500 transition-all shadow-lg shadow-purple-500/25"
           >
-            Retry Launch
+            Try Again
           </button>
         </div>
       </div>
@@ -161,7 +161,7 @@ export default function AnalysisScreen({ repoUrl }: Props) {
             whileHover={{ x: -5 }}
           >
             <ArrowLeft className="w-5 h-5" />
-            Back to Base
+            Back
           </motion.button>
           <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity group">
             <OrionLogo size="sm" />
@@ -178,7 +178,7 @@ export default function AnalysisScreen({ repoUrl }: Props) {
                 className="text-center mb-12"
               >
                 <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-purple-300 via-blue-300 to-cyan-300 bg-clip-text text-transparent">
-                  Launching Analysis
+                  Calculating Altitude
                 </h2>
                 <p className="text-gray-400">{repoUrl}</p>
               </motion.div>
@@ -286,7 +286,7 @@ export default function AnalysisScreen({ repoUrl }: Props) {
                   </div>
                 </motion.div>
                 <h2 className="text-3xl font-bold mt-6 mb-2 bg-gradient-to-r from-white via-purple-100 to-white bg-clip-text text-transparent">{result.repo}</h2>
-                <p className="text-gray-400">Altitude Assessment</p>
+                <p className="text-gray-400">Production Readiness Report</p>
                 
                 {/* Confidence Badge */}
                 {result.confidence && (
@@ -404,10 +404,10 @@ export default function AnalysisScreen({ repoUrl }: Props) {
                           
                           <Crown className="w-12 h-12 text-purple-400 mx-auto mb-4" />
                           <h4 className="text-xl font-bold mb-2 text-white">
-                            {result.totalFindings - 2} More Mission-Critical Findings
+                            {result.totalFindings - 2} More Findings
                           </h4>
                           <p className="text-gray-400 mb-6">
-                            Unlock full telemetry, detailed flight paths, and mission reports with Pro
+                            See every issue, get the full report, and export to PDF with Commander
                           </p>
                           {user ? (
                             <button
@@ -422,7 +422,7 @@ export default function AnalysisScreen({ repoUrl }: Props) {
                               className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg font-semibold hover:from-purple-500 hover:to-blue-500 transition-all shadow-lg shadow-purple-500/25 flex items-center gap-2 mx-auto"
                             >
                               <Github className="w-5 h-5" />
-                              Sign in to Access Mission Control
+                              Sign in for Full Report
                             </button>
                           )}
                         </motion.div>
@@ -441,7 +441,7 @@ export default function AnalysisScreen({ repoUrl }: Props) {
                   whileHover={{ y: -4 }}
                   className="cosmic-card rounded-xl p-6"
                 >
-                  <h3 className="text-lg font-semibold mb-3 text-cyan-300">Mission Successes</h3>
+                  <h3 className="text-lg font-semibold mb-3 text-cyan-300">What&apos;s Working</h3>
                   <ul className="space-y-2">
                     {result.summary.strengths.map((strength, i) => (
                       <li key={i} className="text-sm text-gray-300 flex items-start gap-2">
@@ -459,7 +459,7 @@ export default function AnalysisScreen({ repoUrl }: Props) {
                   whileHover={{ y: -4 }}
                   className="cosmic-card rounded-xl p-6"
                 >
-                  <h3 className="text-lg font-semibold mb-3 text-orange-300">Course Corrections</h3>
+                  <h3 className="text-lg font-semibold mb-3 text-orange-300">What&apos;s Limiting Altitude</h3>
                   <ul className="space-y-2">
                     {result.summary.weaknesses.map((weakness, i) => (
                       <li key={i} className="text-sm text-gray-300 flex items-start gap-2">
@@ -477,7 +477,7 @@ export default function AnalysisScreen({ repoUrl }: Props) {
                   whileHover={{ y: -4 }}
                   className="cosmic-card rounded-xl p-6"
                 >
-                  <h3 className="text-lg font-semibold mb-3 text-purple-300">Mission Objectives</h3>
+                  <h3 className="text-lg font-semibold mb-3 text-purple-300">Fix These to Climb</h3>
                   <ul className="space-y-2">
                     {result.summary.topPriorities.map((priority, i) => (
                       <li key={i} className="text-sm text-gray-300 flex items-start gap-2">
@@ -559,7 +559,7 @@ function CategoryCard({
                 </span>
               </div>
             ) : (
-              <span className="text-sm text-gray-500">Not applicable for this mission</span>
+              <span className="text-sm text-gray-500">Not applicable</span>
             )}
           </div>
           <ChevronRight className={cn("w-5 h-5 text-purple-400 transition-transform", isExpanded && "rotate-90")} />
@@ -580,7 +580,7 @@ function CategoryCard({
               
               {category.subcategories && category.subcategories.length > 0 && (
                 <div className="space-y-2">
-                  <h5 className="text-sm font-semibold text-purple-300">System Breakdown:</h5>
+                  <h5 className="text-sm font-semibold text-purple-300">Breakdown:</h5>
                   {category.subcategories.map((sub, i) => (
                     <div key={i} className="flex items-center justify-between text-sm">
                       <span className="text-gray-400">{sub.name}</span>
@@ -594,7 +594,7 @@ function CategoryCard({
               
               {category.recommendations.length > 0 && (
                 <div className="space-y-2">
-                  <h5 className="text-sm font-semibold text-purple-300">Flight Path Recommendations:</h5>
+                  <h5 className="text-sm font-semibold text-purple-300">Recommendations:</h5>
                   <ul className="space-y-1">
                     {category.recommendations.map((rec, i) => (
                       <li key={i} className="text-sm text-gray-400 flex items-start gap-2">
@@ -699,7 +699,7 @@ function FindingCard({ finding, index }: { finding: Finding; index: number }) {
       </div>
       <div className="mt-4 p-4 rounded-lg" style={{ background: 'var(--orion-deep)' }}>
         <p className="text-sm text-gray-300">
-          <span className="font-semibold text-purple-300">Flight correction:</span> {finding.fix}
+          <span className="font-semibold text-purple-300">Fix:</span> {finding.fix}
         </p>
       </div>
     </motion.div>

@@ -59,16 +59,16 @@ export default function UpgradePage() {
   }
 
   const features = [
-    { icon: Rocket, title: 'Unlimited Missions', description: 'No monthly limits on analysis launches' },
-    { icon: Shield, title: 'Full Telemetry', description: 'Every finding revealed, nothing hidden' },
-    { icon: Download, title: 'Mission Reports', description: 'Export professional PDFs for stakeholders' },
-    { icon: Crown, title: 'Priority Comms', description: 'Direct line to mission control' },
+    { icon: Rocket, title: 'Unlimited Scans', description: 'Analyze as many repos as you want, no monthly cap' },
+    { icon: Shield, title: 'Full Report', description: 'Every finding, every fix, nothing behind the paywall' },
+    { icon: Download, title: 'PDF Export', description: 'Professional reports you can share with your team' },
+    { icon: Crown, title: 'Priority Support', description: 'Direct access when you need help' },
   ]
 
   const isPro = user?.tier === 'PRO'
-  const buttonText = loading ? 'Initiating...' : 
-    isPro ? 'Already Commander' : 
-    user ? 'Become Commander' : 'Sign in to Upgrade'
+  const buttonText = loading ? 'Loading...' : 
+    isPro ? 'Already Pro' : 
+    user ? 'Upgrade to Pro' : 'Sign in to Upgrade'
 
   return (
     <div className="min-h-screen text-white relative overflow-hidden" style={{ background: '#030014' }}>
@@ -82,7 +82,7 @@ export default function UpgradePage() {
             className="flex items-center gap-2 text-gray-400 hover:text-purple-300 transition-colors"
             whileHover={{ x: -5 }}
           >
-            ← Return to Base
+            ← Back
           </motion.button>
         </header>
 
@@ -109,13 +109,13 @@ export default function UpgradePage() {
                 }}
               >
                 <Crown className="w-4 h-4 text-purple-300" />
-                <span className="text-purple-200">COMMANDER RANK</span>
+                <span className="text-purple-200">PRO</span>
               </motion.div>
               <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-purple-300 via-blue-300 to-cyan-300 bg-clip-text text-transparent">
-                Unlock Full Mission Control
+                See the Full Picture
               </h1>
               <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-                Unlimited launches, complete telemetry, and professional mission reports
+                Unlimited scans, every finding unlocked, exportable reports
               </p>
             </motion.div>
 
@@ -126,24 +126,24 @@ export default function UpgradePage() {
                 transition={{ delay: 0.1 }}
                 className="cosmic-card rounded-xl p-8"
               >
-                <h3 className="text-2xl font-bold mb-4 text-gray-200">Explorer</h3>
+                <h3 className="text-2xl font-bold mb-4 text-gray-200">Free</h3>
                 <div className="text-4xl font-bold mb-6 text-white">$0<span className="text-lg text-gray-400">/month</span></div>
                 <ul className="space-y-3">
                   <li className="flex items-center gap-3">
                     <Check className="w-5 h-5 text-cyan-400" />
-                    <span>3 missions per month</span>
+                    <span>3 scans per month</span>
                   </li>
                   <li className="flex items-center gap-3">
                     <Check className="w-5 h-5 text-cyan-400" />
-                    <span>Top 2 findings visible</span>
+                    <span>Top 2 findings shown</span>
                   </li>
                   <li className="flex items-center gap-3">
                     <span className="w-5 h-5 text-gray-600 text-center">×</span>
-                    <span className="text-gray-500">No mission reports</span>
+                    <span className="text-gray-500">No PDF export</span>
                   </li>
                   <li className="flex items-center gap-3">
                     <span className="w-5 h-5 text-gray-600 text-center">×</span>
-                    <span className="text-gray-500">Standard comms only</span>
+                    <span className="text-gray-500">Community support</span>
                   </li>
                 </ul>
               </motion.div>
@@ -169,24 +169,24 @@ export default function UpgradePage() {
                 <div className="absolute -top-3 -right-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white text-sm font-bold px-4 py-1 rounded-full shadow-lg shadow-purple-500/30">
                   RECOMMENDED
                 </div>
-                <h3 className="text-2xl font-bold mb-4 text-white">Commander</h3>
+                <h3 className="text-2xl font-bold mb-4 text-white">Pro</h3>
                 <div className="text-4xl font-bold mb-6 text-white">$29<span className="text-lg text-gray-400">/month</span></div>
                 <ul className="space-y-3">
                   <li className="flex items-center gap-3">
                     <Check className="w-5 h-5 text-cyan-400" />
-                    <span>Unlimited missions</span>
+                    <span>Unlimited scans</span>
                   </li>
                   <li className="flex items-center gap-3">
                     <Check className="w-5 h-5 text-cyan-400" />
-                    <span>Full telemetry access</span>
+                    <span>Every finding unlocked</span>
                   </li>
                   <li className="flex items-center gap-3">
                     <Check className="w-5 h-5 text-cyan-400" />
-                    <span>Mission report exports</span>
+                    <span>PDF report export</span>
                   </li>
                   <li className="flex items-center gap-3">
                     <Check className="w-5 h-5 text-cyan-400" />
-                    <span>Priority comms channel</span>
+                    <span>Priority support</span>
                   </li>
                 </ul>
                 <button
