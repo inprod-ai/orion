@@ -380,6 +380,12 @@ $RECYCLE.BIN/
 .Trash-*
 .nfs*
 
+# CLI build artifacts
+/cli/dist
+
+# Tool caches
+.pinata/
+
 # Custom project ignores
 .history/
 .vscode-upload.json

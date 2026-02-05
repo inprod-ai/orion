@@ -1,8 +1,16 @@
 {
   "name": "orion-archi",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
+  "bin": {
+    "orion": "./cli/dist/index.js"
+  },
+  "files": [
+    "cli/dist"
+  ],
   "scripts": {
+    "cli:build": "npx esbuild cli/index.ts --bundle --platform=node --target=node18 --outfile=cli/dist/index.js --banner:js='#!/usr/bin/env node'",
+    "prepublishOnly": "npm run cli:build",
     "dev": "next dev --turbopack",
     "build": "prisma generate && next build",
     "start": "next start",
