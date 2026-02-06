@@ -1,4 +1,4 @@
-# Proofs Not Scores: The Evolution of inprod
+# Proofs Not Scores: The Evolution of orion
 
 **Status**: Strategic Direction  
 **Last Updated**: February 2026  
@@ -8,7 +8,7 @@
 
 ## The Problem with Scores
 
-Current inprod (and all competitors) work like this:
+Current orion (and all competitors) work like this:
 
 ```
 Scan code → Match patterns → Assign score → Guess user capacity
@@ -49,7 +49,7 @@ Instead of guessing, **prove it**.
 ### Current Architecture
 
 ```
-lib/inprod/
+lib/orion/
 ├── analyzers/          # Pattern matching (12 categories)
 │   ├── testing.ts      # Checks for test files, frameworks
 │   ├── security.ts     # Checks for headers, validation
@@ -64,7 +64,7 @@ lib/sandbox.ts          # E2B integration (EXISTS but underused)
 ### Target Architecture
 
 ```
-lib/inprod/
+lib/orion/
 ├── analyzers/          # Static analysis (unchanged)
 ├── verifiers/          # NEW: Execute and verify
 │   ├── compile.ts      # Verify code compiles
@@ -150,7 +150,7 @@ interface VerifiedAltitude extends AltitudeResult {
 Extend existing sandbox.ts:
 
 ```typescript
-// lib/inprod/verifiers/compile.ts
+// lib/orion/verifiers/compile.ts
 
 export interface CompileResult {
   success: boolean
@@ -196,7 +196,7 @@ export async function verifyCompilation(
 ## Implementation: Phase 2 (Test Verification)
 
 ```typescript
-// lib/inprod/verifiers/tests.ts
+// lib/orion/verifiers/tests.ts
 
 export interface TestResult {
   success: boolean
@@ -231,7 +231,7 @@ export async function verifyTests(
 ## Implementation: Phase 3 (Mutation Testing)
 
 ```typescript
-// lib/inprod/verifiers/mutation.ts
+// lib/orion/verifiers/mutation.ts
 
 export interface MutationResult {
   score: number // 0-100, % of mutants killed
@@ -286,7 +286,7 @@ export async function runMutationTesting(
 ## Implementation: Phase 4 (Load Testing)
 
 ```typescript
-// lib/inprod/verifiers/load.ts
+// lib/orion/verifiers/load.ts
 
 export interface LoadTestResult {
   maxConcurrentUsers: number // VERIFIED number
@@ -369,7 +369,7 @@ export async function runLoadTest(
 ## Implementation: Phase 5 (Production Correlation)
 
 ```typescript
-// lib/inprod/observability/sentry.ts
+// lib/orion/observability/sentry.ts
 
 export interface SentryIssue {
   id: string
@@ -397,7 +397,7 @@ export async function fetchSentryIssues(
   return response.json()
 }
 
-// lib/inprod/observability/correlate.ts
+// lib/orion/observability/correlate.ts
 
 export function correlateToSource(
   issues: SentryIssue[],
@@ -423,7 +423,7 @@ export function correlateToSource(
 ## Updated Altitude Calculation
 
 ```typescript
-// lib/inprod/altitude.ts - V2
+// lib/orion/altitude.ts - V2
 
 export function calculateVerifiedAltitude(
   categories: VerifiedCategoryScore[],
@@ -580,7 +580,7 @@ At 1000 full verifications/month: **$250 E2B cost**
 | GitHub Copilot | Code generation | No verification |
 | OpenAI Codex | Autonomous coding | No load testing |
 
-**inprod unique**: Execute code, run tests, mutation test, load test, correlate production — all in one flow.
+**orion unique**: Execute code, run tests, mutation test, load test, correlate production — all in one flow.
 
 ---
 

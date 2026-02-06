@@ -2,7 +2,7 @@
   "events": [
     {
       "type": "ai_suggestion",
-      "message": "inprod.ai is a production readiness automation platform that analyzes GitHub repos and generates missing implementations to make code production-ready.",
+      "message": "orion is a production readiness automation platform that analyzes GitHub repos and generates missing implementations to make code production-ready.",
       "data": {
         "phase": {
           "phase": "BUILD",
@@ -20,7 +20,7 @@
     },
     {
       "type": "ai_suggestion",
-      "message": "inprod.ai is a production readiness automation platform that analyzes GitHub repos and generates missing implementations. The project has substantial code but needs .cursorrules to establish development conventions.",
+      "message": "orion is a production readiness automation platform that analyzes GitHub repos and generates missing implementations. The project has substantial code but needs .cursorrules to establish development conventions.",
       "data": {
         "phase": {
           "phase": "BUILD",
@@ -56,7 +56,7 @@
     },
     {
       "type": "ai_suggestion",
-      "message": "inprod.ai is a production readiness automation platform that analyzes GitHub repos and generates missing implementations for security, testing, and deployment.",
+      "message": "orion is a production readiness automation platform that analyzes GitHub repos and generates missing implementations for security, testing, and deployment.",
       "data": {
         "phase": {
           "phase": "BUILD",
@@ -74,7 +74,7 @@
     },
     {
       "type": "ai_suggestion",
-      "message": "inprod.ai is a production readiness platform that analyzes GitHub repos and generates missing code/configs. Currently indexing the codebase after establishing project rules.",
+      "message": "orion is a production readiness platform that analyzes GitHub repos and generates missing code/configs. Currently indexing the codebase after establishing project rules.",
       "data": {
         "phase": {
           "phase": "BUILD",
@@ -86,7 +86,7 @@
     },
     {
       "type": "ai_suggestion",
-      "message": "inprod.ai is a production readiness analyzer that scans GitHub repos and generates missing code/configs. Currently implementing core analysis features and test suite.",
+      "message": "orion is a production readiness analyzer that scans GitHub repos and generates missing code/configs. Currently implementing core analysis features and test suite.",
       "data": {
         "phase": {
           "phase": "BUILD",
@@ -161,7 +161,7 @@
     },
     {
       "type": "ai_suggestion",
-      "message": "inprod.ai - Production readiness automation platform that analyzes repos and generates missing code. Sister product to Slopometer.",
+      "message": "orion - Production readiness automation platform that analyzes repos and generates missing code. Sister product to Slopometer.",
       "data": {
         "phase": {
           "phase": "BUILD",
@@ -209,7 +209,7 @@
     },
     {
       "type": "ai_suggestion",
-      "message": "inprod.ai is a production readiness automation platform that analyzes codebases and generates missing implementations for production readiness.",
+      "message": "orion is a production readiness automation platform that analyzes codebases and generates missing implementations for production readiness.",
       "data": {
         "phase": {
           "phase": "BUILD",
@@ -248,7 +248,7 @@
     },
     {
       "type": "ai_suggestion",
-      "message": "inprod.ai is a production readiness platform that analyzes repos and generates missing code. Currently in testing phase with 125 passing tests.",
+      "message": "orion is a production readiness platform that analyzes repos and generates missing code. Currently in testing phase with 125 passing tests.",
       "data": {
         "phase": {
           "phase": "BUILD",
@@ -260,7 +260,7 @@
     },
     {
       "type": "prompt_copied",
-      "message": "Write unit tests for the remaining generators in lib/inprod/generators/: security.ts, testing.ts, ci",
+      "message": "Write unit tests for the remaining generators in lib/orion/generators/: security.ts, testing.ts, ci",
       "id": "1769107258409-pa9stl",
       "timestamp": "2026-01-22T18:40:58.409Z"
     },
@@ -284,7 +284,7 @@
     },
     {
       "type": "ai_suggestion",
-      "message": "inprod.ai - Production readiness automation platform that analyzes repos and generates missing implementations",
+      "message": "orion - Production readiness automation platform that analyzes repos and generates missing implementations",
       "data": {
         "phase": {
           "phase": "BUILD",

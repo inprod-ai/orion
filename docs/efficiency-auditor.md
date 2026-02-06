@@ -333,7 +333,7 @@ The combination is a significant technical lift that can't be easily replicated.
 
 **Current state of the art**: "Your code is O(n²)"
 
-**inprod efficiency auditor**: "Your code is 47% as efficient as theoretically possible. Here's exactly where the waste is, and here's the optimal implementation."
+**orion efficiency auditor**: "Your code is 47% as efficient as theoretically possible. Here's exactly where the waste is, and here's the optimal implementation."
 
 **One-liner**: "Not just 'is it fast?' — 'is it as fast as physics allows?'"
 

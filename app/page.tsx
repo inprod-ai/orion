@@ -18,6 +18,7 @@ import Spotlight from '@/components/space/Spotlight'
 const StarField3D = dynamic(() => import('@/components/space/StarField3D'), { ssr: false })
 const SpaceParticles = dynamic(() => import('@/components/space/SpaceParticles'), { ssr: false })
 const ShootingStars = dynamic(() => import('@/components/space/ShootingStar'), { ssr: false })
+const AscendingRocket = dynamic(() => import('@/components/space/AscendingRocket'), { ssr: false })
 
 interface UserData {
   id: string
@@ -431,7 +432,7 @@ function Footer() {
             <span className="font-bold tracking-[0.15em] text-gray-400">ORION</span>
           </div>
           <nav className="flex items-center gap-6 text-sm text-gray-500">
-            <a href="https://github.com/inprod-ai/orion" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">GitHub</a>
+            <a href="https://github.com/orion-archi/orion" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">GitHub</a>
             <a href="https://www.npmjs.com/package/orion-archi" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">npm</a>
             <Link href="/upgrade" className="hover:text-white transition-colors">Pricing</Link>
           </nav>
@@ -492,6 +493,7 @@ function HomeContent() {
       <StarField3D />
       <SpaceParticles />
       <ShootingStars />
+      <AscendingRocket />
 
       <div className="relative z-10">
         <Navbar />

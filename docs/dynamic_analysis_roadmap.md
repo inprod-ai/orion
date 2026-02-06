@@ -1,4 +1,4 @@
-# Slopometer → inprod.ai: Dynamic Analysis Roadmap
+# Slopometer → orion.ai: Dynamic Analysis Roadmap
 
 **From "This looks wrong" to "This IS wrong, here's proof, here's the fix"**
 
@@ -11,7 +11,7 @@ This document outlines the technical roadmap for evolving Slopometer from a stat
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                                                                              │
-│   TODAY: Slopometer                    TOMORROW: inprod.ai                  │
+│   TODAY: Slopometer                    TOMORROW: orion.ai                  │
 │   ─────────────────                    ───────────────────                  │
 │   "This might be wrong"         →      "This IS wrong"                      │
 │   "Consider adding tests"       →      "Here are your tests"                │
@@ -453,7 +453,7 @@ Connect to production telemetry, correlate errors to code, prioritize by real im
 │          ┌──────────────────────────────────────────────────────────────┘   │
 │          ▼                                                                  │
 │   ┌─────────────────────────────────────────────────────────────────────┐  │
-│   │  INPROD.AI COLLECTOR                                                 │  │
+│   │  ORION.AI COLLECTOR                                                 │  │
 │   │  ───────────────────                                                 │  │
 │   │                                                                      │  │
 │   │  1. Ingest production signals                                        │  │
@@ -1293,7 +1293,7 @@ function withdraw(user: User, amount: number): Result {
 
 Or add as separate tier:
 - **Slopometer** (static): $19/mo
-- **inprod.ai** (full): $49/mo
+- **orion.ai** (full): $49/mo
 
 ---
 
@@ -1331,7 +1331,7 @@ Or add as separate tier:
 │   THE MOAT:                                                                 │
 │                                                                              │
 │   Other tools: "Here are 847 warnings"                                      │
-│   inprod.ai:   "You have 3 bugs. Here's proof. Here's the fix.             │
+│   orion.ai:   "You have 3 bugs. Here's proof. Here's the fix.             │
 │                 Here are the tests. Verified in production."                │
 │                                                                              │
 └─────────────────────────────────────────────────────────────────────────────┘

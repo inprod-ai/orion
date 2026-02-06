@@ -53,7 +53,7 @@
     },
     {
       "timestamp": 1769107135495,
-      "suggestion": "Write unit tests for the remaining generators in lib/inprod/generators/: security.ts, testing.ts, cicd.ts, and readme.ts. Follow the same pattern as the analyzer tests - test each template generation function with different gap scenarios.",
+      "suggestion": "Write unit tests for the remaining generators in lib/orion/generators/: security.ts, testing.ts, cicd.ts, and readme.ts. Follow the same pattern as the analyzer tests - test each template generation function with different gap scenarios.",
       "accepted": false
     },
     {
@@ -112,7 +112,7 @@
     },
     {
       "timestamp": 1768967902563,
-      "suggestion": "Create a comprehensive test suite starting with the core analyzer functions. Write tests for lib/inprod/analyzer.ts and lib/inprod/analyzers/security.ts using Vitest. Cover the analyzeRepository function, altitude calculations, and security gap detection. Include test cases for different tech stacks and missing implementations.",
+      "suggestion": "Create a comprehensive test suite starting with the core analyzer functions. Write tests for lib/orion/analyzer.ts and lib/orion/analyzers/security.ts using Vitest. Cover the analyzeRepository function, altitude calculations, and security gap detection. Include test cases for different tech stacks and missing implementations.",
       "accepted": false
     },
     {

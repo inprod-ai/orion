@@ -1,16 +1,16 @@
-# inprod.ai PRD v2 — Verified Production Readiness
+# Orion PRD v2 — Verified Production Readiness
 
 **Version**: 2.0  
 **Status**: Strategic  
 **Last Updated**: February 2026  
-**Domain**: inprod.ai  
+**Domain**: orion  
 **Parent Product**: Slopometer
 
 ---
 
 ## Executive Summary
 
-inprod.ai evolves from a pattern-matching analysis tool to a **verification-based production readiness platform**. The core insight: scores are guesses, proofs are facts.
+orion evolves from a pattern-matching analysis tool to a **verification-based production readiness platform**. The core insight: scores are guesses, proofs are facts.
 
 **The shift**:
 - v1: "Your code looks like it could handle 10K users" (pattern matching)
@@ -26,7 +26,7 @@ inprod.ai evolves from a pattern-matching analysis tool to a **verification-base
 
 ### The Pattern Matching Trap
 
-All current production readiness tools (including inprod v1) work the same way:
+All current production readiness tools (including orion v1) work the same way:
 
 ```
 Scan code → Match patterns → Assign score → Guess capacity
@@ -116,7 +116,7 @@ Instead of pattern-based scores, offer progressively rigorous verification:
 ### Current State
 
 ```
-lib/inprod/
+lib/orion/
 ├── analyzers/          # Pattern matching (12 categories)
 ├── generators/         # Generate fix code
 ├── altitude.ts         # Maps scores → user capacity (GUESS)
@@ -128,7 +128,7 @@ lib/sandbox.ts          # E2B integration (exists, underused)
 ### Target State
 
 ```
-lib/inprod/
+lib/orion/
 ├── analyzers/          # Static analysis (unchanged)
 ├── verifiers/          # NEW: Execute and verify
 │   ├── compile.ts      # Verify code compiles
@@ -315,7 +315,7 @@ No competitor combines all of:
 3. Mutation testing (like Stryker)
 4. Load testing (like k6)
 5. Production correlation (like Sentry)
-6. Capacity prediction (unique to inprod)
+6. Capacity prediction (unique to orion)
 
 ### Positioning Matrix
 
@@ -323,7 +323,7 @@ No competitor combines all of:
                     HIGH VERIFICATION
                           ↑
                           │
-        Formal tools      │       inprod v2
+        Formal tools      │       orion v2
         (Coq, TLA+)       │    (verified + accessible)
                           │
     ←─────────────────────┼─────────────────────────→
@@ -388,7 +388,7 @@ Target venues: PLDI, ICSE, FSE
 ### Relationship
 
 - **Slopometer**: Detection ("Is my code ready to ship?")
-- **inprod**: Completion + Verification ("Make my code ready to ship" + "Prove it's ready")
+- **orion**: Completion + Verification ("Make my code ready to ship" + "Prove it's ready")
 
 ### Integration Flow
 
@@ -397,9 +397,9 @@ Slopometer scan
       ↓
 "3 blockers, 12 warnings"
       ↓
-[Complete in inprod.ai →] button
+[Complete in orion →] button
       ↓
-inprod.ai receives scan context
+orion receives scan context
       ↓
 Generate fixes + Verify they work
       ↓
@@ -424,15 +424,15 @@ Create PR with verified fixes
 
 | Developer Type | Distribution | Status |
 |----------------|--------------|--------|
-| Web/React/Node | npm (`npx inprod`) | Planned |
-| macOS / iOS | Homebrew (`brew install inprod`) | Planned |
+| Web/React/Node | npm (`npx orion`) | Planned |
+| macOS / iOS | Homebrew (`brew install orion`) | Planned |
 | Universal | curl script | Planned |
-| Web-only | inprod.ai dashboard | Current |
+| Web-only | orion dashboard | Current |
 
 ### CLI Flow
 
 ```bash
-$ inprod
+$ orion
 
 🔍 Analyzing my-startup...
 
@@ -464,7 +464,7 @@ Generate fixes? [Y/n]
 | Verified scans | Scans with compile/test verification | 1,000/mo |
 | Verification rate | % of scans that verify | 60% |
 | Fix generation | Files generated | 5,000/mo |
-| PR creation | PRs opened via inprod | 200/mo |
+| PR creation | PRs opened via orion | 200/mo |
 
 ### Business Metrics
 

@@ -1,4 +1,4 @@
-# inprod Gameplan
+# Orion Gameplan
 
 **Status**: Active  
 **Last Updated**: February 2026  
@@ -36,7 +36,7 @@ Track 1 generates revenue and builds infrastructure. Track 2 uses that infrastru
 
 ### Deliverables
 
-1. **`lib/inprod/verifiers/compile.ts`**
+1. **`lib/orion/verifiers/compile.ts`**
    - Clone repo into E2B sandbox
    - Install dependencies based on detected stack
    - Run build command
@@ -54,7 +54,7 @@ Track 1 generates revenue and builds infrastructure. Track 2 uses that infrastru
 ### Technical Spec
 
 ```typescript
-// lib/inprod/verifiers/compile.ts
+// lib/orion/verifiers/compile.ts
 
 export interface CompileResult {
   success: boolean
@@ -148,7 +148,7 @@ function getBuildCommand(stack: TechStack): string {
 
 ### Deliverables
 
-1. **`lib/inprod/verifiers/tests.ts`**
+1. **`lib/orion/verifiers/tests.ts`**
    - Detect test framework
    - Run test command
    - Parse test output (pass/fail counts)
@@ -170,7 +170,7 @@ function getBuildCommand(stack: TechStack): string {
 ### Technical Spec
 
 ```typescript
-// lib/inprod/verifiers/tests.ts
+// lib/orion/verifiers/tests.ts
 
 export interface TestResult {
   success: boolean
@@ -242,7 +242,7 @@ function getTestCommand(stack: TechStack): string {
 
 ### Deliverables
 
-1. **`lib/inprod/verifiers/mutation.ts`**
+1. **`lib/orion/verifiers/mutation.ts`**
    - Install Stryker in sandbox
    - Run mutation testing on target files
    - Parse mutation score
@@ -263,7 +263,7 @@ function getTestCommand(stack: TechStack): string {
 ### Technical Spec
 
 ```typescript
-// lib/inprod/verifiers/mutation.ts
+// lib/orion/verifiers/mutation.ts
 
 export interface MutationResult {
   score: number  // 0-100
@@ -334,7 +334,7 @@ export async function runMutationTesting(
 
 ### Deliverables
 
-1. **`lib/inprod/verifiers/load.ts`**
+1. **`lib/orion/verifiers/load.ts`**
    - Start application in sandbox
    - Run k6 load test
    - Ramp users until failure
@@ -357,7 +357,7 @@ export async function runMutationTesting(
 ### Technical Spec
 
 ```typescript
-// lib/inprod/verifiers/load.ts
+// lib/orion/verifiers/load.ts
 
 export interface LoadTestResult {
   maxConcurrentUsers: number
@@ -433,12 +433,12 @@ export async function runLoadTest(
 
 ### Deliverables
 
-1. **`lib/inprod/observability/sentry.ts`**
+1. **`lib/orion/observability/sentry.ts`**
    - OAuth flow for Sentry access
    - Fetch issues from Sentry API
    - Parse stack traces
 
-2. **`lib/inprod/observability/correlate.ts`**
+2. **`lib/orion/observability/correlate.ts`**
    - Map stack frames to repo files
    - Rank issues by user impact
 
@@ -453,7 +453,7 @@ export async function runLoadTest(
 ### Technical Spec
 
 ```typescript
-// lib/inprod/observability/sentry.ts
+// lib/orion/observability/sentry.ts
 
 export interface SentryIssue {
   id: string
@@ -486,7 +486,7 @@ export async function fetchSentryIssues(
   return response.json()
 }
 
-// lib/inprod/observability/correlate.ts
+// lib/orion/observability/correlate.ts
 
 export function correlateToSource(
   issues: SentryIssue[],
@@ -530,7 +530,7 @@ export function correlateToSource(
 
 ### Deliverables
 
-1. **`lib/inprod/verifiers/efficiency.ts`**
+1. **`lib/orion/verifiers/efficiency.ts`**
    - LLM classifier for problem types
    - Instrumented execution
    - Efficiency ratio calculation
@@ -551,7 +551,7 @@ export function correlateToSource(
 ### Technical Spec
 
 ```typescript
-// lib/inprod/verifiers/efficiency.ts
+// lib/orion/verifiers/efficiency.ts
 
 export interface EfficiencyResult {
   problemClass: string

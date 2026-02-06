@@ -1,8 +1,8 @@
-# Slopometer Integration Guide for inprod.ai
+# Slopometer Integration Guide for orion.ai
 
 **Version:** 1.0  
 **Last Updated:** January 2026  
-**Purpose:** Complete reference for building inprod.ai integration with Slopometer
+**Purpose:** Complete reference for building orion.ai integration with Slopometer
 
 ---
 
@@ -29,7 +29,7 @@ Slopometer uses **Neon Postgres** with **Drizzle ORM**. The database is located 
 
 ### Core Tables
 
-#### `users` — User accounts (shared with inprod.ai)
+#### `users` — User accounts (shared with orion.ai)
 
 ```sql
 CREATE TABLE users (
@@ -41,7 +41,7 @@ CREATE TABLE users (
   email TEXT,                          -- Email (from GitHub)
   access_token TEXT,                   -- ENCRYPTED GitHub access token
   
-  -- Subscription (SHARED WITH INPROD.AI)
+  -- Subscription (SHARED WITH ORION.AI)
   plan plan_enum DEFAULT 'free',       -- 'free' | 'pro' | 'team' | 'enterprise'
   stripe_customer_id TEXT,             -- Stripe customer ID
   stripe_subscription_id TEXT,         -- Stripe subscription ID
@@ -61,14 +61,14 @@ CREATE INDEX users_github_id_idx ON users(github_id);
 CREATE INDEX users_stripe_customer_idx ON users(stripe_customer_id);
 ```
 
-**Key Fields for inprod.ai:**
+**Key Fields for orion.ai:**
 - `id` — Internal UUID, use this for all auth checks
 - `github_id` — External GitHub ID (don't use for auth)
-- `plan` — Subscription tier (determines inprod.ai features)
+- `plan` — Subscription tier (determines orion.ai features)
 - `stripe_customer_id` — For unified billing
 - `access_token` — ENCRYPTED, use for GitHub API calls
 
-#### `scans` — Scan results (primary data for inprod.ai handoff)
+#### `scans` — Scan results (primary data for orion.ai handoff)
 
 ```sql
 CREATE TABLE scans (
@@ -91,7 +91,7 @@ CREATE TABLE scans (
   progress INTEGER DEFAULT 0,          -- 0-100
   error_message TEXT,
   
-  -- Tech stack (IMPORTANT FOR INPROD.AI)
+  -- Tech stack (IMPORTANT FOR ORION.AI)
   tech_stack JSONB,
   -- Structure: {
   --   languages: [{ name: "typescript", percentage: 80 }, ...],
@@ -237,7 +237,7 @@ CREATE TABLE usage_logs (
   api_key_id UUID REFERENCES api_keys(id),
   scan_id UUID REFERENCES scans(id),
   
-  action TEXT NOT NULL,                -- "scan", "fix_generation", "inprod_completion"
+  action TEXT NOT NULL,                -- "scan", "fix_generation", "orion_completion"
   repo_url TEXT,
   tokens_used INTEGER DEFAULT 0,
   cost_cents INTEGER DEFAULT 0,
@@ -257,36 +257,36 @@ export const PLAN_LIMITS = {
     privateRepos: false,
     aiFixGeneration: false,
     apiAccess: false,
-    // INPROD.AI LIMITS
-    inprodCompletions: 0,        // View only
-    inprodGenerations: 0,
+    // ORION.AI LIMITS
+    orionCompletions: 0,        // View only
+    orionGenerations: 0,
   },
   pro: {
     scansPerMonth: 100,
     privateRepos: true,
     aiFixGeneration: true,
     apiAccess: true,
-    // INPROD.AI LIMITS
-    inprodCompletions: 10,       // Full completions/month
-    inprodGenerations: 50,       // Individual generations/month
+    // ORION.AI LIMITS
+    orionCompletions: 10,       // Full completions/month
+    orionGenerations: 50,       // Individual generations/month
   },
   team: {
     scansPerMonth: 500,
     privateRepos: true,
     aiFixGeneration: true,
     apiAccess: true,
-    // INPROD.AI LIMITS
-    inprodCompletions: 50,
-    inprodGenerations: 200,
+    // ORION.AI LIMITS
+    orionCompletions: 50,
+    orionGenerations: 200,
   },
   enterprise: {
     scansPerMonth: -1,           // Unlimited
     privateRepos: true,
     aiFixGeneration: true,
     apiAccess: true,
-    // INPROD.AI LIMITS
-    inprodCompletions: -1,       // Unlimited
-    inprodGenerations: -1,       // Unlimited
+    // ORION.AI LIMITS
+    orionCompletions: -1,       // Unlimited
+    orionGenerations: -1,       // Unlimited
   },
 };
 ```
@@ -481,26 +481,26 @@ interface SessionData {
 // Format: salt:iv:ciphertext:authTag (hex encoded)
 ```
 
-### SSO for inprod.ai
+### SSO for orion.ai
 
 **Option 1: Shared Cookie (Same Domain)**
 ```
 slopometer.com     → slopometer_session cookie
-inprod.slopometer.com → Same cookie (subdomain)
+orion.slopometer.com → Same cookie (subdomain)
 ```
 
 **Option 2: Cross-Domain SSO (Different Domain)**
 ```typescript
-// inprod.ai requests token exchange from Slopometer
+// orion.ai requests token exchange from Slopometer
 // POST https://api.slopometer.com/v1/auth/exchange
 {
   "slopometerSessionToken": "<from redirect>",
-  "inprodClientId": "inprod-client-id"
+  "orionClientId": "orion-client-id"
 }
 
 // Returns
 {
-  "inprodToken": "<signed JWT>",
+  "orionToken": "<signed JWT>",
   "user": { "id": "uuid", "plan": "pro", ... },
   "expiresAt": "2026-01-02T13:00:00Z"
 }
@@ -508,15 +508,15 @@ inprod.slopometer.com → Same cookie (subdomain)
 
 **Option 3: OAuth Extension (Recommended)**
 ```typescript
-// User on Slopometer clicks "Complete in inprod.ai"
+// User on Slopometer clicks "Complete in orion.ai"
 // Redirect to:
-const url = `https://inprod.ai/complete?` + new URLSearchParams({
+const url = `https://orion.ai/complete?` + new URLSearchParams({
   slopometer_session: await signedSessionToken(session),
   scan_id: scanId,
   return_url: window.location.href,
 });
 
-// inprod.ai verifies token with Slopometer API
+// orion.ai verifies token with Slopometer API
 // GET https://api.slopometer.com/v1/auth/verify
 // Authorization: Bearer <slopometer_session_token>
 ```
@@ -686,7 +686,7 @@ interface Finding {
 
 ### Detector → Finding Type Mapping
 
-| Detector | File | Finding Types | inprod.ai Generation |
+| Detector | File | Finding Types | orion.ai Generation |
 |----------|------|---------------|---------------------|
 | `secrets.ts` | Regex patterns | `secret` | Env var extraction |
 | `patterns.ts` | Code patterns | `slop`, `pattern` | Remove/replace |
@@ -745,7 +745,7 @@ const PRODUCTION_CHECKS = [
 ];
 ```
 
-### Finding → inprod.ai Generation Template Mapping
+### Finding → orion.ai Generation Template Mapping
 
 ```typescript
 const FINDING_TO_TEMPLATE: Record<string, string> = {
@@ -811,7 +811,7 @@ export const PRICING = {
 };
 ```
 
-### Unified Billing for inprod.ai
+### Unified Billing for orion.ai
 
 **Same Stripe Customer:**
 ```typescript
@@ -820,7 +820,7 @@ await stripe.customers.create({
   email: user.email,
   metadata: {
     slopometer_user_id: user.id,
-    inprod_user_id: user.id,  // Same ID!
+    orion_user_id: user.id,  // Same ID!
   },
 });
 
@@ -830,16 +830,16 @@ await db.update(users)
   .where(eq(users.id, userId));
 ```
 
-**inprod.ai reads same customer:**
+**orion.ai reads same customer:**
 ```typescript
-// inprod.ai checks subscription
+// orion.ai checks subscription
 const user = await db.select().from(users).where(eq(users.id, userId));
 const subscription = await stripe.subscriptions.retrieve(user.stripeSubscriptionId);
 
 // Unified limits
 const limits = PLAN_LIMITS[user.plan];
-const canGenerate = limits.inprodGenerations === -1 || 
-                    user.generationsThisMonth < limits.inprodGenerations;
+const canGenerate = limits.orionGenerations === -1 || 
+                    user.generationsThisMonth < limits.orionGenerations;
 ```
 
 ### Webhook Events (Shared)
@@ -847,7 +847,7 @@ const canGenerate = limits.inprodGenerations === -1 ||
 ```typescript
 // Stripe webhooks handled at /api/stripe/webhook
 
-// Events that affect both Slopometer and inprod.ai:
+// Events that affect both Slopometer and orion.ai:
 switch (event.type) {
   case "checkout.session.completed":
     // User subscribed → update plan
@@ -868,9 +868,9 @@ switch (event.type) {
 
 ## 7. Integration Protocol
 
-### Handoff: Slopometer → inprod.ai
+### Handoff: Slopometer → orion.ai
 
-#### Step 1: User clicks "Complete in inprod.ai"
+#### Step 1: User clicks "Complete in orion.ai"
 
 ```typescript
 // Slopometer: src/app/scan/[id]/page.tsx
@@ -886,20 +886,20 @@ const handleComplete = async () => {
     timestamp: Date.now(),
   };
   
-  const signature = await signHandoff(handoff, INPROD_SHARED_SECRET);
+  const signature = await signHandoff(handoff, ORION_SHARED_SECRET);
   
-  // Redirect to inprod.ai
-  window.location.href = `https://inprod.ai/complete?` + new URLSearchParams({
+  // Redirect to orion.ai
+  window.location.href = `https://orion.ai/complete?` + new URLSearchParams({
     handoff: btoa(JSON.stringify(handoff)),
     sig: signature,
   });
 };
 ```
 
-#### Step 2: inprod.ai receives handoff
+#### Step 2: orion.ai receives handoff
 
 ```typescript
-// inprod.ai: src/app/complete/page.tsx
+// orion.ai: src/app/complete/page.tsx
 
 export default async function CompletePage({ searchParams }) {
   // Verify signature
@@ -924,10 +924,10 @@ export default async function CompletePage({ searchParams }) {
 }
 ```
 
-#### Step 3: inprod.ai fetches scan data
+#### Step 3: orion.ai fetches scan data
 
 ```typescript
-// inprod.ai API client for Slopometer
+// orion.ai API client for Slopometer
 
 class SlopometerClient {
   private apiKey: string;
@@ -957,7 +957,7 @@ class SlopometerClient {
 }
 ```
 
-### API for inprod.ai
+### API for orion.ai
 
 **New endpoints to add to Slopometer:**
 
@@ -975,7 +975,7 @@ class SlopometerClient {
 // Auth: Session token in Authorization header
 
 // POST /api/v1/auth/exchange
-// Exchanges Slopometer session for inprod.ai token
+// Exchanges Slopometer session for orion.ai token
 // Auth: Signed handoff token
 ```
 
@@ -992,8 +992,8 @@ class SlopometerClient {
 | AI Client | `src/lib/ai/client.ts` | ✅ Yes | Claude, GPT, etc. |
 | Cost Tracker | `src/lib/cost-tracker.ts` | ✅ Yes | AI cost tracking |
 | Rate Limiter | `src/lib/rate-limit.ts` | ✅ Yes | IP-based limiting |
-| DB Schema | `src/lib/db/schema.ts` | ✅ Yes | Add inprod tables |
-| DB Ops | `src/lib/db/operations.ts` | ⚠️ Partial | Extend for inprod |
+| DB Schema | `src/lib/db/schema.ts` | ✅ Yes | Add orion tables |
+| DB Ops | `src/lib/db/operations.ts` | ⚠️ Partial | Extend for orion |
 | Scanners | `src/lib/scanners/*` | ✅ Yes | Reuse for detection |
 | Fix Generator | `src/lib/ai/fix-generator.ts` | ✅ Yes | Extend for full gen |
 
@@ -1009,7 +1009,7 @@ packages/
 │   └── db/                    # Database schema
 ├── slopometer/                # Slopometer app
 │   └── src/
-└── inprod/                    # inprod.ai app
+└── orion/                    # orion.ai app
     └── src/
 
 // Option 2: Separate repos with shared npm package
@@ -1044,30 +1044,30 @@ STRIPE_WEBHOOK_SECRET=...
 # Slopometer specific
 NEXT_PUBLIC_APP_URL=https://slopometer.com
 
-# inprod.ai specific
-NEXT_PUBLIC_INPROD_URL=https://inprod.ai
+# orion.ai specific
+NEXT_PUBLIC_ORION_URL=https://orion.ai
 SLOPOMETER_API_KEY=...           # For API calls to Slopometer
-INPROD_SHARED_SECRET=...         # For handoff signing
+ORION_SHARED_SECRET=...         # For handoff signing
 ```
 
 ---
 
-## Quick Start: Building inprod.ai Integration
+## Quick Start: Building orion.ai Integration
 
 ### 1. Clone and extend Slopometer
 
 ```bash
-# Create inprod.ai project
-npx create-next-app@latest inprod --typescript --tailwind --app
+# Create orion.ai project
+npx create-next-app@latest orion --typescript --tailwind --app
 
 # Copy shared libraries
-cp -r slopometer/src/lib/types.ts inprod/src/lib/
-cp -r slopometer/src/lib/crypto.ts inprod/src/lib/
-cp -r slopometer/src/lib/ai inprod/src/lib/
-cp -r slopometer/src/lib/db/schema.ts inprod/src/lib/db/
+cp -r slopometer/src/lib/types.ts orion/src/lib/
+cp -r slopometer/src/lib/crypto.ts orion/src/lib/
+cp -r slopometer/src/lib/ai orion/src/lib/
+cp -r slopometer/src/lib/db/schema.ts orion/src/lib/db/
 ```
 
-### 2. Add inprod.ai tables to schema
+### 2. Add orion.ai tables to schema
 
 ```typescript
 // Add to src/lib/db/schema.ts
@@ -1104,7 +1104,7 @@ export const generatedFiles = pgTable("generated_files", {
 ### 3. Implement handoff receiver
 
 ```typescript
-// inprod.ai: src/app/complete/page.tsx
+// orion.ai: src/app/complete/page.tsx
 
 import { SlopometerClient } from "@/lib/slopometer-client";
 
@@ -1133,12 +1133,12 @@ export default async function CompletePage({ searchParams }) {
 
 <Button 
   onClick={() => {
-    window.location.href = `https://inprod.ai/complete?scanId=${scan.id}`;
+    window.location.href = `https://orion.ai/complete?scanId=${scan.id}`;
   }}
   className="gap-2"
 >
   <Zap className="w-4 h-4" />
-  Complete in inprod.ai
+  Complete in orion.ai
   <ExternalLink className="w-4 h-4" />
 </Button>
 ```

@@ -53,7 +53,7 @@ The Efficiency Auditor builds on infrastructure from the main product:
 
 ### Deliverables
 
-1. **`lib/inprod/efficiency/classifier.ts`**
+1. **`lib/orion/efficiency/classifier.ts`**
    - Prompt engineering for problem classification
    - Confidence scoring
    - Fallback to "unknown"
@@ -70,7 +70,7 @@ The Efficiency Auditor builds on infrastructure from the main product:
 ### Technical Spec
 
 ```typescript
-// lib/inprod/efficiency/classifier.ts
+// lib/orion/efficiency/classifier.ts
 
 import Anthropic from '@anthropic-ai/sdk'
 
@@ -256,7 +256,7 @@ export const CLASSIFICATION_BENCHMARK = [
 
 ### Deliverables
 
-1. **`lib/inprod/efficiency/bounds-database.ts`**
+1. **`lib/orion/efficiency/bounds-database.ts`**
    - 20 problem classes with bounds
    - Formulas for calculating minimum operations
    - Citations to authoritative sources
@@ -268,7 +268,7 @@ export const CLASSIFICATION_BENCHMARK = [
 ### Technical Spec
 
 ```typescript
-// lib/inprod/efficiency/bounds-database.ts
+// lib/orion/efficiency/bounds-database.ts
 
 export interface TheoreticalBound {
   class: ProblemClass
@@ -459,7 +459,7 @@ export function calculateTheoreticalMinimum(
 
 ### Deliverables
 
-1. **`lib/inprod/efficiency/instrumentation.ts`**
+1. **`lib/orion/efficiency/instrumentation.ts`**
    - Wrap arrays with Proxy to count accesses
    - Count comparisons via operator interception
    - Track function calls
@@ -472,7 +472,7 @@ export function calculateTheoreticalMinimum(
 ### Technical Spec
 
 ```typescript
-// lib/inprod/efficiency/instrumentation.ts
+// lib/orion/efficiency/instrumentation.ts
 
 export interface OperationCounts {
   comparisons: number
@@ -573,7 +573,7 @@ export function generateInstrumentationWrapper(
 ### Sandbox Execution
 
 ```typescript
-// lib/inprod/efficiency/measurement.ts
+// lib/orion/efficiency/measurement.ts
 
 import { Sandbox } from '@e2b/code-interpreter'
 
@@ -635,7 +635,7 @@ export async function measureFunction(
 
 ### Deliverables
 
-1. **`lib/inprod/efficiency/calculator.ts`**
+1. **`lib/orion/efficiency/calculator.ts`**
    - Core efficiency calculation
    - Multi-measurement analysis
    - Empirical complexity inference
@@ -643,7 +643,7 @@ export async function measureFunction(
 ### Technical Spec
 
 ```typescript
-// lib/inprod/efficiency/calculator.ts
+// lib/orion/efficiency/calculator.ts
 
 export interface EfficiencyCalculation {
   problemClass: ProblemClass
@@ -749,7 +749,7 @@ function inferComplexity(measurements: Measurement[]): string {
 
 ### Deliverables
 
-1. **`lib/inprod/efficiency/explainer.ts`**
+1. **`lib/orion/efficiency/explainer.ts`**
    - Prompt for gap explanation
    - Structured output parsing
    - Suggestion generation
@@ -757,7 +757,7 @@ function inferComplexity(measurements: Measurement[]): string {
 ### Technical Spec
 
 ```typescript
-// lib/inprod/efficiency/explainer.ts
+// lib/orion/efficiency/explainer.ts
 
 export interface EfficiencyGap {
   cause: string
@@ -872,7 +872,7 @@ function getOptimalAlgorithmDescription(problemClass: ProblemClass): string {
 
 ### Deliverables
 
-1. **`lib/inprod/efficiency/generator.ts`**
+1. **`lib/orion/efficiency/generator.ts`**
    - Generate optimal code for problem class
    - Match original function signature
    - Verify correctness with tests
@@ -880,7 +880,7 @@ function getOptimalAlgorithmDescription(problemClass: ProblemClass): string {
 ### Technical Spec
 
 ```typescript
-// lib/inprod/efficiency/generator.ts
+// lib/orion/efficiency/generator.ts
 
 export interface OptimalImplementation {
   code: string

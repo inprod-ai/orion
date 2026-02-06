@@ -1,10 +1,10 @@
-# inprod Strategy Research
+# orion Strategy Research
 
-research conducted february 2026 to determine product-market fit and academic novelty of two proposed directions for inprod.ai
+research conducted february 2026 to determine product-market fit and academic novelty of two proposed directions for orion.ai
 
 ## two competing visions
 
-**proofs not scores**: evolve inprod from pattern-based scoring to verification-based guarantees via sandbox execution, mutation testing, load testing, and production correlation
+**proofs not scores**: evolve orion from pattern-based scoring to verification-based guarantees via sandbox execution, mutation testing, load testing, and production correlation
 
 **efficiency auditor**: measure how close actual code performance is to the mathematical theoretical minimum for a given problem class (e.g., "your sort uses 2.3x the comparisons it theoretically needs")
 

@@ -1,4 +1,4 @@
-## The Big Picture: What Slopometer/inprod Could Offer That's Hard
+## The Big Picture: What Slopometer/orion Could Offer That's Hard
 
 Based on research and technical possibilities, here are the **game-changing capabilities** that could differentiate:
 
@@ -182,4 +182,4 @@ Based on research and technical possibilities, here are the **game-changing capa
 
 **The big insight:**
 > **Slopometer today = "This looks wrong"**  
-> **inprod tomorrow = "This IS wrong, here's proof, here's the fix"**
+> **orion tomorrow = "This IS wrong, here's proof, here's the fix"**

@@ -3,7 +3,7 @@
 **Version**: 1.0  
 **Status**: Research Initiative  
 **Last Updated**: February 2026  
-**Relationship**: Standalone research product / inprod premium tier  
+**Relationship**: Standalone research product / orion premium tier  
 **Target Venues**: PLDI, ICSE, FSE, EMNLP
 
 ---
@@ -254,7 +254,7 @@ For functions that don't match known problem classes, use entropy-based bounds:
 ### File Structure
 
 ```
-lib/inprod/efficiency/
+lib/orion/efficiency/
 ├── classifier.ts           # LLM-based problem classification
 ├── bounds-database.ts      # Known theoretical bounds
 ├── instrumentation.ts      # Operation counting wrappers
@@ -283,7 +283,7 @@ The Efficiency Auditor **requires** infrastructure from Proofs Not Scores:
 ### Core Types
 
 ```typescript
-// lib/inprod/efficiency/types.ts
+// lib/orion/efficiency/types.ts
 
 export interface ProblemClassification {
   class: ProblemClass
@@ -368,7 +368,7 @@ export interface EfficiencyGap {
 ### Bounds Database
 
 ```typescript
-// lib/inprod/efficiency/bounds-database.ts
+// lib/orion/efficiency/bounds-database.ts
 
 export const THEORETICAL_BOUNDS: Record<ProblemClass, TheoreticalBound> = {
   'comparison-sort': {
@@ -509,7 +509,7 @@ interface EfficiencyResponse {
 ### CLI Interface
 
 ```bash
-$ inprod efficiency src/utils/sort.ts:sortUsers
+$ orion efficiency src/utils/sort.ts:sortUsers
 
 🔬 Analyzing sortUsers()...
 

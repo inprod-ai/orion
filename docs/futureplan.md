@@ -1,4 +1,4 @@
-# Future Plans for inprod.ai
+# Future Plans for orion.ai
 
 ## Phase 2 Features (Post-MVP)
 

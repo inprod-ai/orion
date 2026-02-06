@@ -48,7 +48,7 @@ function getRepoFiles(dir: string, prefix = ''): RepoFile[] {
 
 async function main() {
   console.log('='.repeat(60))
-  console.log('INPROD SELF-ANALYSIS')
+  console.log('ORION SELF-ANALYSIS')
   console.log('='.repeat(60))
   console.log()
   

@@ -24,18 +24,18 @@ app/upgrade/page.tsx
 app/altitude-demo/page.tsx
 ├── components/AltitudeDisplay.tsx
 │   └── components/RocketVisualization.tsx
-│   └── @/lib/inprod/altitude (getAltitudeGradient, getStarsVisibility)
-└── @/lib/inprod/types (CategoryScore, AltitudeResult)
+│   └── @/lib/orion/altitude (getAltitudeGradient, getStarsVisibility)
+└── @/lib/orion/types (CategoryScore, AltitudeResult)
 ```
 
 ### Core Library Dependencies
 
 ```
-lib/inprod/analyzer.ts
-├── lib/inprod/stack-detector.ts
-├── lib/inprod/altitude.ts
-├── lib/inprod/types.ts
-└── lib/inprod/analyzers/index.ts
+lib/orion/analyzer.ts
+├── lib/orion/stack-detector.ts
+├── lib/orion/altitude.ts
+├── lib/orion/types.ts
+└── lib/orion/analyzers/index.ts
     ├── frontend.ts
     ├── backend.ts
     ├── database.ts
@@ -49,7 +49,7 @@ lib/inprod/analyzer.ts
     ├── version-control.ts
     └── deployment.ts
 
-lib/inprod/generators/index.ts
+lib/orion/generators/index.ts
 ├── security.ts (660 lines - most complete)
 ├── cicd.ts (374 lines)
 ├── testing.ts (267 lines)
@@ -285,17 +285,17 @@ PLATFORM_CATEGORIES: {
 ### Largest Files (Potential Refactoring Candidates)
 
 ```
-lib/inprod/generators/security.ts    660 lines (OK - template-heavy)
-lib/inprod/generators/cicd.ts        374 lines (OK - template-heavy)
+lib/orion/generators/security.ts    660 lines (OK - template-heavy)
+lib/orion/generators/cicd.ts        374 lines (OK - template-heavy)
 app/api/analyze/route.ts             ~590 lines (REVIEW - streaming logic)
-lib/inprod/types.ts                  363 lines (OK - type definitions)
-lib/inprod/generators/testing.ts     267 lines (OK)
+lib/orion/types.ts                  363 lines (OK - type definitions)
+lib/orion/generators/testing.ts     267 lines (OK)
 ```
 
 ### Suggested Refactoring
 
 1. **`app/api/analyze/route.ts`** - Extract GitHub fetching logic into `lib/github/fetch.ts`
-2. **`lib/inprod/types.ts`** - Split into `types/` directory with category-specific files
+2. **`lib/orion/types.ts`** - Split into `types/` directory with category-specific files
 
 ---
 
@@ -320,13 +320,13 @@ ENCRYPTION_SECRET      # Session encryption (64 chars)
 ```
 
 ### Adding a New Analyzer
-1. Create `lib/inprod/analyzers/{category}.ts`
+1. Create `lib/orion/analyzers/{category}.ts`
 2. Export function matching `(ctx: RepoContext) => CategoryScore`
-3. Add to `lib/inprod/analyzers/index.ts`
-4. Add tests in `tests/inprod/{category}.test.ts`
+3. Add to `lib/orion/analyzers/index.ts`
+4. Add tests in `tests/orion/{category}.test.ts`
 
 ### Adding a New Generator
-1. Create `lib/inprod/generators/{category}.ts`
+1. Create `lib/orion/generators/{category}.ts`
 2. Export function matching `(ctx: RepoContext, gaps: Gap[]) => Promise<GeneratedFile[]>`
-3. Add to `lib/inprod/generators/index.ts`
+3. Add to `lib/orion/generators/index.ts`
 4. Wire into `/api/generate/route.ts`

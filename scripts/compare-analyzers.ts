@@ -143,8 +143,8 @@ Return JSON:
 }
 
 async function main() {
-  const repoUrl = 'https://github.com/inprod-ai/orion'
-  const owner = 'inprod-ai'
+  const repoUrl = 'https://github.com/orion-archi/orion'
+  const owner = 'orion-archi'
   const repo = 'orion'
 
   console.log('📥 Fetching repository files...')

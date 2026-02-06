@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "projectPath": "/Users/christiancattaneo/Projects/inprod",
+  "projectPath": "/Users/christiancattaneo/Projects/orion",
   "lastFullScan": 1769887783367,
   "files": {
     "app/api/analyze/route.ts": {
@@ -242,9 +242,9 @@
       ],
       "imports": [
         "next/server",
-        "@/lib/inprod/analyzer",
+        "@/lib/orion/analyzer",
         "@/lib/github",
-        "@/lib/inprod/types"
+        "@/lib/orion/types"
       ],
       "lineCount": 48,
       "relevanceScore": 100,
@@ -288,13 +288,13 @@
       ],
       "imports": [
         "next/server",
-        "@/lib/inprod/analyzer",
+        "@/lib/orion/analyzer",
         "@/lib/github",
-        "@/lib/inprod/types",
-        "@/lib/inprod/generators/security",
-        "@/lib/inprod/generators/testing",
-        "@/lib/inprod/generators/cicd",
-        "@/lib/inprod/generators/readme"
+        "@/lib/orion/types",
+        "@/lib/orion/generators/security",
+        "@/lib/orion/generators/testing",
+        "@/lib/orion/generators/cicd",
+        "@/lib/orion/generators/readme"
       ],
       "lineCount": 137,
       "relevanceScore": 100,
@@ -614,7 +614,7 @@
         "KeyFiles"
       ],
       "imports": [
-        "@/lib/inprod/types"
+        "@/lib/orion/types"
       ],
       "lineCount": 622,
       "relevanceScore": 85,
@@ -641,7 +641,7 @@
         "mentioned"
       ]
     },
-    "lib/inprod/analyzers/index.ts": {
+    "lib/orion/analyzers/index.ts": {
       "hash": "652ede16dcab",
       "size": 801,
       "mtime": 1767380959438.0881,
@@ -667,7 +667,7 @@
         "core file"
       ]
     },
-    "lib/inprod/generators/index.ts": {
+    "lib/orion/generators/index.ts": {
       "hash": "242fc77e8480",
       "size": 589,
       "mtime": 1769103954607.2656,
@@ -692,7 +692,7 @@
         "recently modified"
       ]
     },
-    "lib/inprod/types.ts": {
+    "lib/orion/types.ts": {
       "hash": "f210c98d47d2",
       "size": 13888,
       "mtime": 1767395023691.7183,
@@ -895,7 +895,7 @@
       "relevanceScore": 55,
       "reasons": []
     },
-    "lib/inprod/altitude.ts": {
+    "lib/orion/altitude.ts": {
       "hash": "206e0e9fc44d",
       "size": 8300,
       "mtime": 1767395023685.2107,
@@ -915,7 +915,7 @@
       "relevanceScore": 55,
       "reasons": []
     },
-    "lib/inprod/analyzer.ts": {
+    "lib/orion/analyzer.ts": {
       "hash": "5b23761da448",
       "size": 8131,
       "mtime": 1767396418331.1292,
@@ -937,7 +937,7 @@
       "relevanceScore": 55,
       "reasons": []
     },
-    "lib/inprod/analyzers/api-integrations.ts": {
+    "lib/orion/analyzers/api-integrations.ts": {
       "hash": "8ba9049b1124",
       "size": 4933,
       "mtime": 1769103954605.969,
@@ -956,7 +956,7 @@
         "recently modified"
       ]
     },
-    "lib/inprod/analyzers/authentication.ts": {
+    "lib/orion/analyzers/authentication.ts": {
       "hash": "3d0ae5ee8cbe",
       "size": 4668,
       "mtime": 1769103954573.0696,
@@ -975,7 +975,7 @@
         "recently modified"
       ]
     },
-    "lib/inprod/analyzers/backend.ts": {
+    "lib/orion/analyzers/backend.ts": {
       "hash": "7ef792b623d6",
       "size": 5098,
       "mtime": 1769103954573.039,
@@ -994,7 +994,7 @@
         "recently modified"
       ]
     },
-    "lib/inprod/analyzers/database.ts": {
+    "lib/orion/analyzers/database.ts": {
       "hash": "9eb39c45a915",
       "size": 4580,
       "mtime": 1769103954573.064,
@@ -1013,7 +1013,7 @@
         "recently modified"
       ]
     },
-    "lib/inprod/analyzers/deployment.ts": {
+    "lib/orion/analyzers/deployment.ts": {
       "hash": "cb20ee2f5e35",
       "size": 4868,
       "mtime": 1769103954607.2104,
@@ -1032,7 +1032,7 @@
         "recently modified"
       ]
     },
-    "lib/inprod/analyzers/design-ux.ts": {
+    "lib/orion/analyzers/design-ux.ts": {
       "hash": "2037f5ddd1cb",
       "size": 3934,
       "mtime": 1769103954606.0078,
@@ -1051,7 +1051,7 @@
         "recently modified"
       ]
     },
-    "lib/inprod/analyzers/error-handling.ts": {
+    "lib/orion/analyzers/error-handling.ts": {
       "hash": "3d7e5aa514d2",
       "size": 5105,
       "mtime": 1769103954607.1494,
@@ -1070,7 +1070,7 @@
         "recently modified"
       ]
     },
-    "lib/inprod/analyzers/frontend.ts": {
+    "lib/orion/analyzers/frontend.ts": {
       "hash": "f0df59a85a1b",
       "size": 5225,
       "mtime": 1769103954573.0173,
@@ -1089,7 +1089,7 @@
         "recently modified"
       ]
     },
-    "lib/inprod/analyzers/security.ts": {
+    "lib/orion/analyzers/security.ts": {
       "hash": "db1777337d59",
       "size": 6814,
       "mtime": 1769103954605.8052,
@@ -1108,7 +1108,7 @@
         "recently modified"
       ]
     },
-    "lib/inprod/analyzers/state-management.ts": {
+    "lib/orion/analyzers/state-management.ts": {
       "hash": "bf7d5bfaf6af",
       "size": 3964,
       "mtime": 1769103954607.1611,
@@ -1127,7 +1127,7 @@
         "recently modified"
       ]
     },
-    "lib/inprod/analyzers/testing.ts": {
+    "lib/orion/analyzers/testing.ts": {
       "hash": "fd62a0bb7359",
       "size": 4631,
       "mtime": 1769103954573.1697,
@@ -1146,7 +1146,7 @@
         "recently modified"
       ]
     },
-    "lib/inprod/analyzers/version-control.ts": {
+    "lib/orion/analyzers/version-control.ts": {
       "hash": "3c7f770b0cab",
       "size": 5203,
       "mtime": 1769103954607.1082,
@@ -1165,7 +1165,7 @@
         "recently modified"
       ]
     },
-    "lib/inprod/generators/cicd.ts": {
+    "lib/orion/generators/cicd.ts": {
       "hash": "4a831309401d",
       "size": 10336,
       "mtime": 1769887705813.0444,
@@ -1185,7 +1185,7 @@
         "recently modified"
       ]
     },
-    "lib/inprod/generators/readme.ts": {
+    "lib/orion/generators/readme.ts": {
       "hash": "da39447e7616",
       "size": 4074,
       "mtime": 1767380959529.1707,
@@ -1200,7 +1200,7 @@
       "relevanceScore": 55,
       "reasons": []
     },
-    "lib/inprod/generators/security.ts": {
+    "lib/orion/generators/security.ts": {
       "hash": "641cf99e2211",
       "size": 17898,
       "mtime": 1767380959529.1287,
@@ -1247,7 +1247,7 @@
       "relevanceScore": 55,
       "reasons": []
     },
-    "lib/inprod/generators/testing.ts": {
+    "lib/orion/generators/testing.ts": {
       "hash": "10308626a963",
       "size": 7045,
       "mtime": 1767380959529.164,
@@ -1271,7 +1271,7 @@
       "relevanceScore": 55,
       "reasons": []
     },
-    "lib/inprod/stack-detector.ts": {
+    "lib/orion/stack-detector.ts": {
       "hash": "30dd96a39672",
       "size": 10746,
       "mtime": 1768969714164.544,
@@ -1363,8 +1363,8 @@
       "imports": [
         "framer-motion",
         "react",
-        "@/lib/inprod/types",
-        "@/lib/inprod/altitude"
+        "@/lib/orion/types",
+        "@/lib/orion/altitude"
       ],
       "lineCount": 270,
       "relevanceScore": 50,
@@ -1456,8 +1456,8 @@
       ],
       "imports": [
         "@anthropic-ai/sdk",
-        "../lib/inprod/analyzer",
-        "../lib/inprod/types"
+        "../lib/orion/analyzer",
+        "../lib/orion/types"
       ],
       "lineCount": 221,
       "relevanceScore": 50,
@@ -1529,7 +1529,7 @@
       "relevanceScore": 40,
       "reasons": []
     },
-    "tests/inprod/analyzer.test.ts": {
+    "tests/orion/analyzer.test.ts": {
       "hash": "af1979249dba",
       "size": 9120,
       "mtime": 1768968491013.867,
@@ -1541,8 +1541,8 @@
       ],
       "imports": [
         "vitest",
-        "@/lib/inprod/stack-detector",
-        "@/lib/inprod/types"
+        "@/lib/orion/stack-detector",
+        "@/lib/orion/types"
       ],
       "lineCount": 212,
       "relevanceScore": 80,
@@ -1551,7 +1551,7 @@
         "recently modified"
       ]
     },
-    "tests/inprod/stack-detector.test.ts": {
+    "tests/orion/stack-detector.test.ts": {
       "hash": "bf4621c04661",
       "size": 3531,
       "mtime": 1767383832899.1748,
@@ -1562,14 +1562,14 @@
       ],
       "imports": [
         "vitest",
-        "@/lib/inprod/stack-detector",
-        "@/lib/inprod/types"
+        "@/lib/orion/stack-detector",
+        "@/lib/orion/types"
       ],
       "lineCount": 107,
       "relevanceScore": 40,
       "reasons": []
     },
-    "tests/inprod/altitude.test.ts": {
+    "tests/orion/altitude.test.ts": {
       "hash": "f80594a4663b",
       "size": 8926,
       "mtime": 1768968491013.8672,
@@ -1579,7 +1579,7 @@
       ],
       "imports": [
         "vitest",
-        "@/lib/inprod/types"
+        "@/lib/orion/types"
       ],
       "lineCount": 288,
       "relevanceScore": 80,
@@ -1588,7 +1588,7 @@
         "recently modified"
       ]
     },
-    "tests/inprod/security.test.ts": {
+    "tests/orion/security.test.ts": {
       "hash": "8c41bb4d12ee",
       "size": 12118,
       "mtime": 1768969714164.887,
@@ -1600,8 +1600,8 @@
       ],
       "imports": [
         "vitest",
-        "@/lib/inprod/analyzers/security",
-        "@/lib/inprod/types",
+        "@/lib/orion/analyzers/security",
+        "@/lib/orion/types",
         "dompurify",
         "@prisma/client",
         "drizzle-orm",
@@ -1614,7 +1614,7 @@
         "modified today"
       ]
     },
-    "lib/inprod/platform.ts": {
+    "lib/orion/platform.ts": {
       "hash": "a0693b6c444b",
       "size": 2096,
       "mtime": 1769102763064.8135,
@@ -1654,7 +1654,7 @@
         "recently modified"
       ]
     },
-    "tests/inprod/analyzers.test.ts": {
+    "tests/orion/analyzers.test.ts": {
       "hash": "ddeff5d535ce",
       "size": 17764,
       "mtime": 1769103954618.0005,
@@ -1668,18 +1668,18 @@
       ],
       "imports": [
         "vitest",
-        "@/lib/inprod/types",
-        "@/lib/inprod/analyzers/frontend",
-        "@/lib/inprod/analyzers/backend",
-        "@/lib/inprod/analyzers/database",
-        "@/lib/inprod/analyzers/authentication",
-        "@/lib/inprod/analyzers/api-integrations",
-        "@/lib/inprod/analyzers/state-management",
-        "@/lib/inprod/analyzers/design-ux",
-        "@/lib/inprod/analyzers/testing",
-        "@/lib/inprod/analyzers/error-handling",
-        "@/lib/inprod/analyzers/version-control",
-        "@/lib/inprod/analyzers/deployment",
+        "@/lib/orion/types",
+        "@/lib/orion/analyzers/frontend",
+        "@/lib/orion/analyzers/backend",
+        "@/lib/orion/analyzers/database",
+        "@/lib/orion/analyzers/authentication",
+        "@/lib/orion/analyzers/api-integrations",
+        "@/lib/orion/analyzers/state-management",
+        "@/lib/orion/analyzers/design-ux",
+        "@/lib/orion/analyzers/testing",
+        "@/lib/orion/analyzers/error-handling",
+        "@/lib/orion/analyzers/version-control",
+        "@/lib/orion/analyzers/deployment",
         "zod",
         "crypto"
       ],
@@ -1691,7 +1691,7 @@
         "recently modified"
       ]
     },
-    "lib/inprod/generators/authentication.ts": {
+    "lib/orion/generators/authentication.ts": {
       "hash": "34742cbb56b2",
       "size": 11707,
       "mtime": 1769103954607.2297,
@@ -1733,7 +1733,7 @@
         "recently modified"
       ]
     },
-    "lib/inprod/generators/backend.ts": {
+    "lib/orion/generators/backend.ts": {
       "hash": "ae4bf8001a03",
       "size": 13319,
       "mtime": 1769103954607.4297,
@@ -1773,7 +1773,7 @@
         "recently modified"
       ]
     },
-    "lib/inprod/generators/database.ts": {
+    "lib/orion/generators/database.ts": {
       "hash": "7234f5988ff3",
       "size": 7557,
       "mtime": 1769103954607.2432,
@@ -1798,7 +1798,7 @@
         "recently modified"
       ]
     },
-    "lib/inprod/generators/error-handling.ts": {
+    "lib/orion/generators/error-handling.ts": {
       "hash": "97d0e657970f",
       "size": 15276,
       "mtime": 1769103954607.6262,
@@ -1844,7 +1844,7 @@
         "recently modified"
       ]
     },
-    "tests/inprod/generators/cicd.test.ts": {
+    "tests/orion/generators/cicd.test.ts": {
       "hash": "3c5aa0eab908",
       "size": 11222,
       "mtime": 1769887758723.3025,
@@ -1854,8 +1854,8 @@
       ],
       "imports": [
         "vitest",
-        "@/lib/inprod/generators/cicd",
-        "@/lib/inprod/types"
+        "@/lib/orion/generators/cicd",
+        "@/lib/orion/types"
       ],
       "lineCount": 343,
       "relevanceScore": 100,

@@ -167,7 +167,7 @@ export async function POST(request: NextRequest) {
           const accessToken = session?.accessToken || process.env.GITHUB_TOKEN
           const fetchWithTimeout = (url: string, timeout = 15000) => {
             const headers: Record<string, string> = {
-              'User-Agent': 'InProd-AI-Security-Scanner',
+              'User-Agent': 'Orion-Security-Scanner',
               'Accept': 'application/vnd.github.v3+json'
             }
             // Add auth header for API access
