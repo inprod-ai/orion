@@ -3,8 +3,8 @@
 // =============================================================================
 
 import { describe, it, expect } from 'vitest'
-import { generateCICD } from '@/lib/inprod/generators/cicd'
-import type { RepoContext, Gap } from '@/lib/inprod/types'
+import { generateCICD } from '@/lib/orion/generators/cicd'
+import type { RepoContext, Gap } from '@/lib/orion/types'
 
 function createMockContext(overrides: Partial<RepoContext> = {}): RepoContext {
   return {

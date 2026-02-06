@@ -6,8 +6,8 @@ import {
   getAltitudeProgress,
   getAltitudeGradient,
   getStarsVisibility,
-} from '@/lib/inprod/altitude'
-import type { CategoryScore } from '@/lib/inprod/types'
+} from '@/lib/orion/altitude'
+import type { CategoryScore } from '@/lib/orion/types'
 
 // Helper to create category scores for testing
 function createCategoryScore(

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { verifyCompilation } from '@/lib/inprod/verifiers/compile'
-import type { RepoFile, TechStack } from '@/lib/inprod/types'
+import { verifyCompilation } from '@/lib/orion/verifiers/compile'
+import type { RepoFile, TechStack } from '@/lib/orion/types'
 
 // Mock E2B
 vi.mock('e2b', () => ({

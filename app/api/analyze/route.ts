@@ -5,9 +5,9 @@ import type { AnalysisResult } from '@/types/analysis'
 import { getSession } from '@/lib/github-auth'
 import { prisma } from '@/lib/prisma'
 import { parseGitHubUrl, fetchRepoFiles } from '@/lib/github'
-import { verifyCompilation } from '@/lib/inprod/verifiers/compile'
-import { detectTechStack } from '@/lib/inprod/stack-detector'
-import type { CompileResult } from '@/lib/inprod/verifiers/types'
+import { verifyCompilation } from '@/lib/orion/verifiers/compile'
+import { detectTechStack } from '@/lib/orion/stack-detector'
+import type { CompileResult } from '@/lib/orion/verifiers/types'
 
 // Verification levels: static (default), compile, test, mutation, load, full
 type VerificationLevel = 'static' | 'compile' | 'test' | 'mutation' | 'load' | 'full'

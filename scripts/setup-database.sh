@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "Setting up database for inprod.ai..."
+echo "Setting up database for Orion..."
 
 # Check if .env file exists
 if [ ! -f .env ]; then

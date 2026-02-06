@@ -11,7 +11,7 @@ import {
   getOptimalAlgorithm,
   isTightBound,
   formatCitation,
-} from '@/lib/inprod/efficiency/bounds-database'
+} from '@/lib/orion/efficiency/bounds-database'
 
 describe('BOUNDS_DATABASE', () => {
   it('should contain exactly 10 problem classes', () => {

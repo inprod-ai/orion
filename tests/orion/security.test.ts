@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { analyzeSecurity } from '@/lib/inprod/analyzers/security'
-import type { RepoContext, RepoFile, TechStack } from '@/lib/inprod/types'
+import { analyzeSecurity } from '@/lib/orion/analyzers/security'
+import type { RepoContext, RepoFile, TechStack } from '@/lib/orion/types'
 
 // Helper to create a minimal context
 function createContext(

@@ -4,18 +4,18 @@
 // Tests for all category analyzers
 
 import { describe, it, expect, beforeEach } from 'vitest'
-import { RepoFile, RepoContext, TechStack } from '@/lib/inprod/types'
-import { analyzeFrontend } from '@/lib/inprod/analyzers/frontend'
-import { analyzeBackend } from '@/lib/inprod/analyzers/backend'
-import { analyzeDatabase } from '@/lib/inprod/analyzers/database'
-import { analyzeAuthentication } from '@/lib/inprod/analyzers/authentication'
-import { analyzeApiIntegrations } from '@/lib/inprod/analyzers/api-integrations'
-import { analyzeStateManagement } from '@/lib/inprod/analyzers/state-management'
-import { analyzeDesignUx } from '@/lib/inprod/analyzers/design-ux'
-import { analyzeTesting } from '@/lib/inprod/analyzers/testing'
-import { analyzeErrorHandling } from '@/lib/inprod/analyzers/error-handling'
-import { analyzeVersionControl } from '@/lib/inprod/analyzers/version-control'
-import { analyzeDeployment } from '@/lib/inprod/analyzers/deployment'
+import { RepoFile, RepoContext, TechStack } from '@/lib/orion/types'
+import { analyzeFrontend } from '@/lib/orion/analyzers/frontend'
+import { analyzeBackend } from '@/lib/orion/analyzers/backend'
+import { analyzeDatabase } from '@/lib/orion/analyzers/database'
+import { analyzeAuthentication } from '@/lib/orion/analyzers/authentication'
+import { analyzeApiIntegrations } from '@/lib/orion/analyzers/api-integrations'
+import { analyzeStateManagement } from '@/lib/orion/analyzers/state-management'
+import { analyzeDesignUx } from '@/lib/orion/analyzers/design-ux'
+import { analyzeTesting } from '@/lib/orion/analyzers/testing'
+import { analyzeErrorHandling } from '@/lib/orion/analyzers/error-handling'
+import { analyzeVersionControl } from '@/lib/orion/analyzers/version-control'
+import { analyzeDeployment } from '@/lib/orion/analyzers/deployment'
 
 // =============================================================================
 // TEST HELPERS

@@ -3,8 +3,8 @@
  */
 
 import Anthropic from '@anthropic-ai/sdk'
-import { analyzeCompleteness } from '../lib/inprod/analyzer'
-import { RepoFile } from '../lib/inprod/types'
+import { analyzeCompleteness } from '../lib/orion/analyzer'
+import { RepoFile } from '../lib/orion/types'
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -143,9 +143,9 @@ Return JSON:
 }
 
 async function main() {
-  const repoUrl = 'https://github.com/inprod-ai/inprod'
+  const repoUrl = 'https://github.com/inprod-ai/orion'
   const owner = 'inprod-ai'
-  const repo = 'inprod'
+  const repo = 'orion'
 
   console.log('📥 Fetching repository files...')
   const files = await fetchRepoFiles(owner, repo)

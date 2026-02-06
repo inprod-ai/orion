@@ -8,8 +8,8 @@ import {
   detectCodePatterns,
   heuristicClassify,
   getClassLabel,
-} from '@/lib/inprod/efficiency/classifier'
-import type { CodePatterns } from '@/lib/inprod/efficiency/types'
+} from '@/lib/orion/efficiency/classifier'
+import type { CodePatterns } from '@/lib/orion/efficiency/types'
 
 describe('detectCodePatterns', () => {
   it('should detect comparison patterns', () => {

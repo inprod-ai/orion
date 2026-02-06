@@ -2,13 +2,13 @@
 // =============================================================================
 // ANALYZE LOCAL REPOSITORY
 // =============================================================================
-// Runs inprod analysis on the local codebase
+// Runs Orion analysis on the local codebase
 
 import * as fs from 'fs'
 import * as path from 'path'
-import { analyzeRepository } from '../lib/inprod/analyzer'
-import { detectTechStack } from '../lib/inprod/stack-detector'
-import type { RepoContext } from '../lib/inprod/types'
+import { analyzeRepository } from '../lib/orion/analyzer'
+import { detectTechStack } from '../lib/orion/stack-detector'
+import type { RepoContext } from '../lib/orion/types'
 
 const REPO_PATH = process.cwd()
 

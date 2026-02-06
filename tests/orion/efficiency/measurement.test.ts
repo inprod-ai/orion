@@ -9,8 +9,8 @@ import {
   measureFunction,
   numericComparator,
   calculateStats,
-} from '@/lib/inprod/efficiency/measurement'
-import type { OperationCounts, Measurement } from '@/lib/inprod/efficiency/types'
+} from '@/lib/orion/efficiency/measurement'
+import type { OperationCounts, Measurement } from '@/lib/orion/efficiency/types'
 
 function createCounts(overrides: Partial<OperationCounts> = {}): OperationCounts {
   return {

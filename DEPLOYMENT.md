@@ -1,4 +1,4 @@
-# Deployment Checklist for inprod.ai
+# Deployment Checklist for orion.archi
 
 ## Prerequisites
 
@@ -16,12 +16,12 @@ Create these in Vercel dashboard:
 - [ ] `ANTHROPIC_API_KEY` - Claude API key
 - [ ] `GITHUB_CLIENT_ID` - From GitHub OAuth app
 - [ ] `GITHUB_CLIENT_SECRET` - From GitHub OAuth app
-- [ ] `NEXTAUTH_URL` - Your production URL (https://inprod.ai)
+- [ ] `NEXTAUTH_URL` - Your production URL (https://orion.archi)
 - [ ] `NEXTAUTH_SECRET` - Generate with `openssl rand -base64 32`
 - [ ] `STRIPE_SECRET_KEY` - From Stripe dashboard
 - [ ] `STRIPE_WEBHOOK_SECRET` - From Stripe webhook endpoint
 - [ ] `STRIPE_PRICE_ID` - Your Pro plan price ID
-- [ ] `NEXT_PUBLIC_URL` - Your production URL (https://inprod.ai)
+- [ ] `NEXT_PUBLIC_URL` - Your production URL (https://orion.archi)
 
 ## Setup Steps
 
@@ -35,12 +35,12 @@ npx prisma db push --accept-data-loss
 ### 2. GitHub OAuth Setup
 1. Go to https://github.com/settings/developers
 2. Create new OAuth App
-3. Set Authorization callback URL: `https://inprod.ai/api/auth/callback/github`
+3. Set Authorization callback URL: `https://orion.archi/api/auth/callback/github`
 4. Copy Client ID and Client Secret to Vercel
 
 ### 3. Stripe Setup
 1. Create a product and price in Stripe dashboard
-2. Set up webhook endpoint: `https://inprod.ai/api/stripe/webhook`
+2. Set up webhook endpoint: `https://orion.archi/api/stripe/webhook`
 3. Select events:
    - `checkout.session.completed`
    - `customer.subscription.updated`

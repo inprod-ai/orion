@@ -610,7 +610,7 @@ export function stripHtml(html: string): string {
  */
 function generateExtractSecret(_ctx: RepoContext, gap: Gap): GeneratedFile[] {
   return [{
-    path: '.inprod/fixes/extract-secret-guide.md',
+    path: '.orion/fixes/extract-secret-guide.md',
     content: `# Fix: Extract Hardcoded Secret
 
 ## Issue

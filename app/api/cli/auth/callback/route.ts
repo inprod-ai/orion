@@ -148,7 +148,7 @@ function successPage(redirectUrl: string, userName: string) {
 <!DOCTYPE html>
 <html>
 <head>
-  <title>inprod - Authenticated</title>
+  <title>Orion - Authenticated</title>
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -191,7 +191,7 @@ function errorPage(message: string) {
 <!DOCTYPE html>
 <html>
 <head>
-  <title>inprod - Error</title>
+  <title>Orion - Error</title>
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;

@@ -3,13 +3,13 @@
 // =============================================================================
 
 import { NextRequest, NextResponse } from 'next/server'
-import { analyzeCompleteness, getInstantFixGaps } from '@/lib/inprod/analyzer'
+import { analyzeCompleteness, getInstantFixGaps } from '@/lib/orion/analyzer'
 import { fetchRepoFiles } from '@/lib/github'
-import { RepoFile, Gap, Category, GeneratedFile } from '@/lib/inprod/types'
-import { generateSecurityFixes } from '@/lib/inprod/generators/security'
-import { generateTests } from '@/lib/inprod/generators/testing'
-import { generateCICD } from '@/lib/inprod/generators/cicd'
-import { generateReadme } from '@/lib/inprod/generators/readme'
+import { RepoFile, Gap, Category, GeneratedFile } from '@/lib/orion/types'
+import { generateSecurityFixes } from '@/lib/orion/generators/security'
+import { generateTests } from '@/lib/orion/generators/testing'
+import { generateCICD } from '@/lib/orion/generators/cicd'
+import { generateReadme } from '@/lib/orion/generators/readme'
 
 interface GenerateRequest {
   repoUrl: string

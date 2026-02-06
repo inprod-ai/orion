@@ -10,8 +10,8 @@ import {
   formatEfficiency,
   formatOperations,
   generateEfficiencyBar,
-} from '@/lib/inprod/efficiency/calculator'
-import type { OperationCounts } from '@/lib/inprod/efficiency/types'
+} from '@/lib/orion/efficiency/calculator'
+import type { OperationCounts } from '@/lib/orion/efficiency/types'
 
 function createCounts(overrides: Partial<OperationCounts> = {}): OperationCounts {
   return {

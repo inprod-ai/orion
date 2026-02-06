@@ -4,7 +4,7 @@ echo "Add Stripe Webhook Secret to Vercel"
 echo "===================================="
 echo ""
 echo "1. Go to https://dashboard.stripe.com/webhooks"
-echo "2. Click on your webhook endpoint (https://inprod.ai/api/stripe/webhook)"
+echo "2. Click on your webhook endpoint (https://orion.archi/api/stripe/webhook)"
 echo "3. Copy the 'Signing secret' (starts with whsec_)"
 echo ""
 read -p "Paste your webhook signing secret here: " WEBHOOK_SECRET

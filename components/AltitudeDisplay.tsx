@@ -2,8 +2,8 @@
 
 import { motion, AnimatePresence } from 'framer-motion'
 import { useMemo } from 'react'
-import type { AltitudeResult } from '@/lib/inprod/types'
-import { formatUserCount, getAltitudeProgress, getAltitudeGradient, getStarsVisibility } from '@/lib/inprod/altitude'
+import type { AltitudeResult } from '@/lib/orion/types'
+import { formatUserCount, getAltitudeProgress, getAltitudeGradient, getStarsVisibility } from '@/lib/orion/altitude'
 
 interface AltitudeDisplayProps {
   altitude: AltitudeResult

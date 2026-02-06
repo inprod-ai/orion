@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🚀 Setting up Vercel environment variables for inprod.ai"
+echo "🚀 Setting up Vercel environment variables for orion.archi"
 echo ""
 echo "This script will help you add all required environment variables to Vercel."
 echo "Make sure you have the following ready:"
@@ -32,21 +32,21 @@ echo "vUqYcqzb5qVBCC5WQxHwy4JaOxdhZjSdUrAH/cSP8e8=" | vercel env add NEXTAUTH_SE
 
 # Add NEXTAUTH_URL
 echo "🌐 Adding NEXTAUTH_URL..."
-echo "https://inprod.ai" | vercel env add NEXTAUTH_URL production
-echo "https://inprod-preview.vercel.app" | vercel env add NEXTAUTH_URL preview
+echo "https://orion.archi" | vercel env add NEXTAUTH_URL production
+echo "https://orion-preview.vercel.app" | vercel env add NEXTAUTH_URL preview
 echo "http://localhost:3000" | vercel env add NEXTAUTH_URL development
 
 # Add NEXT_PUBLIC_URL
 echo "🔗 Adding NEXT_PUBLIC_URL..."
-echo "https://inprod.ai" | vercel env add NEXT_PUBLIC_URL production
-echo "https://inprod-preview.vercel.app" | vercel env add NEXT_PUBLIC_URL preview
+echo "https://orion.archi" | vercel env add NEXT_PUBLIC_URL production
+echo "https://orion-preview.vercel.app" | vercel env add NEXT_PUBLIC_URL preview
 echo "http://localhost:3000" | vercel env add NEXT_PUBLIC_URL development
 
 # GitHub OAuth (optional for now)
 echo ""
 echo "📱 For GitHub OAuth (optional now, can add later):"
 echo "1. Go to https://github.com/settings/developers"
-echo "2. Create new OAuth App with callback: https://inprod.ai/api/auth/callback/github"
+echo "2. Create new OAuth App with callback: https://orion.archi/api/auth/callback/github"
 echo ""
 echo "Add GitHub credentials? (y/n)"
 read add_github

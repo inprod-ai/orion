@@ -1,4 +1,4 @@
-# inprod.ai Codebase Index
+# orion.ai Codebase Index
 
 Production readiness analysis platform. Analyzes codebases, identifies gaps, generates fixes, and calculates **altitude** (max concurrent users your code can handle).
 
@@ -44,7 +44,7 @@ Production readiness analysis platform. Analyzes codebases, identifies gaps, gen
 ├──────────────────────────────────────┼───────────────────────────────────────┤
 │                                      ▼                                        │
 │  ┌─────────────────────────────────────────────────────────────────────┐     │
-│  │                     lib/inprod/analyzer.ts                          │     │
+│  │                     lib/orion/analyzer.ts                          │     │
 │  │  analyzeRepository() ──► CategoryScore[] ──► calculateAltitude()    │     │
 │  └─────────────────────────────────────────────────────────────────────┘     │
 │         │                                              │                      │
@@ -71,7 +71,7 @@ Production readiness analysis platform. Analyzes codebases, identifies gaps, gen
 │         │                                                                     │
 │         ▼                                                                     │
 │  ┌─────────────────────────────────────────────────────────────────────┐     │
-│  │                     lib/inprod/altitude.ts                          │     │
+│  │                     lib/orion/altitude.ts                          │     │
 │  │  Score ──► CATEGORY_USER_LIMITS ──► Bottleneck ──► AltitudeZone    │     │
 │  └─────────────────────────────────────────────────────────────────────┘     │
 │                                                                               │
@@ -107,7 +107,7 @@ User clicks "Analyze"
     ├── Fetch repo files from GitHub API
     │
     ▼
-lib/inprod/analyzer.ts::analyzeCompleteness()
+lib/orion/analyzer.ts::analyzeCompleteness()
     │
     ├── detectTechStack(files) → TechStack
     ├── Build RepoContext { files, techStack, packageJson }
@@ -394,7 +394,7 @@ app/
 └── layout.tsx             # Root layout
 
 lib/
-├── inprod/                # Core analysis engine
+├── orion/                # Core analysis engine
 │   ├── analyzer.ts        # Main orchestrator
 │   ├── altitude.ts        # User capacity calculation
 │   ├── stack-detector.ts  # Tech stack detection
@@ -409,6 +409,6 @@ lib/
 └── crypto.ts              # Encryption utilities
 
 components/                 # React components
-tests/inprod/              # Test suite
+tests/orion/              # Test suite
 prisma/schema.prisma       # Database schema
 ```

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { detectTechStack } from '@/lib/inprod/stack-detector'
-import { RepoFile } from '@/lib/inprod/types'
+import { detectTechStack } from '@/lib/orion/stack-detector'
+import { RepoFile } from '@/lib/orion/types'
 
 describe('Stack Detector', () => {
   it('should detect Next.js project', () => {

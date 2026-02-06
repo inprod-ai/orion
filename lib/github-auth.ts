@@ -117,7 +117,7 @@ export async function getGitHubUser(accessToken: string): Promise<GitHubUser> {
 // SESSION MANAGEMENT
 // =============================================================================
 
-const SESSION_COOKIE_NAME = 'inprod_session'
+const SESSION_COOKIE_NAME = 'orion_session'
 const STATE_COOKIE_NAME = 'oauth_state'
 const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 30 // 30 days
 

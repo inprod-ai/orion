@@ -3,9 +3,9 @@
 // =============================================================================
 
 import { NextRequest, NextResponse } from 'next/server'
-import { analyzeCompleteness, generateCompletionPlan, formatAnalysisSummary } from '@/lib/inprod/analyzer'
+import { analyzeCompleteness, generateCompletionPlan, formatAnalysisSummary } from '@/lib/orion/analyzer'
 import { fetchRepoFiles } from '@/lib/github'
-import { RepoFile } from '@/lib/inprod/types'
+import { RepoFile } from '@/lib/orion/types'
 
 export async function POST(req: NextRequest) {
   try {

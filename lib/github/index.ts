@@ -4,7 +4,7 @@
 // Mirrors slopometer's robust GitHub integration.
 // =============================================================================
 
-import { RepoFile } from '@/lib/inprod/types'
+import { RepoFile } from '@/lib/orion/types'
 
 // =============================================================================
 // LIMITS (Cost Control)

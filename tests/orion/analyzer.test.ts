@@ -6,9 +6,9 @@ import {
   getInstantFixGaps,
   generateCompletionPlan,
   getAltitudeSummary,
-} from '@/lib/inprod/analyzer'
-import { detectTechStack } from '@/lib/inprod/stack-detector'
-import type { RepoFile, RepoContext } from '@/lib/inprod/types'
+} from '@/lib/orion/analyzer'
+import { detectTechStack } from '@/lib/orion/stack-detector'
+import type { RepoFile, RepoContext } from '@/lib/orion/types'
 
 // Test fixtures
 function createPackageJson(overrides: Record<string, unknown> = {}): string {

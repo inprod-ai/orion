@@ -9,9 +9,9 @@ import {
   getCasesByClass,
   getCasesByDifficulty,
   getBenchmarkStats,
-} from '@/lib/inprod/efficiency/classification-benchmark'
+} from '@/lib/orion/efficiency/classification-benchmark'
 
-import type { ProblemClass, BenchmarkCase } from '@/lib/inprod/efficiency/types'
+import type { ProblemClass, BenchmarkCase } from '@/lib/orion/efficiency/types'
 
 describe('CLASSIFICATION_BENCHMARK', () => {
   it('should contain exactly 100 benchmark cases', () => {

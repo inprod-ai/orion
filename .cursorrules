@@ -1,4 +1,4 @@
-# inprod.ai Cursor Rules
+# Orion Cursor Rules
 
 ## Project Overview
 Production readiness analysis platform built with Next.js 16, TypeScript, Prisma, and custom GitHub OAuth.
@@ -14,7 +14,7 @@ Production readiness analysis platform built with Next.js 16, TypeScript, Prisma
 ### Type Definitions
 - Define interfaces for all API request/response shapes.
 - Colocate types with their usage when specific to one file.
-- Share common types in `types/` or `lib/inprod/types.ts`.
+- Share common types in `types/` or `lib/orion/types.ts`.
 - Use `type` for unions/intersections, `interface` for object shapes.
 
 ## File Naming Conventions
@@ -43,7 +43,7 @@ lib/
 types/
   analysis.ts
 tests/
-  inprod/
+  orion/
     analyzer.test.ts
 ```
 
