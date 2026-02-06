@@ -109,7 +109,7 @@ function HeroSection({ isSignedIn, onSelectRepo, onSubmit, repoUrl, setRepoUrl, 
           transition={{ delay: 0.5 }}
           className="text-lg text-gray-400 max-w-xl mx-auto mb-10 leading-relaxed"
         >
-          Orion scans 12 categories of production readiness and tells you your <span className="text-purple-300">altitude</span> -- the max concurrent users your code can handle.
+          Paste a repo. We tell you exactly <span className="text-purple-300">how many users</span> your code can handle before it breaks.
         </motion.p>
 
         {/* CTA area */}
