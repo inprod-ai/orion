@@ -35,7 +35,7 @@ npx prisma db push --accept-data-loss
 ### 2. GitHub OAuth Setup
 1. Go to https://github.com/settings/developers
 2. Create new OAuth App
-3. Set Authorization callback URL: `https://orion.archi/api/auth/callback/github`
+3. Set Authorization callback URL: `https://orion.archi/api/auth/callback`
 4. Copy Client ID and Client Secret to Vercel
 
 ### 3. Stripe Setup

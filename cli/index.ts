@@ -1,9 +1,9 @@
 // =============================================================================
 // ORION CLI - Production Readiness Analysis
 // =============================================================================
-// Usage: npx orion [path] [options]
-//        orion .
-//        orion /path/to/project
+// Usage: npx orion-archi [path] [options]
+//        npx orion-archi .
+//        npx orion-archi /path/to/project
 
 import * as fs from 'fs'
 import * as path from 'path'
@@ -369,9 +369,9 @@ if (args.includes('--help') || args.includes('-h')) {
   ORION - Production Readiness Analysis
   
   Usage:
-    npx orion [path]     Analyze a project
-    orion .              Analyze current directory
-    orion /path/to/repo  Analyze specific path
+    npx orion-archi [path]     Analyze a project
+    npx orion-archi .          Analyze current directory
+    npx orion-archi /path/to   Analyze specific path
   
   Options:
     --help, -h           Show this help

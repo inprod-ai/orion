@@ -114,7 +114,7 @@ Focus on:
 Be specific with file paths and line numbers. Confidence should reflect certainty.`
 
     const response = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-sonnet-4-20250514',
       max_tokens: 4000,
       temperature: 0.2,
       messages: [{ role: 'user', content: prompt }]
