@@ -89,7 +89,7 @@ function HeroSection({ isSignedIn, onSelectRepo, onSubmit, repoUrl, setRepoUrl, 
           style={{ background: 'rgba(139,92,246,0.1)', border: '1px solid rgba(139,92,246,0.25)', color: 'rgba(200,180,255,0.9)' }}
         >
           <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-          Production readiness for any codebase
+          We compile your code, run your tests, scan for vulnerabilities
         </motion.div>
 
         <motion.h1
@@ -156,9 +156,9 @@ function HeroSection({ isSignedIn, onSelectRepo, onSubmit, repoUrl, setRepoUrl, 
 
 function HowItWorksSection() {
   const steps = [
-    { num: '1', title: 'Paste a repo', desc: 'Enter any GitHub URL or sign in to pick from your repositories. Public and private repos supported.' },
-    { num: '2', title: 'Get your altitude', desc: 'Orion scans 12 categories -- security, database, testing, deployment, and more. Each one maps to a rocket component.' },
-    { num: '3', title: 'Fix and climb', desc: 'See your bottleneck, get specific fixes with estimated impact. Each fix raises your altitude -- the max users your code can handle.' },
+    { num: '1', title: 'Paste a repo', desc: 'Enter any GitHub URL. We fetch every file and read the actual code -- not just metadata.' },
+    { num: '2', title: 'We verify it', desc: 'We compile your code in a sandbox, run Semgrep security analysis with OWASP rules, estimate capacity from your architecture, and optionally run your tests.' },
+    { num: '3', title: 'Get proof', desc: 'Specific findings with CWE references and line numbers. Actual capacity estimate citing your config files. Build verification with real error output.' },
   ]
 
   return (
@@ -195,17 +195,17 @@ function HowItWorksSection() {
 
 function FeaturesSection() {
   const features = [
-    { icon: Shield, title: 'Heat Shield', desc: 'Auth, encryption, headers, secrets. If the shield fails, you never reach orbit.', color: '#8b5cf6' },
-    { icon: Rocket, title: 'Engines', desc: 'Backend architecture, request handling, rate limiting, horizontal scaling.', color: '#3b82f6' },
-    { icon: Sparkles, title: 'Pre-flight', desc: 'Tests, error handling, code quality. The checks that tell you if it is safe to launch.', color: '#06b6d4' },
+    { icon: Shield, title: 'Security proof', desc: 'Semgrep AST analysis with OWASP rules. Real vulnerabilities with CWE references, file paths, and line numbers. Not string matching.', color: '#8b5cf6' },
+    { icon: Rocket, title: 'Capacity estimation', desc: 'Claude reads your actual database config, server setup, caching layer, and estimates max concurrent users from known benchmarks.', color: '#3b82f6' },
+    { icon: Sparkles, title: 'Build verification', desc: 'Your code gets compiled in an E2B sandbox. If it builds, we prove it. If it fails, you see the exact errors.', color: '#06b6d4' },
   ]
 
   return (
     <section id="features" className="py-24 px-6">
       <div className="max-w-5xl mx-auto">
         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Every part of the rocket</h2>
-          <p className="text-gray-400 max-w-lg mx-auto">Your code is a rocket. Each category is a component. If one fails, you can&apos;t reach full altitude.</p>
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Proof, not guesses</h2>
+          <p className="text-gray-400 max-w-lg mx-auto">We read your code, compile it, scan it, and estimate capacity. Every claim is backed by evidence.</p>
         </motion.div>
 
         <div className="grid md:grid-cols-3 gap-6">
@@ -400,7 +400,7 @@ function CtaSection() {
       <div className="max-w-3xl mx-auto text-center">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Start climbing</h2>
-          <p className="text-gray-400 mb-8 max-w-md mx-auto">Free for public repos. 3 scans per month. No credit card required.</p>
+          <p className="text-gray-400 mb-8 max-w-md mx-auto">Free for public repos. 3 scans per month. Sandbox verification included.</p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <a href="/api/auth/login" className="flex items-center gap-2 px-6 py-3 rounded-lg font-semibold text-sm transition-all" style={{ background: 'linear-gradient(135deg, #7c3aed, #3b82f6)', boxShadow: '0 0 20px rgba(124,58,237,0.3)' }}>

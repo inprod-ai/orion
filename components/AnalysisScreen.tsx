@@ -25,6 +25,16 @@ interface UserData {
   monthlyScans: number
 }
 
+interface SemgrepFinding {
+  ruleId: string
+  path: string
+  line: number
+  message: string
+  severity: 'ERROR' | 'WARNING' | 'INFO'
+  category: string
+  metadata?: { cwe?: string[]; owasp?: string[] }
+}
+
 interface VerificationResult {
   level: string
   compile?: {
@@ -34,6 +44,51 @@ interface VerificationResult {
     errors: Array<{ file: string; line?: number; message: string; severity: string }>
     duration: number
   }
+  semgrep?: {
+    findingCount: number
+    findings: SemgrepFinding[]
+    rulesRun: number
+    duration: number
+  }
+  tests?: {
+    success: boolean
+    total: number
+    passed: number
+    failed: number
+    skipped: number
+    coverage?: { lines: number; branches: number; functions: number }
+    failures: Array<{ name: string; file: string; error: string }>
+    duration: number
+  }
+  mutation?: {
+    score: number
+    totalMutants: number
+    killed: number
+    survived: number
+    weakTests: Array<{ file: string; survivingMutants: number }>
+    duration: number
+  }
+  load?: {
+    maxConcurrentUsers: number
+    metrics: { requestsTotal: number; requestsFailed: number; latencyP50: number; latencyP95: number; latencyP99: number; throughput: number }
+    bottleneck: { component: string; errorType: string }
+    duration: number
+  }
+}
+
+interface CapacityEstimate {
+  maxConcurrentUsers: number
+  confidence: string
+  bottleneck: { component: string; reason: string; limit: number }
+  factors: Array<{ name: string; value: string; impact: string; estimatedLimit: number; explanation: string }>
+  methodology: string
+}
+
+interface AltitudeData {
+  maxUsers: number
+  zone: { zone: string; displayName: string }
+  bottleneck: { category: string; reason: string }
+  formattedMaxUsers: string
 }
 
 export default function AnalysisScreen({ repoUrl }: Props) {
@@ -49,6 +104,8 @@ export default function AnalysisScreen({ repoUrl }: Props) {
   const [scanId, setScanId] = useState<string | null>(null)
   const [exporting, setExporting] = useState(false)
   const [verification, setVerification] = useState<VerificationResult | null>(null)
+  const [capacity, setCapacity] = useState<CapacityEstimate | null>(null)
+  const [altitude, setAltitude] = useState<AltitudeData | null>(null)
 
   useEffect(() => {
     // Fetch user on mount
@@ -104,9 +161,14 @@ export default function AnalysisScreen({ repoUrl }: Props) {
               if (data.scanId) {
                 setScanId(data.scanId)
               }
-              // Save verification result if returned
               if (data.verification) {
                 setVerification(data.verification)
+              }
+              if (data.capacity) {
+                setCapacity(data.capacity)
+              }
+              if (data.altitude) {
+                setAltitude(data.altitude)
               }
             }
           } catch (e) {
@@ -367,6 +429,173 @@ export default function AnalysisScreen({ repoUrl }: Props) {
                   </button>
                 )}
               </div>
+
+              {/* Altitude + Capacity Section */}
+              {(altitude || capacity) && (
+                <div className="mb-12">
+                  <div className="cosmic-card rounded-xl p-8">
+                    <div className="grid md:grid-cols-2 gap-8">
+                      {/* Altitude */}
+                      {altitude && (
+                        <div>
+                          <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Max concurrent users</h3>
+                          <div className="flex items-baseline gap-3 mb-2">
+                            <span className="text-5xl font-bold text-white">{altitude.formattedMaxUsers}</span>
+                            <span className="text-lg text-purple-300">{altitude.zone.displayName}</span>
+                          </div>
+                          <p className="text-sm text-gray-400">
+                            Bottleneck: <span className="text-orange-300">{altitude.bottleneck.category}</span> -- {altitude.bottleneck.reason}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Capacity factors */}
+                      {capacity && capacity.factors.length > 0 && (
+                        <div>
+                          <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Architecture factors</h3>
+                          <div className="space-y-2">
+                            {capacity.factors.slice(0, 5).map((f, i) => (
+                              <div key={i} className="flex items-center justify-between text-sm">
+                                <div className="flex items-center gap-2">
+                                  <span className={cn(
+                                    "w-2 h-2 rounded-full",
+                                    f.impact === 'positive' ? 'bg-green-400' : f.impact === 'negative' ? 'bg-red-400' : 'bg-gray-400'
+                                  )} />
+                                  <span className="text-gray-300">{f.name}</span>
+                                </div>
+                                <span className="text-gray-500 font-mono text-xs">{f.estimatedLimit > 0 ? `~${f.estimatedLimit.toLocaleString()} users` : ''}</span>
+                              </div>
+                            ))}
+                          </div>
+                          {capacity.methodology && (
+                            <p className="text-xs text-gray-500 mt-3 italic">{capacity.methodology}</p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Verification Proof Section */}
+              {verification && (verification.compile || verification.semgrep || verification.tests || verification.mutation || verification.load) && (
+                <div className="mb-12">
+                  <h3 className="text-2xl font-bold mb-6">Verification proof</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {/* Compile */}
+                    {verification.compile && (
+                      <div className={cn("cosmic-card rounded-xl p-5", verification.compile.success ? "border-green-500/20" : "border-red-500/20")}>
+                        <div className="flex items-center gap-2 mb-2">
+                          <Hammer className={cn("w-4 h-4", verification.compile.success ? "text-green-400" : "text-red-400")} />
+                          <span className="text-sm font-semibold text-white">Build</span>
+                        </div>
+                        <p className={cn("text-2xl font-bold", verification.compile.success ? "text-green-400" : "text-red-400")}>
+                          {verification.compile.success ? "PASSES" : `${verification.compile.errorCount} errors`}
+                        </p>
+                        <p className="text-xs text-gray-500 mt-1">{(verification.compile.duration / 1000).toFixed(1)}s in sandbox</p>
+                      </div>
+                    )}
+
+                    {/* Semgrep */}
+                    {verification.semgrep && (
+                      <div className="cosmic-card rounded-xl p-5">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Shield className="w-4 h-4 text-purple-400" />
+                          <span className="text-sm font-semibold text-white">Security scan</span>
+                        </div>
+                        <p className={cn("text-2xl font-bold", verification.semgrep.findingCount === 0 ? "text-green-400" : "text-orange-400")}>
+                          {verification.semgrep.findingCount} {verification.semgrep.findingCount === 1 ? 'finding' : 'findings'}
+                        </p>
+                        <p className="text-xs text-gray-500 mt-1">Semgrep AST analysis, {(verification.semgrep.duration / 1000).toFixed(1)}s</p>
+                      </div>
+                    )}
+
+                    {/* Tests */}
+                    {verification.tests && (
+                      <div className={cn("cosmic-card rounded-xl p-5", verification.tests.success ? "border-green-500/20" : "border-red-500/20")}>
+                        <div className="flex items-center gap-2 mb-2">
+                          <CheckCircle className={cn("w-4 h-4", verification.tests.success ? "text-green-400" : "text-red-400")} />
+                          <span className="text-sm font-semibold text-white">Tests</span>
+                        </div>
+                        <p className={cn("text-2xl font-bold", verification.tests.success ? "text-green-400" : "text-red-400")}>
+                          {verification.tests.passed}/{verification.tests.total} pass
+                        </p>
+                        {verification.tests.coverage && (
+                          <p className="text-xs text-gray-400 mt-1">{verification.tests.coverage.lines.toFixed(0)}% line coverage</p>
+                        )}
+                        <p className="text-xs text-gray-500">{(verification.tests.duration / 1000).toFixed(1)}s in sandbox</p>
+                      </div>
+                    )}
+
+                    {/* Mutation */}
+                    {verification.mutation && (
+                      <div className="cosmic-card rounded-xl p-5">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Zap className="w-4 h-4 text-yellow-400" />
+                          <span className="text-sm font-semibold text-white">Mutation score</span>
+                        </div>
+                        <p className={cn("text-2xl font-bold", verification.mutation.score >= 80 ? "text-green-400" : verification.mutation.score >= 60 ? "text-yellow-400" : "text-red-400")}>
+                          {verification.mutation.score}%
+                        </p>
+                        <p className="text-xs text-gray-400 mt-1">{verification.mutation.killed} killed, {verification.mutation.survived} survived</p>
+                        <p className="text-xs text-gray-500">{(verification.mutation.duration / 1000).toFixed(1)}s in sandbox</p>
+                      </div>
+                    )}
+
+                    {/* Load */}
+                    {verification.load && (
+                      <div className="cosmic-card rounded-xl p-5">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Rocket className="w-4 h-4 text-blue-400" />
+                          <span className="text-sm font-semibold text-white">Load test</span>
+                        </div>
+                        <p className="text-2xl font-bold text-white">
+                          {verification.load.maxConcurrentUsers} users
+                        </p>
+                        <p className="text-xs text-gray-400 mt-1">{verification.load.metrics.throughput.toFixed(0)} req/s, p95 {verification.load.metrics.latencyP95.toFixed(0)}ms</p>
+                        <p className="text-xs text-gray-500">{(verification.load.duration / 1000).toFixed(1)}s</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Semgrep findings detail */}
+                  {verification.semgrep && verification.semgrep.findings.length > 0 && (
+                    <div className="mt-6">
+                      <h4 className="text-lg font-semibold mb-4 text-white">Security findings (Semgrep)</h4>
+                      <div className="space-y-2">
+                        {verification.semgrep.findings.slice(0, 10).map((f, i) => (
+                          <div key={i} className="cosmic-card rounded-lg p-4">
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <span className={cn(
+                                    "text-xs font-semibold px-2 py-0.5 rounded",
+                                    f.severity === 'ERROR' ? 'bg-red-500/20 text-red-400' :
+                                    f.severity === 'WARNING' ? 'bg-yellow-500/20 text-yellow-400' :
+                                    'bg-gray-500/20 text-gray-400'
+                                  )}>{f.severity}</span>
+                                  <span className="text-xs text-gray-500 font-mono">{f.path}:{f.line}</span>
+                                </div>
+                                <p className="text-sm text-gray-300 mt-1">{f.message.slice(0, 200)}{f.message.length > 200 ? '...' : ''}</p>
+                                {f.metadata?.cwe && f.metadata.cwe.length > 0 && (
+                                  <div className="flex gap-2 mt-2">
+                                    {f.metadata.cwe.slice(0, 2).map((cwe, j) => (
+                                      <span key={j} className="text-xs text-purple-400/70 font-mono">{cwe}</span>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                        {verification.semgrep.findings.length > 10 && (
+                          <p className="text-sm text-gray-500 text-center">+ {verification.semgrep.findings.length - 10} more findings</p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Top Findings */}
               {result.findings && result.findings.length > 0 && (
