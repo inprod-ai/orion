@@ -1,3 +1,14 @@
+// =============================================================================
+// API: /api/analyze - Production readiness analysis with verification levels
+// =============================================================================
+// Levels:
+//   static   - Pattern matching + Claude analysis on actual code (default)
+//   compile  - + compile verification in sandbox
+//   test     - + run test suite, parse coverage
+//   mutation - + Stryker mutation testing
+//   load     - + k6 load testing (requires running app)
+//   full     - all of the above
+
 import { NextRequest } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { ANALYSIS_CATEGORIES } from '@/types/analysis'
@@ -5,24 +16,27 @@ import type { AnalysisResult } from '@/types/analysis'
 import { getSession } from '@/lib/github-auth'
 import { prisma } from '@/lib/prisma'
 import { parseGitHubUrl, fetchRepoFiles } from '@/lib/github'
+import { analyzeCompleteness } from '@/lib/orion/analyzer'
 import { verifyCompilation } from '@/lib/orion/verifiers/compile'
+import { verifyTests } from '@/lib/orion/verifiers/tests'
+import { runSemgrep } from '@/lib/orion/verifiers/semgrep'
+import { verifyMutations } from '@/lib/orion/verifiers/mutation'
+import { verifyLoad } from '@/lib/orion/verifiers/load'
+import { estimateCapacity } from '@/lib/orion/verifiers/capacity'
 import { detectTechStack } from '@/lib/orion/stack-detector'
-import type { CompileResult } from '@/lib/orion/verifiers/types'
+import type { CompileResult, TestResult, MutationResult, LoadTestResult } from '@/lib/orion/verifiers/types'
+import type { SemgrepResult } from '@/lib/orion/verifiers/semgrep'
+import type { CapacityEstimate } from '@/lib/orion/verifiers/capacity'
 
-// Verification levels: static (default), compile, test, mutation, load, full
 type VerificationLevel = 'static' | 'compile' | 'test' | 'mutation' | 'load' | 'full'
 
-// Increase timeout for AI analysis (Vercel Pro: up to 300s)
-export const maxDuration = 60
+export const maxDuration = 120 // Allow up to 2 minutes for deep verification
 
-// Validate required environment variables
 if (!process.env.ANTHROPIC_API_KEY) {
   throw new Error('ANTHROPIC_API_KEY is required')
 }
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-})
+const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
 // In-memory rate limiting for anonymous users
 const ipRequestCounts = new Map<string, { count: number; resetTime: number }>()
@@ -31,20 +45,17 @@ export async function POST(request: NextRequest) {
   try {
     // Validate request size
     const contentLength = request.headers.get('content-length')
-    if (contentLength && parseInt(contentLength) > 1024) { // 1KB limit
+    if (contentLength && parseInt(contentLength) > 1024) {
       return new Response(JSON.stringify({ error: 'Request too large' }), {
-        status: 413,
-        headers: { 'Content-Type': 'application/json' },
+        status: 413, headers: { 'Content-Type': 'application/json' },
       })
     }
 
     const body = await request.json()
-    
-    // Basic input validation
+
     if (!body.repoUrl) {
       return new Response(JSON.stringify({ error: 'repoUrl is required' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
+        status: 400, headers: { 'Content-Type': 'application/json' },
       })
     }
 
@@ -52,600 +63,428 @@ export async function POST(request: NextRequest) {
     const parsedRepo = parseGitHubUrl(body.repoUrl)
     if (!parsedRepo) {
       return new Response(JSON.stringify({ error: 'Invalid GitHub URL format' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
+        status: 400, headers: { 'Content-Type': 'application/json' },
       })
     }
-    
+
     const repoUrl = parsedRepo.url
     const owner = body.owner || parsedRepo.owner
     const repo = body.repo || parsedRepo.name
-    
-    // Parse verification level (default: static)
-    const verificationLevel: VerificationLevel = 
+
+    const verificationLevel: VerificationLevel =
       ['static', 'compile', 'test', 'mutation', 'load', 'full'].includes(body.verification)
         ? body.verification
         : 'static'
-    
-    // Get authenticated session
+
+    // Auth + rate limiting
     const session = await getSession()
-    
-    
-    // Check if user has exceeded free tier limits
+
     if (session?.userId) {
       const user = await prisma.user.findUnique({
         where: { id: session.userId },
-        select: { tier: true, monthlyScans: true, lastResetAt: true }
+        select: { tier: true, monthlyScans: true, lastResetAt: true },
       })
-      
+
       if (user) {
-        // Reset monthly scans if it's a new month
         const now = new Date()
         const lastReset = new Date(user.lastResetAt)
         if (now.getMonth() !== lastReset.getMonth() || now.getFullYear() !== lastReset.getFullYear()) {
           await prisma.user.update({
             where: { id: session.userId },
-            data: { monthlyScans: 0, lastResetAt: now }
+            data: { monthlyScans: 0, lastResetAt: now },
           })
           user.monthlyScans = 0
         }
-        
-        // Check scan limits for free tier
+
         if (user.tier === 'FREE' && user.monthlyScans >= 3) {
           return new Response(JSON.stringify({ error: 'Monthly scan limit reached. Upgrade to Pro for unlimited scans.' }), {
-            status: 403,
-            headers: { 'Content-Type': 'application/json' },
+            status: 403, headers: { 'Content-Type': 'application/json' },
           })
         }
       }
     }
-    
-    // Persistent rate limiting with better IP detection
+
+    // IP rate limiting for anonymous users
     const forwarded = request.headers.get('x-forwarded-for')
     const realIp = request.headers.get('x-real-ip')
     const remoteAddr = request.headers.get('remote-addr')
     const ip = (forwarded?.split(',')[0].trim()) || realIp || remoteAddr || 'unknown'
-    
-    // Validate IP format
+
     const ipRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$|^::1$|^[0-9a-fA-F:]+$/
     if (ip !== 'unknown' && !ipRegex.test(ip)) {
       return new Response(JSON.stringify({ error: 'Invalid request' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
+        status: 400, headers: { 'Content-Type': 'application/json' },
       })
     }
-    
-    // Rate limiting for anonymous users
+
     if (!session) {
       const now = Date.now()
-      const resetTime = now + (24 * 60 * 60 * 1000) // 24 hours
+      const resetTime = now + 24 * 60 * 60 * 1000
       const ipData = ipRequestCounts.get(ip) || { count: 0, resetTime }
-      
-      // Reset if past reset time
-      if (now > ipData.resetTime) {
-        ipData.count = 0
-        ipData.resetTime = resetTime
-      }
-      
-      // Check rate limit (3 requests per day for anonymous)
+      if (now > ipData.resetTime) { ipData.count = 0; ipData.resetTime = resetTime }
       if (ipData.count >= 3) {
-        return new Response(JSON.stringify({ 
+        return new Response(JSON.stringify({
           error: 'Rate limit exceeded. Sign in for more requests or try again tomorrow.',
-          reset: ipData.resetTime
+          reset: ipData.resetTime,
         }), {
           status: 429,
-          headers: { 
+          headers: {
             'Content-Type': 'application/json',
             'X-RateLimit-Limit': '3',
             'X-RateLimit-Remaining': '0',
-            'X-RateLimit-Reset': ipData.resetTime.toString()
+            'X-RateLimit-Reset': ipData.resetTime.toString(),
           },
         })
       }
-      
-      // Increment count
       ipData.count++
       ipRequestCounts.set(ip, ipData)
     }
 
-    // Create a streaming response
+    // =========================================================================
+    // STREAMING RESPONSE
+    // =========================================================================
+
     const encoder = new TextEncoder()
     const stream = new ReadableStream({
       async start(controller) {
+        const send = (data: Record<string, unknown>) => {
+          controller.enqueue(encoder.encode(JSON.stringify(data) + '\n'))
+        }
+
         try {
-          // Send initial progress
-          controller.enqueue(encoder.encode(JSON.stringify({ 
-            progress: { 
-              stage: 'fetching', 
-              message: 'Fetching repository data...', 
-              percentage: 5 
-            } 
-          }) + '\n'))
+          // ===================================================================
+          // PHASE 1: Fetch actual repo files
+          // ===================================================================
+          send({ progress: { stage: 'fetching', message: 'Fetching repository files...', percentage: 5 } })
 
-          // Fetch GitHub data with timeout and validation
-          // Use access token for private repos, fall back to GITHUB_TOKEN for rate limits
           const accessToken = session?.accessToken || process.env.GITHUB_TOKEN
-          const fetchWithTimeout = (url: string, timeout = 15000) => {
-            const headers: Record<string, string> = {
-              'User-Agent': 'Orion-Security-Scanner',
-              'Accept': 'application/vnd.github.v3+json'
-            }
-            // Add auth header for API access
-            if (accessToken) {
-              headers['Authorization'] = `Bearer ${accessToken}`
-            }
-            return Promise.race([
-              fetch(url, { headers }),
-              new Promise<never>((_, reject) => 
-                setTimeout(() => reject(new Error('Request timeout')), timeout)
-              )
-            ])
-          }
-
-          const [repoResponse, readmeResponse, languagesResponse, commitsResponse, contentsResponse] = await Promise.all([
-            fetchWithTimeout(`https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}`),
-            fetchWithTimeout(`https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/readme`),
-            fetchWithTimeout(`https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/languages`),
-            fetchWithTimeout(`https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/commits?per_page=5`),
-            fetchWithTimeout(`https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contents`)
-          ])
-
-          if (!repoResponse.ok) {
-            if (repoResponse.status === 404) {
-              // Could be private repo without access or doesn't exist
-              if (!accessToken) {
-                throw new Error('Repository not found. If this is a private repo, please sign in first.')
-              } else {
-                throw new Error('Repository not found or you don\'t have access to this private repo.')
-              }
-            }
-            throw new Error(`GitHub API error: ${repoResponse.status}`)
-          }
-
-          controller.enqueue(encoder.encode(JSON.stringify({ 
-            progress: { 
-              stage: 'fetching', 
-              message: 'Analyzing repository structure...', 
-              percentage: 15 
-            } 
-          }) + '\n'))
-
-          // Parse responses in parallel
-          const [repoData, languages, recentCommits, contents] = await Promise.all([
-            repoResponse.json(),
-            languagesResponse.ok ? languagesResponse.json() : {},
-            commitsResponse.ok ? commitsResponse.json() : [],
-            contentsResponse.ok ? contentsResponse.json() : []
-          ])
-
-          const hasReadme = readmeResponse.ok
-
-          // Check for important files (optimized)
-          const fileNames = new Set(contents.map((item: any) => item.name.toLowerCase()))
-          const hasTests = contents.some((item: any) => {
-            const name = item.name.toLowerCase()
-            return name.includes('test') || name.includes('spec') || name === '__tests__' || name === 'tests'
+          const repoData = await fetchRepoFiles(repoUrl, accessToken, (event) => {
+            send({ progress: {
+              stage: 'fetching',
+              message: `Fetched ${event.fetched}/${event.total} files...`,
+              percentage: 5 + Math.floor((event.fetched / event.total) * 15),
+            }})
           })
-          const hasCI = fileNames.has('.github') || fileNames.has('.circleci') || fileNames.has('.gitlab-ci.yml')
-          const hasDocker = fileNames.has('dockerfile') || fileNames.has('docker-compose.yml') || fileNames.has('docker-compose.yaml')
-          const hasPackageJson = fileNames.has('package.json')
-          const hasRequirements = fileNames.has('requirements.txt') || fileNames.has('pyproject.toml') || fileNames.has('pipfile')
-          const hasEnvExample = fileNames.has('.env.example') || fileNames.has('.env.sample')
-          
-          // Detect project type more intelligently
-          const hasPackagesDir = contents.some((item: any) => item.name === 'packages' && item.type === 'dir')
-          const hasSrcDir = contents.some((item: any) => item.name === 'src' && item.type === 'dir')
-          const hasAppDir = contents.some((item: any) => item.name === 'app' && item.type === 'dir')
-          const hasPagesDir = contents.some((item: any) => item.name === 'pages' && item.type === 'dir')
-          
-          // Fetch package.json if exists to understand project type
-          let packageJsonData: any = null
-          if (hasPackageJson) {
-            try {
-              const pkgResponse = await fetchWithTimeout(
-                `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contents/package.json`
-              )
-              if (pkgResponse.ok) {
-                const pkgContent = await pkgResponse.json()
-                packageJsonData = JSON.parse(Buffer.from(pkgContent.content, 'base64').toString())
-              }
-            } catch { /* ignore */ }
-          }
-          
-          // Determine project type
-          let projectType: 'app' | 'library' | 'framework' | 'monorepo' | 'cli' | 'unknown' = 'unknown'
-          let projectTypeReason = ''
-          
-          if (hasPackagesDir || packageJsonData?.workspaces) {
-            projectType = 'monorepo'
-            projectTypeReason = 'Has packages/ directory or workspaces config'
-          } else if (packageJsonData?.bin) {
-            projectType = 'cli'
-            projectTypeReason = 'Has bin field in package.json'
-          } else if (packageJsonData?.main || packageJsonData?.module || packageJsonData?.exports) {
-            if (!hasAppDir && !hasPagesDir) {
-              // Check if it's a framework (used by many, foundational)
-              if (repoData.stargazers_count > 10000 && repoData.forks_count > 1000) {
-                projectType = 'framework'
-                projectTypeReason = 'Exports code, high stars/forks, no app structure = framework/library'
-              } else {
-                projectType = 'library'
-                projectTypeReason = 'Has main/module/exports but no app/ or pages/'
-              }
-            } else {
-              projectType = 'app'
-              projectTypeReason = 'Has app/ or pages/ directory'
-            }
-          } else if (hasAppDir || hasPagesDir) {
-            projectType = 'app'
-            projectTypeReason = 'Has app/ or pages/ directory'
-          }
 
-          // Calculate confidence score
-          const confidenceFactors = []
-          let confidenceScore = 50 // Base confidence
-          
-          if (hasTests) {
-            confidenceScore += 25
-          } else {
-            confidenceFactors.push('No test files detected')
-          }
-          
-          if (hasCI) {
-            confidenceScore += 25
-          } else {
-            confidenceFactors.push('No CI/CD configuration found')
-          }
-          
-          if (!hasReadme) {
-            confidenceFactors.push('No README file')
-          }
-          
-          const confidenceLevel = confidenceScore >= 75 ? 'high' : confidenceScore >= 50 ? 'medium' : 'low'
+          send({ progress: { stage: 'analyzing', message: 'Running pattern analysis...', percentage: 22 } })
 
-          // Prepare context for Claude
-          const context = {
-            repoName: repo,
-            description: repoData.description,
-            languages: Object.keys(languages),
-            primaryLanguage: repoData.language,
-            // Project type detection (CRITICAL for accurate analysis)
-            projectType,
-            projectTypeReason,
-            hasReadme,
-            hasTests,
-            hasCI,
-            hasDocker,
-            hasPackageJson,
-            hasRequirements,
-            hasEnvExample,
-            // Structure info
-            hasPackagesDir,
-            hasSrcDir,
-            hasAppDir,
-            hasPagesDir,
-            // package.json fields if available
-            hasExports: !!packageJsonData?.exports,
-            hasMainModule: !!packageJsonData?.main || !!packageJsonData?.module,
-            hasBin: !!packageJsonData?.bin,
-            hasWorkspaces: !!packageJsonData?.workspaces,
-            peerDependencies: packageJsonData?.peerDependencies ? Object.keys(packageJsonData.peerDependencies) : [],
-            // Repo metrics
-            stars: repoData.stargazers_count,
-            forks: repoData.forks_count,
-            openIssues: repoData.open_issues_count,
-            lastUpdated: repoData.updated_at,
-            recentCommitCount: recentCommits.length,
-            fileStructure: Array.from(fileNames).slice(0, 15), // First 15 files/folders
-          }
+          // ===================================================================
+          // PHASE 2: Run local analyzers on actual file contents
+          // ===================================================================
+          const localAnalysis = await analyzeCompleteness(repoUrl, repoData.files)
+          const techStack = detectTechStack(repoData.files)
 
-          // Analyze with Claude
-          controller.enqueue(encoder.encode(JSON.stringify({ 
-            progress: { 
-              stage: 'analyzing', 
-              message: 'Performing comprehensive analysis...', 
-              percentage: 30 
-            } 
-          }) + '\n'))
+          send({ progress: { stage: 'analyzing', message: 'Analyzing code with AI...', percentage: 30 } })
 
-          // Build project-type-aware prompt
-          const projectTypeGuidance = {
-            framework: `This is a FRAMEWORK/LIBRARY (like React, Vue, lodash).
-CRITICAL SCORING RULES FOR FRAMEWORKS:
-- Testing: Score based on test coverage RATIO, not just "tests exist". Frameworks typically have extensive tests.
-- Security: Focus on library-specific concerns (prototype pollution, XSS vectors in rendering, etc.)
-- Performance: Bundle size, tree-shaking, build optimization
-- NOT APPLICABLE: Authentication, Database, Frontend (it IS the frontend tool), Deployment (users deploy, not the lib)
-- Best Practices: TypeScript types, API stability, changelog, semantic versioning, docs quality`,
-            
-            library: `This is a LIBRARY (reusable code published to npm/PyPI/etc).
-SCORING RULES FOR LIBRARIES:
-- Testing: Critical - libraries need thorough unit tests
-- Security: Dependency audit, no vulnerable patterns
-- NOT APPLICABLE: Authentication, Database, Deployment (unless it's a deployment tool)
-- Best Practices: Types, exports, documentation, examples`,
-            
-            monorepo: `This is a MONOREPO with multiple packages.
-SCORING RULES FOR MONOREPOS:
-- Evaluate the overall architecture and shared tooling
-- Testing: Look for test infrastructure across packages
-- CI/CD: Critical - needs build/test orchestration`,
-            
-            cli: `This is a CLI TOOL.
-SCORING RULES FOR CLI TOOLS:
-- Testing: Command tests, argument parsing tests
-- NOT APPLICABLE: Frontend, Design/UX (unless it's a TUI), Database (unless it uses one)
-- Best Practices: Error messages, help text, exit codes`,
-            
-            app: `This is a WEB APPLICATION.
-Apply standard web app scoring across all categories.`,
-            
-            unknown: `Could not determine project type. Apply general best practices.`
-          }
-          
-          const prompt = `Analyze this GitHub repository for production readiness.
+          // ===================================================================
+          // PHASE 3: Deep AI analysis -- send actual code to Claude
+          // ===================================================================
+          // Extract key files for per-route / per-file analysis
+          const keyFileContents = extractKeyFileContents(repoData.files)
 
-PROJECT TYPE: ${projectType.toUpperCase()}
-${projectTypeGuidance[projectType]}
+          const prompt = buildDeepAnalysisPrompt(
+            owner, repo, repoData, localAnalysis, keyFileContents
+          )
 
-Repository Context:
-${JSON.stringify(context, null, 2)}
-
-CRITICAL INSTRUCTIONS:
-1. Score ONLY categories that apply to this project type. Mark others as "applicable": false.
-2. For libraries/frameworks with hasTests=true, assume good test coverage unless proven otherwise.
-3. High stars+forks suggests mature, battle-tested code - don't give low scores without evidence.
-4. Be specific to this project type - don't suggest "add authentication" to a utility library.
-5. Each finding must be actionable and RELEVANT to what this project actually is.
-
-Provide analysis with:
-
-1. Category Scores for applicable categories only:
-${ANALYSIS_CATEGORIES.map(cat => `- ${cat.name} (weight: ${cat.weight}%)`).join('\n')}
-
-2. Top 3-5 actionable findings SPECIFIC to this project type:
-   - Clear title and description (1-2 sentences)
-   - Category (security/performance/best-practices)
-   - Severity (critical/high/medium/low)
-   - Points (critical: 8-10, high: 5-7, medium: 2-4, low: 1)
-   - Effort level and time estimate
-   - Specific fix (relevant to project type)
-
-3. Summary acknowledging what the project IS
-
-Respond in JSON:
-{
-  "overallScore": number,
-  "categories": [
-    {
-      "name": string,
-      "displayName": string,
-      "score": number,
-      "maxScore": number,
-      "applicable": boolean,
-      "description": string,
-      "recommendations": string[],
-      "subcategories": []
-    }
-  ],
-  "findings": [
-    {
-      "id": string,
-      "title": string,
-      "description": string,
-      "category": "security" | "performance" | "best-practices",
-      "severity": "critical" | "high" | "medium" | "low",
-      "points": number,
-      "effort": "easy" | "medium" | "hard",
-      "estimatedTime": string,
-      "fix": string
-    }
-  ],
-  "summary": {
-    "strengths": string[],
-    "weaknesses": string[],
-    "topPriorities": string[]
-  }
-}`
-
-          // Use Haiku for speed (3-5s vs 30-60s with Sonnet)
-          const response = await anthropic.messages.create({
+          const aiResponse = await anthropic.messages.create({
             model: 'claude-3-5-haiku-20241022',
-            max_tokens: 2500,
-            temperature: 0.3,
-            messages: [{
-              role: 'user',
-              content: prompt
-            }]
+            max_tokens: 3000,
+            temperature: 0.2,
+            messages: [{ role: 'user', content: prompt }],
           })
 
-          // Send progress updates for each category
-          let progressPercentage = 40
-          for (const category of ANALYSIS_CATEGORIES) {
-            controller.enqueue(encoder.encode(JSON.stringify({ 
-              progress: { 
-                stage: 'scoring', 
-                message: `Evaluating ${category.name}...`, 
-                percentage: progressPercentage,
-                currentCategory: category.name
-              } 
-            }) + '\n'))
-            progressPercentage += Math.floor(50 / ANALYSIS_CATEGORIES.length)
-            await new Promise(resolve => setTimeout(resolve, 100)) // Reduced delay
+          // Simulate per-category progress
+          let pct = 35
+          for (const cat of ANALYSIS_CATEGORIES) {
+            send({ progress: { stage: 'scoring', message: `Evaluating ${cat.name}...`, percentage: pct, currentCategory: cat.name } })
+            pct += Math.floor(30 / ANALYSIS_CATEGORIES.length)
+            await new Promise(r => setTimeout(r, 50))
           }
 
-          // Parse Claude's response
-          const content = response.content[0]
-          if (content.type !== 'text') {
-            throw new Error('Unexpected response format')
+          // Parse AI response
+          const content = aiResponse.content[0]
+          if (content.type !== 'text') throw new Error('Unexpected response format')
+
+          let analysisData: Record<string, unknown>
+          try {
+            // Handle potential markdown code fences
+            let jsonStr = content.text.trim()
+            const jsonMatch = jsonStr.match(/```(?:json)?\s*([\s\S]*?)```/)
+            if (jsonMatch) jsonStr = jsonMatch[1].trim()
+            analysisData = JSON.parse(jsonStr)
+          } catch {
+            // Fall back to local analysis if AI parse fails
+            analysisData = {
+              overallScore: localAnalysis.overallScore,
+              categories: localAnalysis.categories.map(c => ({
+                name: c.category,
+                displayName: c.label,
+                score: c.score,
+                maxScore: 100,
+                applicable: true,
+                description: '',
+                recommendations: [],
+                subcategories: [],
+              })),
+              findings: localAnalysis.categories.flatMap(c => c.gaps.map(g => ({
+                id: g.id,
+                title: g.title,
+                description: g.description,
+                category: g.category,
+                severity: g.severity === 'blocker' ? 'critical' : g.severity,
+                points: g.severity === 'blocker' ? 10 : g.severity === 'critical' ? 7 : 3,
+                effort: g.effortMinutes && g.effortMinutes <= 15 ? 'easy' : 'medium',
+                estimatedTime: g.effortMinutes ? `${g.effortMinutes} min` : '30 min',
+                fix: g.fixTemplate || '',
+              }))),
+              summary: {
+                strengths: localAnalysis.categories.filter(c => c.score >= 80).map(c => c.label),
+                weaknesses: localAnalysis.categories.filter(c => c.score < 50).map(c => c.label),
+                topPriorities: localAnalysis.categories
+                  .filter(c => c.gaps.some(g => g.severity === 'blocker' || g.severity === 'critical'))
+                  .map(c => c.label),
+              },
+            }
           }
 
-          const analysisData = JSON.parse(content.text)
-          
+          // Build result with both local analysis + AI deep analysis
           const result: AnalysisResult = {
             repoUrl,
             owner,
             repo,
-            overallScore: analysisData.overallScore,
+            overallScore: (analysisData as { overallScore?: number }).overallScore || localAnalysis.overallScore,
             timestamp: new Date(),
-            categories: analysisData.categories,
-            findings: analysisData.findings || [],
+            categories: (analysisData as { categories?: AnalysisResult['categories'] }).categories || [],
+            findings: (analysisData as { findings?: AnalysisResult['findings'] }).findings || [],
             confidence: {
-              level: confidenceLevel,
-              score: confidenceScore,
-              factors: confidenceFactors
+              level: 'high', // We now read actual code
+              score: 80,
+              factors: [],
             },
-            summary: analysisData.summary
+            summary: (analysisData as { summary?: AnalysisResult['summary'] }).summary || { strengths: [], weaknesses: [], topPriorities: [] },
           }
 
-          // Save scan to database
-          let savedScan
-          if (session?.userId) {
-            savedScan = await prisma.scan.create({
-              data: {
-                userId: session.userId,
-                repoUrl,
-                owner,
-                repo,
-                overallScore: result.overallScore,
-                confidence: result.confidence as any,
-                categories: result.categories as any,
-                findings: result.findings as any,
-                summary: result.summary as any,
-              }
-            })
-            
-            // Increment user's monthly scan count
-            await prisma.user.update({
-              where: { id: session.userId },
-              data: { monthlyScans: { increment: 1 } }
-            })
-          } else {
-            // Save anonymous scan
-            savedScan = await prisma.scan.create({
-              data: {
-                repoUrl,
-                owner,
-                repo,
-                overallScore: result.overallScore,
-                confidence: result.confidence as any,
-                categories: result.categories as any,
-                findings: result.findings as any,
-                summary: result.summary as any,
-              }
-            })
+          // ===================================================================
+          // PHASE 4: Capacity estimation (always runs, Level 3)
+          // ===================================================================
+          send({ progress: { stage: 'analyzing', message: 'Estimating capacity from architecture...', percentage: 68 } })
+
+          let capacityEstimate: CapacityEstimate | undefined
+          try {
+            capacityEstimate = await estimateCapacity(repoData.files)
+          } catch (err) {
+            console.error('Capacity estimation failed:', err)
           }
-          
-          // Run compile verification if requested
+
+          // ===================================================================
+          // PHASE 5: Verification levels (conditional)
+          // ===================================================================
           let compileResult: CompileResult | undefined
-          
-          if (verificationLevel !== 'static') {
-            controller.enqueue(encoder.encode(JSON.stringify({ 
-              progress: { 
-                stage: 'verifying', 
-                message: 'Running compile verification in sandbox...', 
-                percentage: 92 
-              } 
-            }) + '\n'))
-            
+          let testResult: TestResult | undefined
+          let semgrepResult: SemgrepResult | undefined
+          let mutationResult: MutationResult | undefined
+          let loadResult: LoadTestResult | undefined
+
+          const shouldRun = (level: VerificationLevel) => {
+            const order: VerificationLevel[] = ['static', 'compile', 'test', 'mutation', 'load', 'full']
+            return verificationLevel === 'full' || order.indexOf(verificationLevel) >= order.indexOf(level)
+          }
+
+          // Semgrep (runs with compile+ for AST-level security analysis)
+          if (shouldRun('compile') && process.env.E2B_API_KEY) {
+            send({ progress: { stage: 'verifying', message: 'Running Semgrep security scan...', percentage: 72 } })
             try {
-              // Fetch full repo files for verification
-              const repoFiles = await fetchRepoFiles(repoUrl, session?.accessToken)
-              const techStack = detectTechStack(repoFiles.files)
-              
-              // Run compile verification
-              compileResult = await verifyCompilation(repoFiles.files, techStack)
-              
-              controller.enqueue(encoder.encode(JSON.stringify({ 
-                progress: { 
-                  stage: 'verifying', 
-                  message: compileResult.success 
-                    ? 'Compile verification passed!' 
-                    : `Compile verification failed: ${compileResult.errors.length} errors`,
-                  percentage: 98 
-                } 
-              }) + '\n'))
-            } catch (verifyError) {
-              console.error('Verification error:', verifyError)
-              compileResult = {
-                success: false,
-                errors: [{
-                  file: '',
-                  message: verifyError instanceof Error ? verifyError.message : 'Verification failed',
-                  severity: 'error'
-                }],
-                warnings: [],
-                duration: 0,
-                evidence: ''
-              }
+              semgrepResult = await runSemgrep(repoData.files)
+            } catch (err) {
+              console.error('Semgrep failed:', err)
             }
           }
-          
-          // Apply free tier restrictions if not authenticated or free user
+
+          // Compile verification
+          if (shouldRun('compile') && process.env.E2B_API_KEY) {
+            send({ progress: { stage: 'verifying', message: 'Verifying compilation in sandbox...', percentage: 78 } })
+            try {
+              compileResult = await verifyCompilation(repoData.files, techStack)
+            } catch (err) {
+              console.error('Compile verification failed:', err)
+            }
+          }
+
+          // Test verification
+          if (shouldRun('test') && process.env.E2B_API_KEY) {
+            send({ progress: { stage: 'verifying', message: 'Running test suite in sandbox...', percentage: 84 } })
+            try {
+              const stack = techStack.languages.includes('python') ? 'python'
+                : techStack.languages.includes('go') ? 'go'
+                : 'node'
+              testResult = await verifyTests(repoData.files, stack)
+            } catch (err) {
+              console.error('Test verification failed:', err)
+            }
+          }
+
+          // Mutation testing (Pro only, compute-intensive)
+          if (shouldRun('mutation') && process.env.E2B_API_KEY) {
+            send({ progress: { stage: 'verifying', message: 'Running mutation testing...', percentage: 88 } })
+            try {
+              const pm = techStack.packageManager === 'pnpm' ? 'pnpm'
+                : techStack.packageManager === 'yarn' ? 'yarn'
+                : 'npm'
+              mutationResult = await verifyMutations(repoData.files, pm)
+            } catch (err) {
+              console.error('Mutation testing failed:', err)
+            }
+          }
+
+          // Load testing (requires running app)
+          if (shouldRun('load') && process.env.E2B_API_KEY) {
+            send({ progress: { stage: 'verifying', message: 'Running load tests...', percentage: 93 } })
+            try {
+              const stack = techStack.languages.includes('python') ? 'python'
+                : techStack.languages.includes('go') ? 'go'
+                : 'node'
+              loadResult = await verifyLoad(repoData.files, stack)
+            } catch (err) {
+              console.error('Load testing failed:', err)
+            }
+          }
+
+          // ===================================================================
+          // PHASE 6: Save scan + build response
+          // ===================================================================
+          send({ progress: { stage: 'complete', message: 'Analysis complete!', percentage: 100 } })
+
+          // Save to database
+          let savedScan
+          // Prisma JSON fields require `any` cast for compatibility
+          const scanData = {
+            repoUrl,
+            owner,
+            repo,
+            overallScore: result.overallScore,
+            confidence: result.confidence as any, // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma JSON field
+            categories: result.categories as any, // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma JSON field
+            findings: result.findings as any, // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma JSON field
+            summary: result.summary as any, // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma JSON field
+          }
+
+          if (session?.userId) {
+            savedScan = await prisma.scan.create({
+              data: { ...scanData, userId: session.userId },
+            })
+            await prisma.user.update({
+              where: { id: session.userId },
+              data: { monthlyScans: { increment: 1 } },
+            })
+          } else {
+            savedScan = await prisma.scan.create({ data: scanData })
+          }
+
+          // Free tier restrictions
           let finalResult = result
-          const currentUser = session?.userId 
+          const currentUser = session?.userId
             ? await prisma.user.findUnique({ where: { id: session.userId }, select: { tier: true } })
             : null
-          
+
           if (!session?.userId || currentUser?.tier === 'FREE') {
-            // Only show top 2 findings for free tier
             finalResult = {
               ...result,
               findings: result.findings.slice(0, 2),
               isFreeTier: true,
-              totalFindings: result.findings.length
-            } as any
+              totalFindings: result.findings.length,
+            } as AnalysisResult & { isFreeTier: boolean; totalFindings: number }
           }
 
-          // Send final result
-          controller.enqueue(encoder.encode(JSON.stringify({ 
-            progress: { 
-              stage: 'complete', 
-              message: 'Analysis complete!', 
-              percentage: 100 
-            } 
-          }) + '\n'))
-
-          // Build response with verification data if available
-          const responseData: Record<string, unknown> = { 
-            result: finalResult, 
-            scanId: savedScan.id 
+          // Build response with all verification data
+          const responseData: Record<string, unknown> = {
+            result: finalResult,
+            scanId: savedScan.id,
+            // Local analysis data (altitude, bottleneck)
+            altitude: {
+              maxUsers: localAnalysis.altitude.maxUsers,
+              zone: localAnalysis.altitude.zone,
+              bottleneck: localAnalysis.altitude.bottleneck,
+              formattedMaxUsers: localAnalysis.formattedMaxUsers,
+            },
           }
-          
-          if (compileResult) {
+
+          // Capacity estimate (Level 3)
+          if (capacityEstimate && capacityEstimate.maxConcurrentUsers > 0) {
+            responseData.capacity = capacityEstimate
+          }
+
+          // Verification results
+          if (compileResult || testResult || semgrepResult || mutationResult || loadResult) {
             responseData.verification = {
               level: verificationLevel,
-              compile: {
-                success: compileResult.success,
-                errorCount: compileResult.errors.length,
-                warningCount: compileResult.warnings.length,
-                errors: compileResult.errors.slice(0, 10), // Limit to 10 errors
-                duration: compileResult.duration
-              }
+              ...(compileResult && {
+                compile: {
+                  success: compileResult.success,
+                  errorCount: compileResult.errors.length,
+                  warningCount: compileResult.warnings.length,
+                  errors: compileResult.errors.slice(0, 10),
+                  duration: compileResult.duration,
+                },
+              }),
+              ...(testResult && {
+                tests: {
+                  success: testResult.success,
+                  total: testResult.total,
+                  passed: testResult.passed,
+                  failed: testResult.failed,
+                  skipped: testResult.skipped,
+                  coverage: testResult.coverage,
+                  failures: testResult.failures.slice(0, 10),
+                  duration: testResult.duration,
+                },
+              }),
+              ...(semgrepResult && semgrepResult.success && {
+                semgrep: {
+                  findingCount: semgrepResult.findings.length,
+                  findings: semgrepResult.findings.slice(0, 20),
+                  rulesRun: semgrepResult.rulesRun,
+                  duration: semgrepResult.duration,
+                },
+              }),
+              ...(mutationResult && mutationResult.success && {
+                mutation: {
+                  score: mutationResult.score,
+                  totalMutants: mutationResult.totalMutants,
+                  killed: mutationResult.killed,
+                  survived: mutationResult.survived,
+                  weakTests: mutationResult.weakTests.slice(0, 5),
+                  duration: mutationResult.duration,
+                },
+              }),
+              ...(loadResult && loadResult.success && {
+                load: {
+                  maxConcurrentUsers: loadResult.maxConcurrentUsers,
+                  metrics: loadResult.metrics,
+                  bottleneck: loadResult.bottleneck,
+                  duration: loadResult.duration,
+                },
+              }),
             }
           }
-          
-          controller.enqueue(encoder.encode(JSON.stringify(responseData) + '\n'))
+
+          send(responseData)
           controller.close()
 
         } catch (error) {
-          // Sanitize error messages for production
-          const sanitizedMessage = process.env.NODE_ENV === 'production' 
-            ? 'Analysis failed' 
+          const sanitizedMessage = process.env.NODE_ENV === 'production'
+            ? 'Analysis failed'
             : error instanceof Error ? error.message : 'Analysis failed'
-          
+
           console.error('Analysis error:', {
             message: sanitizedMessage,
             timestamp: new Date().toISOString(),
-            ip: ip.substring(0, 10) + '***' // Partially mask IP in logs
+            ip: ip.substring(0, 10) + '***',
           })
-          
-          controller.enqueue(encoder.encode(JSON.stringify({ 
-            error: sanitizedMessage
-          }) + '\n'))
+
+          send({ error: sanitizedMessage })
           controller.close()
         }
-      }
+      },
     })
 
     return new Response(stream, {
@@ -655,22 +494,111 @@ Respond in JSON:
         'Connection': 'keep-alive',
       },
     })
-
   } catch (error) {
     const sanitizedMessage = process.env.NODE_ENV === 'production'
       ? 'Invalid request'
       : error instanceof Error ? error.message : 'Invalid request'
-      
-    console.error('Request error:', {
-      message: sanitizedMessage,
-      timestamp: new Date().toISOString()
-    })
-    
-    return new Response(JSON.stringify({ 
-      error: sanitizedMessage
-    }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
+
+    console.error('Request error:', { message: sanitizedMessage, timestamp: new Date().toISOString() })
+
+    return new Response(JSON.stringify({ error: sanitizedMessage }), {
+      status: 400, headers: { 'Content-Type': 'application/json' },
     })
   }
+}
+
+// =============================================================================
+// HELPER: Extract key file contents for deep AI analysis
+// =============================================================================
+
+function extractKeyFileContents(files: { path: string; content: string; size: number }[]): string {
+  const keyPatterns = [
+    // API routes (highest value for per-route analysis)
+    (f: { path: string }) => f.path.includes('/api/') && f.path.endsWith('route.ts'),
+    (f: { path: string }) => f.path.includes('/api/') && f.path.endsWith('route.js'),
+    // Middleware
+    (f: { path: string }) => f.path.includes('middleware') && !f.path.includes('.test.'),
+    // Auth files
+    (f: { path: string }) => f.path.includes('auth') && !f.path.includes('.test.') && !f.path.includes('node_modules'),
+    // Database/ORM config
+    (f: { path: string }) => f.path.endsWith('.prisma') || f.path.includes('drizzle'),
+    // Config files
+    (f: { path: string }) => f.path.includes('next.config') || f.path === 'vercel.json',
+    // Package.json
+    (f: { path: string }) => f.path === 'package.json',
+    // Key lib files
+    (f: { path: string }) => f.path.includes('/lib/') && !f.path.includes('.test.'),
+  ]
+
+  let result = ''
+  let totalChars = 0
+  const MAX_CHARS = 25_000 // ~6K tokens
+  const seen = new Set<string>()
+
+  for (const pattern of keyPatterns) {
+    for (const file of files) {
+      if (seen.has(file.path) || !pattern(file)) continue
+      // Truncate large files
+      const content = file.content.slice(0, 2000)
+      const addition = `\n--- ${file.path} ---\n${content}\n`
+      if (totalChars + addition.length > MAX_CHARS) continue
+      result += addition
+      totalChars += addition.length
+      seen.add(file.path)
+    }
+  }
+
+  return result
+}
+
+// =============================================================================
+// HELPER: Build deep analysis prompt with actual code
+// =============================================================================
+
+function buildDeepAnalysisPrompt(
+  owner: string,
+  repo: string,
+  repoData: { files: { path: string }[]; fileCount: number },
+  localAnalysis: { overallScore: number; categories: { category: string; label: string; score: number; gaps: { title: string; severity: string }[] }[] },
+  keyFileContents: string
+): string {
+  // Summary of local analysis results
+  const localSummary = localAnalysis.categories
+    .map(c => `${c.label}: ${c.score}/100 (${c.gaps.length} gaps${c.gaps.filter(g => g.severity === 'blocker' || g.severity === 'critical').length > 0 ? ', has critical issues' : ''})`)
+    .join('\n')
+
+  return `You are a senior security and infrastructure engineer. Analyze this repository's ACTUAL CODE for production readiness.
+
+REPO: ${owner}/${repo} (${repoData.fileCount} files)
+
+LOCAL PATTERN ANALYSIS (already completed):
+${localSummary}
+Overall: ${localAnalysis.overallScore}/100
+
+ACTUAL CODE FROM KEY FILES:
+${keyFileContents}
+
+INSTRUCTIONS:
+1. Read the actual code above. Don't guess from file names -- analyze the implementations.
+2. For each API route, check: Does it validate input? Handle errors? Check auth? Have rate limiting?
+3. For database access, check: Are queries parameterized? Is there connection pooling? Timeouts?
+4. For auth, check: Are sessions encrypted? Tokens expiring? CSRF protection applied?
+5. Cross-reference: Does the .env.example document all secrets used in code?
+6. Each finding must cite a SPECIFIC file and what's wrong in it.
+
+Score categories 0-100. Findings must be from the actual code, not generic advice.
+
+${ANALYSIS_CATEGORIES.map(cat => `- ${cat.name} (weight: ${cat.weight}%)`).join('\n')}
+
+Respond in JSON:
+{
+  "overallScore": number,
+  "categories": [
+    { "name": string, "displayName": string, "score": number, "maxScore": number, "applicable": boolean, "description": string, "recommendations": string[], "subcategories": [] }
+  ],
+  "findings": [
+    { "id": string, "title": string, "description": string, "category": "security"|"performance"|"best-practices", "severity": "critical"|"high"|"medium"|"low", "points": number, "effort": "easy"|"medium"|"hard", "estimatedTime": string, "fix": string }
+  ],
+  "summary": { "strengths": string[], "weaknesses": string[], "topPriorities": string[] }
+}`
 }

@@ -1,12 +1,12 @@
 // =============================================================================
-// VERIFIERS - Proof-based code analysis
+// VERIFIERS - Index
 // =============================================================================
-// Instead of guessing with patterns, verify by execution
 
 export * from './types'
 export * from './compile'
-
-// Future exports:
-// export * from './tests'
-// export * from './mutation'
-// export * from './load'
+export * from './tests'
+export * from './semgrep'
+export * from './mutation'
+export * from './load'
+export * from './capacity'
+export * from './production'
