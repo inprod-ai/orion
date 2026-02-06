@@ -18,7 +18,7 @@ import Spotlight from '@/components/space/Spotlight'
 const StarField3D = dynamic(() => import('@/components/space/StarField3D'), { ssr: false })
 const SpaceParticles = dynamic(() => import('@/components/space/SpaceParticles'), { ssr: false })
 const ShootingStars = dynamic(() => import('@/components/space/ShootingStar'), { ssr: false })
-import AscendingRocket from '@/components/space/AscendingRocket'
+const AscendingRocket = dynamic(() => import('@/components/space/AscendingRocket'), { ssr: false })
 
 interface UserData {
   id: string
