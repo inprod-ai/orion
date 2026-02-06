@@ -44,6 +44,7 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.62.0",
     "@auth/prisma-adapter": "^2.11.1",
+    "@lottiefiles/dotlottie-react": "^0.17.14",
     "@prisma/client": "^6.16.1",
     "@react-pdf/renderer": "^4.3.0",
     "@react-three/drei": "^10.7.7",
