@@ -18,7 +18,7 @@ import Spotlight from '@/components/space/Spotlight'
 const StarField3D = dynamic(() => import('@/components/space/StarField3D'), { ssr: false })
 const SpaceParticles = dynamic(() => import('@/components/space/SpaceParticles'), { ssr: false })
 const ShootingStars = dynamic(() => import('@/components/space/ShootingStar'), { ssr: false })
-const AscendingRocket = dynamic(() => import('@/components/space/AscendingRocket'), { ssr: false })
+import AscendingRocket from '@/components/space/AscendingRocket'
 
 interface UserData {
   id: string
@@ -65,8 +65,9 @@ function HeroSection({ isSignedIn, onSelectRepo, onSubmit, repoUrl, setRepoUrl, 
   setAuthError: (v: string | null) => void
 }) {
   return (
-    <Spotlight className="relative py-24 md:py-32 px-6" size={600} color="rgba(139,92,246,0.06)">
-      <div className="max-w-4xl mx-auto text-center">
+    <Spotlight className="relative py-24 md:py-32 px-6 overflow-hidden" size={600} color="rgba(139,92,246,0.06)">
+      <AscendingRocket />
+      <div className="relative z-10 max-w-4xl mx-auto text-center">
         {authError && (
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="max-w-2xl mx-auto mb-8">
             <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 flex items-start gap-3 backdrop-blur-sm">
@@ -493,7 +494,6 @@ function HomeContent() {
       <StarField3D />
       <SpaceParticles />
       <ShootingStars />
-      <AscendingRocket />
 
       <div className="relative z-10">
         <Navbar />
