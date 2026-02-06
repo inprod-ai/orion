@@ -65,8 +65,7 @@ function HeroSection({ isSignedIn, onSelectRepo, onSubmit, repoUrl, setRepoUrl, 
   setAuthError: (v: string | null) => void
 }) {
   return (
-    <Spotlight className="relative py-24 md:py-32 px-6 overflow-hidden" size={600} color="rgba(139,92,246,0.06)">
-      <AscendingRocket />
+    <Spotlight className="relative py-24 md:py-32 px-6" size={600} color="rgba(139,92,246,0.06)">
       <div className="relative z-10 max-w-4xl mx-auto text-center">
         {authError && (
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="max-w-2xl mx-auto mb-8">
@@ -494,6 +493,7 @@ function HomeContent() {
       <StarField3D />
       <SpaceParticles />
       <ShootingStars />
+      <AscendingRocket />
 
       <div className="relative z-10">
         <Navbar />
