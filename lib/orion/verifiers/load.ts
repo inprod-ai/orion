@@ -192,13 +192,23 @@ function parseK6Output(output: string, startTime: number): LoadTestResult {
 
   // Determine max concurrent users (estimate from ramp stages where errors stayed < 5%)
   // k6 ramps: 10 -> 50 -> 100 -> 200 -> 500
-  const errorRate = metrics.requestsTotal > 0
-    ? metrics.requestsFailed / metrics.requestsTotal
-    : 1
+  // No requests completed = total failure
+  if (metrics.requestsTotal === 0) {
+    return {
+      success: false,
+      maxConcurrentUsers: 0,
+      metrics,
+      bottleneck: detectBottleneck(output, metrics),
+      duration: Date.now() - startTime,
+      evidence: output.slice(0, 5000),
+    }
+  }
+
+  const errorRate = metrics.requestsFailed / metrics.requestsTotal
 
   let maxConcurrentUsers = 0
   if (errorRate < 0.05) {
-    maxConcurrentUsers = 500 // Survived the full ramp
+    maxConcurrentUsers = 500
   } else if (errorRate < 0.1) {
     maxConcurrentUsers = 200
   } else if (errorRate < 0.2) {

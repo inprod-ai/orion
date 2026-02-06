@@ -61,7 +61,17 @@ function parseTestOutput(
   let total = 0, passed = 0, failed = 0, skipped = 0
 
   if (stack === 'node') {
-    // Vitest: "Tests  42 passed | 3 failed (45)"
+    // Vitest: "Tests  42 passed (42)" OR "Tests  2 failed | 8 passed (10)"
+    // The order can be: passed first OR failed first
+    const vitestFailFirst = output.match(/Tests\s+(\d+)\s+failed\s*\|\s*(\d+)\s+passed(?:\s*\|\s*(\d+)\s+skipped)?\s*\((\d+)\)/)
+    if (vitestFailFirst) {
+      failed = parseInt(vitestFailFirst[1]) || 0
+      passed = parseInt(vitestFailFirst[2]) || 0
+      skipped = parseInt(vitestFailFirst[3]) || 0
+      total = parseInt(vitestFailFirst[4]) || passed + failed + skipped
+      parseVitestFailures(output, failures)
+      return { total, passed, failed, skipped, failures }
+    }
     const vitestMatch = output.match(/Tests\s+(\d+)\s+passed(?:\s*\|\s*(\d+)\s+failed)?(?:\s*\|\s*(\d+)\s+skipped)?\s*\((\d+)\)/)
     if (vitestMatch) {
       passed = parseInt(vitestMatch[1]) || 0

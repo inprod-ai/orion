@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "description": "Midas Golden Code methodology settings",
+  
+  "permissions": {
+    "allow": [
+      "Read",
+      "Glob", 
+      "Grep",
+      "LS"
+    ],
+    "deny": []
+  },
+  
+  "context": {
+    "include": [
+      ".cursorrules",
+      "docs/prd.md", 
+      "docs/gameplan.md"
+    ],
+    "exclude": [
+      "node_modules/**",
+      "dist/**",
+      ".git/**"
+    ]
+  }
+}

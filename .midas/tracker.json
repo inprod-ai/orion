@@ -1,35 +1,72 @@
 {
-  "lastUpdated": "2026-02-02T02:38:11.590Z",
-  "recentFiles": [],
+  "lastUpdated": "2026-02-06T16:58:11.900Z",
+  "recentFiles": [
+    {
+      "path": "tsconfig.tsbuildinfo",
+      "lastModified": 1770396692143.202
+    },
+    {
+      "path": "app/api/analyze/route.ts",
+      "lastModified": 1770396683088.0503
+    },
+    {
+      "path": "lib/orion/verifiers/index.ts",
+      "lastModified": 1770396568727.904
+    },
+    {
+      "path": "lib/orion/verifiers/production.ts",
+      "lastModified": 1770396563223.7769
+    },
+    {
+      "path": "lib/orion/verifiers/capacity.ts",
+      "lastModified": 1770396534831.3198
+    },
+    {
+      "path": "lib/orion/verifiers/load.ts",
+      "lastModified": 1770396497600.5176
+    },
+    {
+      "path": "lib/orion/verifiers/mutation.ts",
+      "lastModified": 1770396459845.7666
+    },
+    {
+      "path": "lib/orion/verifiers/tests.ts",
+      "lastModified": 1770396423913.4343
+    },
+    {
+      "path": "lib/orion/verifiers/semgrep.ts",
+      "lastModified": 1770396396034.509
+    }
+  ],
   "recentToolCalls": [],
   "gitActivity": {
     "branch": "main",
-    "lastCommit": "76a3bb81f84989f9aefc4f7bd21004f0002177fd",
-    "lastCommitMessage": "add codebase index with architecture diagrams",
-    "lastCommitTime": 1769888005000,
-    "uncommittedChanges": 9,
+    "lastCommit": "abdeeb11b67a6d19588e6ed27496cf72371cd509",
+    "lastCommitMessage": "verification roadmap: deep analysis, test/mutation/load verifiers, capacity inference, sentry correlation",
+    "lastCommitTime": 1770396734000,
+    "uncommittedChanges": 2,
     "recentCommits": [
-      "add codebase index with architecture diagrams",
-      "fix cicd generator to only recommend existing npm scripts",
-      "Add platform-aware analyzers, 4 new generators, comprehensive tests",
-      "Update codebase index with comprehensive gap analysis",
-      "Add codebase index with gap analysis",
-      "Add comprehensive test suite for analyzer, altitude, and security",
-      "Update cursorrules with Zod validation and Tailwind conventions",
-      "Add cursorrules for project conventions",
-      "Replace NextAuth with custom OAuth flow for reliable GitHub auth",
-      "make logo clickable to return to home page"
+      "verification roadmap: deep analysis, test/mutation/load verifiers, capacity inference, sentry correlation",
+      "fix stale docs, model versions, github links, cli help text",
+      "clearer hero subtitle copy",
+      "cinematic diagonal rocket flyby across viewport",
+      "3d rocket with bloom postprocessing and pbr materials",
+      "hd lottie rocket animation in hero background",
+      "rocket launch in hero section background",
+      "rename inprod to orion, add 3d ascending rocket background",
+      "rename lib/inprod to lib/orion and tests/inprod to tests/orion",
+      "replace sphere orbs with nebula and galaxy CSS effects"
     ]
   },
   "completionSignals": {
     "testsExist": false,
-    "docsComplete": false
+    "docsComplete": true
   },
   "inferredPhase": {
-    "phase": "PLAN",
-    "step": "BRAINLIFT"
+    "phase": "BUILD",
+    "step": "IMPLEMENT"
   },
-  "confidence": 70,
+  "confidence": 60,
   "gates": {
     "compiles": null,
     "compiledAt": null,
@@ -127,7 +164,7 @@
     }
   ],
   "fileSnapshot": [],
-  "lastAnalysis": 1769887818618,
+  "lastAnalysis": 1770397091899,
   "phaseEnteredAt": null,
   "lastProgressAt": null
 }

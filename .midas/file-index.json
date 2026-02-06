@@ -1,16 +1,19 @@
 {
   "version": 1,
   "projectPath": "/Users/christiancattaneo/Projects/orion",
-  "lastFullScan": 1769887783367,
+  "lastFullScan": 1770397054373,
   "files": {
     "app/api/analyze/route.ts": {
-      "hash": "094af69baabf",
-      "size": 23149,
-      "mtime": 1768969714163.8286,
-      "lastIndexed": 1769024967191,
+      "hash": "80d293b6a7ea",
+      "size": 26087,
+      "mtime": 1770396683088.0503,
+      "lastIndexed": 1770397054345,
       "symbols": [
         "POST",
-        "fetchWithTimeout",
+        "send",
+        "shouldRun",
+        "extractKeyFileContents",
+        "buildDeepAnalysisPrompt",
         "maxDuration"
       ],
       "imports": [
@@ -19,13 +22,22 @@
         "@/types/analysis",
         "@/lib/github-auth",
         "@/lib/prisma",
-        "@/lib/github"
+        "@/lib/github",
+        "@/lib/orion/analyzer",
+        "@/lib/orion/verifiers/compile",
+        "@/lib/orion/verifiers/tests",
+        "@/lib/orion/verifiers/semgrep",
+        "@/lib/orion/verifiers/mutation",
+        "@/lib/orion/verifiers/load",
+        "@/lib/orion/verifiers/capacity",
+        "@/lib/orion/stack-detector",
+        "@/lib/orion/verifiers/types"
       ],
-      "lineCount": 601,
-      "relevanceScore": 85,
+      "lineCount": 605,
+      "relevanceScore": 90,
       "reasons": [
         "core file",
-        "modified today"
+        "recently modified"
       ]
     },
     "app/api/auth/callback/route.ts": {
@@ -111,10 +123,10 @@
       ]
     },
     "app/api/cli/analyze/route.ts": {
-      "hash": "5f7e3f4dece2",
-      "size": 4927,
-      "mtime": 1767359024531.6458,
-      "lastIndexed": 1768948822369,
+      "hash": "15a009a7455e",
+      "size": 4879,
+      "mtime": 1770357971424.9739,
+      "lastIndexed": 1770397054345,
       "symbols": [
         "POST"
       ],
@@ -123,18 +135,18 @@
         "@anthropic-ai/sdk",
         "@/lib/prisma"
       ],
-      "lineCount": 171,
-      "relevanceScore": 100,
+      "lineCount": 169,
+      "relevanceScore": 85,
       "reasons": [
         "core file",
-        "mentioned"
+        "modified today"
       ]
     },
     "app/api/cli/auth/callback/route.ts": {
-      "hash": "e3d2c5f72384",
-      "size": 6115,
-      "mtime": 1767359024531.6873,
-      "lastIndexed": 1768948822369,
+      "hash": "5180866d0c53",
+      "size": 6111,
+      "mtime": 1770348599732.151,
+      "lastIndexed": 1770397054346,
       "symbols": [
         "GET",
         "successPage",
@@ -146,17 +158,17 @@
         "crypto"
       ],
       "lineCount": 227,
-      "relevanceScore": 100,
+      "relevanceScore": 85,
       "reasons": [
         "core file",
-        "mentioned"
+        "modified today"
       ]
     },
     "app/api/cli/auth/me/route.ts": {
-      "hash": "8e2eba4f9430",
-      "size": 1886,
-      "mtime": 1767359024531.82,
-      "lastIndexed": 1768948822372,
+      "hash": "3d430073e38d",
+      "size": 1863,
+      "mtime": 1770239672586.7166,
+      "lastIndexed": 1770397054349,
       "symbols": [
         "GET"
       ],
@@ -164,11 +176,10 @@
         "next/server",
         "@/lib/prisma"
       ],
-      "lineCount": 64,
-      "relevanceScore": 100,
+      "lineCount": 63,
+      "relevanceScore": 80,
       "reasons": [
-        "core file",
-        "mentioned"
+        "core file"
       ]
     },
     "app/api/cli/auth/route.ts": {
@@ -193,10 +204,10 @@
       ]
     },
     "app/api/cli/complete/route.ts": {
-      "hash": "01d827898683",
-      "size": 5699,
-      "mtime": 1767359024531.6208,
-      "lastIndexed": 1768948822372,
+      "hash": "deb53fc3c17c",
+      "size": 5651,
+      "mtime": 1770357973311.2603,
+      "lastIndexed": 1770397054346,
       "symbols": [
         "POST"
       ],
@@ -205,18 +216,18 @@
         "@anthropic-ai/sdk",
         "@/lib/prisma"
       ],
-      "lineCount": 189,
-      "relevanceScore": 100,
+      "lineCount": 187,
+      "relevanceScore": 85,
       "reasons": [
         "core file",
-        "mentioned"
+        "modified today"
       ]
     },
     "app/api/cli/fix/route.ts": {
-      "hash": "c915d5de95a9",
-      "size": 4201,
-      "mtime": 1767359024531.607,
-      "lastIndexed": 1768948822373,
+      "hash": "11f553cd9673",
+      "size": 4199,
+      "mtime": 1770357973311.238,
+      "lastIndexed": 1770397054347,
       "symbols": [
         "POST"
       ],
@@ -226,17 +237,17 @@
         "@/lib/prisma"
       ],
       "lineCount": 141,
-      "relevanceScore": 100,
+      "relevanceScore": 85,
       "reasons": [
         "core file",
-        "mentioned"
+        "modified today"
       ]
     },
     "app/api/complete/route.ts": {
-      "hash": "207871404138",
-      "size": 1504,
-      "mtime": 1768935640928.366,
-      "lastIndexed": 1768948822373,
+      "hash": "fedca57d0b8f",
+      "size": 1502,
+      "mtime": 1770348544012.9348,
+      "lastIndexed": 1770397054347,
       "symbols": [
         "POST"
       ],
@@ -247,10 +258,9 @@
         "@/lib/orion/types"
       ],
       "lineCount": 48,
-      "relevanceScore": 100,
+      "relevanceScore": 85,
       "reasons": [
         "core file",
-        "mentioned",
         "modified today"
       ]
     },
@@ -279,10 +289,10 @@
       ]
     },
     "app/api/generate/route.ts": {
-      "hash": "09e463b75360",
-      "size": 4537,
-      "mtime": 1768935640928.3835,
-      "lastIndexed": 1768948822374,
+      "hash": "82c8c6f057c4",
+      "size": 4531,
+      "mtime": 1770348544011.8508,
+      "lastIndexed": 1770397054347,
       "symbols": [
         "POST"
       ],
@@ -297,18 +307,17 @@
         "@/lib/orion/generators/readme"
       ],
       "lineCount": 137,
-      "relevanceScore": 100,
+      "relevanceScore": 85,
       "reasons": [
         "core file",
-        "mentioned",
         "modified today"
       ]
     },
     "app/api/repos/route.ts": {
-      "hash": "cf80cf043ef6",
-      "size": 2076,
-      "mtime": 1768947897735.5159,
-      "lastIndexed": 1768948822374,
+      "hash": "ecd6a01b241e",
+      "size": 2078,
+      "mtime": 1770247487043.5952,
+      "lastIndexed": 1770397054349,
       "symbols": [
         "GET"
       ],
@@ -317,11 +326,9 @@
         "@/lib/github-auth"
       ],
       "lineCount": 69,
-      "relevanceScore": 100,
+      "relevanceScore": 80,
       "reasons": [
-        "core file",
-        "mentioned",
-        "recently modified"
+        "core file"
       ]
     },
     "app/api/stripe/checkout/route.ts": {
@@ -368,15 +375,23 @@
       ]
     },
     "app/page.tsx": {
-      "hash": "7fac09642c8f",
-      "size": 9770,
-      "mtime": 1768947897735.4949,
-      "lastIndexed": 1768948822376,
+      "hash": "0e2e5db7922f",
+      "size": 25737,
+      "mtime": 1770357975593.444,
+      "lastIndexed": 1770397054353,
       "symbols": [
+        "Navbar",
+        "HeroSection",
+        "HowItWorksSection",
+        "FeaturesSection",
+        "CategoriesSection",
+        "CliSection",
+        "AltitudeSection",
+        "CtaSection",
+        "Footer",
         "HomeContent",
         "fetchUser",
         "handleSubmit",
-        "handleSelectRepo",
         "Home"
       ],
       "imports": [
@@ -384,24 +399,27 @@
         "framer-motion",
         "next/navigation",
         "next/link",
+        "next/dynamic",
         "lucide-react",
         "@/lib/utils",
         "@/components/AnalysisScreen",
         "@/components/UserMenu",
-        "@/components/RepoSelector"
+        "@/components/RepoSelector",
+        "@/components/space",
+        "@/components/space/GlowingCard",
+        "@/components/space/Spotlight"
       ],
-      "lineCount": 249,
-      "relevanceScore": 95,
+      "lineCount": 533,
+      "relevanceScore": 65,
       "reasons": [
-        "mentioned",
-        "recently modified"
+        "modified today"
       ]
     },
     "app/upgrade/page.tsx": {
-      "hash": "0ab91a2ae687",
-      "size": 8009,
-      "mtime": 1768947897741.055,
-      "lastIndexed": 1768948822376,
+      "hash": "662ca68c204c",
+      "size": 9904,
+      "mtime": 1770327850540.0513,
+      "lastIndexed": 1770397054354,
       "symbols": [
         "UpgradePage",
         "handleUpgrade"
@@ -410,13 +428,14 @@
         "react",
         "framer-motion",
         "lucide-react",
-        "next/navigation"
+        "next/navigation",
+        "next/dynamic",
+        "@/components/space/GlowingCard"
       ],
-      "lineCount": 194,
-      "relevanceScore": 95,
+      "lineCount": 236,
+      "relevanceScore": 65,
       "reasons": [
-        "mentioned",
-        "recently modified"
+        "modified today"
       ]
     },
     "lib/auth.ts": {
@@ -463,10 +482,10 @@
       ]
     },
     "lib/github-auth.ts": {
-      "hash": "0831d4265773",
-      "size": 6529,
-      "mtime": 1768947897714.1028,
-      "lastIndexed": 1768948822377,
+      "hash": "4ecab0cc949d",
+      "size": 6528,
+      "mtime": 1770348601625.4297,
+      "lastIndexed": 1770397054354,
       "symbols": [
         "getGitHubAuthUrl",
         "exchangeCodeForToken",
@@ -489,17 +508,16 @@
         "./crypto"
       ],
       "lineCount": 235,
-      "relevanceScore": 95,
+      "relevanceScore": 65,
       "reasons": [
-        "mentioned",
-        "recently modified"
+        "modified today"
       ]
     },
     "components/AnalysisScreen.tsx": {
-      "hash": "7cf6ed8f0669",
-      "size": 25999,
-      "mtime": 1768947897741.0552,
-      "lastIndexed": 1768948822378,
+      "hash": "9a5349fc590c",
+      "size": 32230,
+      "mtime": 1770327757627.7527,
+      "lastIndexed": 1770397054356,
       "symbols": [
         "AnalysisScreen",
         "analyzeRepository",
@@ -515,15 +533,16 @@
         "react",
         "framer-motion",
         "next/link",
+        "next/dynamic",
         "lucide-react",
         "@/lib/utils",
+        "@/components/space",
         "@/types/analysis"
       ],
-      "lineCount": 637,
-      "relevanceScore": 90,
+      "lineCount": 752,
+      "relevanceScore": 60,
       "reasons": [
-        "mentioned",
-        "recently modified"
+        "modified today"
       ]
     },
     "components/Providers.tsx": {
@@ -543,10 +562,10 @@
       ]
     },
     "components/RepoSelector.tsx": {
-      "hash": "b8f5eeace14e",
-      "size": 10505,
-      "mtime": 1768947897728.4524,
-      "lastIndexed": 1768948822379,
+      "hash": "1bfeb7df8a56",
+      "size": 10673,
+      "mtime": 1770327819364.3335,
+      "lastIndexed": 1770397054357,
       "symbols": [
         "RepoSelector",
         "fetchUserAndRepos",
@@ -558,18 +577,17 @@
         "react",
         "framer-motion"
       ],
-      "lineCount": 315,
-      "relevanceScore": 90,
+      "lineCount": 320,
+      "relevanceScore": 60,
       "reasons": [
-        "mentioned",
-        "recently modified"
+        "modified today"
       ]
     },
     "components/UserMenu.tsx": {
-      "hash": "1a722c909fc1",
-      "size": 4755,
-      "mtime": 1768947897728.441,
-      "lastIndexed": 1768948822379,
+      "hash": "12b4cc626561",
+      "size": 5104,
+      "mtime": 1770327829648.352,
+      "lastIndexed": 1770397054357,
       "symbols": [
         "UserMenu",
         "fetchUser",
@@ -582,18 +600,17 @@
         "lucide-react",
         "next/link"
       ],
-      "lineCount": 150,
-      "relevanceScore": 90,
+      "lineCount": 155,
+      "relevanceScore": 60,
       "reasons": [
-        "mentioned",
-        "recently modified"
+        "modified today"
       ]
     },
     "lib/github/index.ts": {
-      "hash": "a060e5aa1dbb",
-      "size": 16761,
-      "mtime": 1768935640924.5212,
-      "lastIndexed": 1768948822380,
+      "hash": "dc8a2977a052",
+      "size": 16762,
+      "mtime": 1770348544811.1335,
+      "lastIndexed": 1770397054348,
       "symbols": [
         "implements",
         "parseGitHubUrl",
@@ -624,10 +641,10 @@
       ]
     },
     "app/altitude-demo/page.tsx": {
-      "hash": "6c72b1fd51a8",
-      "size": 299,
-      "mtime": 1767394543301.5674,
-      "lastIndexed": 1768948822381,
+      "hash": "d45f650de6f1",
+      "size": 295,
+      "mtime": 1770247435034.849,
+      "lastIndexed": 1770397054355,
       "symbols": [
         "AltitudeDemoPage",
         "metadata"
@@ -636,10 +653,8 @@
         "@/components/RocketVisualization"
       ],
       "lineCount": 12,
-      "relevanceScore": 80,
-      "reasons": [
-        "mentioned"
-      ]
+      "relevanceScore": 60,
+      "reasons": []
     },
     "lib/orion/analyzers/index.ts": {
       "hash": "652ede16dcab",
@@ -693,10 +708,10 @@
       ]
     },
     "lib/orion/types.ts": {
-      "hash": "f210c98d47d2",
-      "size": 13888,
-      "mtime": 1767395023691.7183,
-      "lastIndexed": 1768948822382,
+      "hash": "67ff3e3db374",
+      "size": 13884,
+      "mtime": 1770349388796.6309,
+      "lastIndexed": 1770397054348,
       "symbols": [
         "for",
         "UX",
@@ -725,9 +740,10 @@
       ],
       "imports": [],
       "lineCount": 364,
-      "relevanceScore": 75,
+      "relevanceScore": 85,
       "reasons": [
-        "core file"
+        "core file",
+        "modified today"
       ]
     },
     "lib/utils.ts": {
@@ -779,31 +795,30 @@
       ]
     },
     "next.config.js": {
-      "hash": "b2de414c0009",
-      "size": 726,
-      "mtime": 1757932640194.1292,
-      "lastIndexed": 1768948822383,
+      "hash": "52cbe6944036",
+      "size": 1033,
+      "mtime": 1770241340850.0754,
+      "lastIndexed": 1770397054355,
       "symbols": [],
       "imports": [],
-      "lineCount": 35,
-      "relevanceScore": 60,
+      "lineCount": 44,
+      "relevanceScore": 65,
       "reasons": [
         "config"
       ]
     },
     "package.json": {
-      "hash": "2423074995a9",
-      "size": 1377,
-      "mtime": 1769887597729.6597,
-      "lastIndexed": 1769887607772,
+      "hash": "df23a0998c7e",
+      "size": 2504,
+      "mtime": 1770357983055.4514,
+      "lastIndexed": 1770397054353,
       "symbols": [],
       "imports": [],
-      "lineCount": 53,
-      "relevanceScore": 100,
+      "lineCount": 92,
+      "relevanceScore": 70,
       "reasons": [
         "config",
-        "mentioned",
-        "recently modified"
+        "modified today"
       ]
     },
     "playwright.config.ts": {
@@ -878,10 +893,10 @@
       ]
     },
     "app/layout.tsx": {
-      "hash": "34f0f0fc468f",
-      "size": 1132,
-      "mtime": 1757926201947.4148,
-      "lastIndexed": 1768948822385,
+      "hash": "11a8426b8f1d",
+      "size": 1122,
+      "mtime": 1770247345868.196,
+      "lastIndexed": 1770397054355,
       "symbols": [
         "RootLayout",
         "metadata"
@@ -892,7 +907,7 @@
         "@/components/Providers"
       ],
       "lineCount": 36,
-      "relevanceScore": 55,
+      "relevanceScore": 60,
       "reasons": []
     },
     "lib/orion/altitude.ts": {
@@ -1166,10 +1181,10 @@
       ]
     },
     "lib/orion/generators/cicd.ts": {
-      "hash": "4a831309401d",
-      "size": 10336,
-      "mtime": 1769887705813.0444,
-      "lastIndexed": 1769887783365,
+      "hash": "78cab24d919c",
+      "size": 10312,
+      "mtime": 1770247493317.2083,
+      "lastIndexed": 1770397054363,
       "symbols": [
         "generateCICD",
         "generateGitHubActions",
@@ -1179,11 +1194,8 @@
         "../types"
       ],
       "lineCount": 432,
-      "relevanceScore": 95,
-      "reasons": [
-        "mentioned",
-        "recently modified"
-      ]
+      "relevanceScore": 60,
+      "reasons": []
     },
     "lib/orion/generators/readme.ts": {
       "hash": "da39447e7616",
@@ -1201,10 +1213,10 @@
       "reasons": []
     },
     "lib/orion/generators/security.ts": {
-      "hash": "641cf99e2211",
-      "size": 17898,
-      "mtime": 1767380959529.1287,
-      "lastIndexed": 1768948822391,
+      "hash": "c59ca7d6cf0b",
+      "size": 17873,
+      "mtime": 1770348600803.0938,
+      "lastIndexed": 1770397054355,
       "symbols": [
         "generateSecurityFixes",
         "generateSecurityHeaders",
@@ -1244,14 +1256,16 @@
         "next/dist/compiled/@edge-runtime/cookies"
       ],
       "lineCount": 660,
-      "relevanceScore": 55,
-      "reasons": []
+      "relevanceScore": 65,
+      "reasons": [
+        "modified today"
+      ]
     },
     "lib/orion/generators/testing.ts": {
-      "hash": "10308626a963",
-      "size": 7045,
-      "mtime": 1767380959529.164,
-      "lastIndexed": 1768948822391,
+      "hash": "060c20f24b40",
+      "size": 7025,
+      "mtime": 1770247498013.7593,
+      "lastIndexed": 1770397054364,
       "symbols": [
         "generateTests",
         "generateVitestSetup",
@@ -1268,7 +1282,7 @@
         "@playwright/test"
       ],
       "lineCount": 268,
-      "relevanceScore": 55,
+      "relevanceScore": 60,
       "reasons": []
     },
     "lib/orion/stack-detector.ts": {
@@ -1351,10 +1365,10 @@
       "reasons": []
     },
     "components/AltitudeDisplay.tsx": {
-      "hash": "f8d5691bdc9f",
-      "size": 10589,
-      "mtime": 1767395023696.4932,
-      "lastIndexed": 1768948822392,
+      "hash": "827e541888aa",
+      "size": 10587,
+      "mtime": 1770348546430.6558,
+      "lastIndexed": 1770397054356,
       "symbols": [
         "AltitudeDisplay",
         "AltitudeBadge",
@@ -1367,14 +1381,16 @@
         "@/lib/orion/altitude"
       ],
       "lineCount": 270,
-      "relevanceScore": 50,
-      "reasons": []
+      "relevanceScore": 60,
+      "reasons": [
+        "modified today"
+      ]
     },
     "components/PDFReport.tsx": {
-      "hash": "00b8f82f6cb0",
-      "size": 5295,
-      "mtime": 1757926557300.324,
-      "lastIndexed": 1768948822393,
+      "hash": "d29cba423bb0",
+      "size": 5291,
+      "mtime": 1770247432104.313,
+      "lastIndexed": 1770397054366,
       "symbols": [
         "PDFReport"
       ],
@@ -1384,7 +1400,7 @@
         "@/types/analysis"
       ],
       "lineCount": 191,
-      "relevanceScore": 50,
+      "relevanceScore": 55,
       "reasons": []
     },
     "components/RocketVisualization.tsx": {
@@ -1412,15 +1428,17 @@
       "reasons": []
     },
     "next-env.d.ts": {
-      "hash": "d0f8375ae119",
-      "size": 251,
-      "mtime": 1769107321055.7979,
-      "lastIndexed": 1769887607775,
+      "hash": "2a74d3909800",
+      "size": 247,
+      "mtime": 1770354740849.9614,
+      "lastIndexed": 1770397054364,
       "symbols": [],
       "imports": [],
       "lineCount": 7,
-      "relevanceScore": 50,
-      "reasons": []
+      "relevanceScore": 60,
+      "reasons": [
+        "modified today"
+      ]
     },
     "prisma/migrations/0_init/migration.sql": {
       "hash": "a5435c781cac",
@@ -1434,21 +1452,23 @@
       "reasons": []
     },
     "scripts/add-webhook-secret.sh": {
-      "hash": "3879bcacb3ce",
-      "size": 880,
-      "mtime": 1757931303176.506,
-      "lastIndexed": 1768948822395,
+      "hash": "85d9a533a750",
+      "size": 882,
+      "mtime": 1770348617989.0652,
+      "lastIndexed": 1770397054365,
       "symbols": [],
       "imports": [],
       "lineCount": 27,
-      "relevanceScore": 50,
-      "reasons": []
+      "relevanceScore": 60,
+      "reasons": [
+        "modified today"
+      ]
     },
     "scripts/compare-analyzers.ts": {
-      "hash": "401e151f9064",
-      "size": 7428,
-      "mtime": 1767389873148.189,
-      "lastIndexed": 1768948822395,
+      "hash": "f73d4043b863",
+      "size": 7424,
+      "mtime": 1770357983861.823,
+      "lastIndexed": 1770397054365,
       "symbols": [
         "fetchRepoFiles",
         "analyzeWithClaude",
@@ -1460,30 +1480,36 @@
         "../lib/orion/types"
       ],
       "lineCount": 221,
-      "relevanceScore": 50,
-      "reasons": []
+      "relevanceScore": 60,
+      "reasons": [
+        "modified today"
+      ]
     },
     "scripts/setup-database.sh": {
-      "hash": "09fdbe08a359",
-      "size": 792,
-      "mtime": 1757926873074.2703,
-      "lastIndexed": 1768948822395,
+      "hash": "f296506b8e3b",
+      "size": 788,
+      "mtime": 1770348620505.5889,
+      "lastIndexed": 1770397054365,
       "symbols": [],
       "imports": [],
       "lineCount": 30,
-      "relevanceScore": 50,
-      "reasons": []
+      "relevanceScore": 60,
+      "reasons": [
+        "modified today"
+      ]
     },
     "scripts/setup-vercel-env.sh": {
-      "hash": "5596a20d80fb",
-      "size": 3054,
-      "mtime": 1757927277512.2305,
-      "lastIndexed": 1768948822395,
+      "hash": "88811594d60f",
+      "size": 3060,
+      "mtime": 1770348640518.3513,
+      "lastIndexed": 1770397054366,
       "symbols": [],
       "imports": [],
       "lineCount": 90,
-      "relevanceScore": 50,
-      "reasons": []
+      "relevanceScore": 60,
+      "reasons": [
+        "modified today"
+      ]
     },
     "types/analysis.ts": {
       "hash": "e233a937c270",
@@ -1517,23 +1543,23 @@
       "reasons": []
     },
     "e2e/home.spec.ts": {
-      "hash": "140ad0d3b0f6",
-      "size": 336,
-      "mtime": 1767388070548.9924,
-      "lastIndexed": 1768948822396,
+      "hash": "d07183f20e5b",
+      "size": 335,
+      "mtime": 1770247447388.591,
+      "lastIndexed": 1770397054373,
       "symbols": [],
       "imports": [
         "@playwright/test"
       ],
       "lineCount": 14,
-      "relevanceScore": 40,
+      "relevanceScore": 45,
       "reasons": []
     },
     "tests/orion/analyzer.test.ts": {
-      "hash": "af1979249dba",
-      "size": 9120,
-      "mtime": 1768968491013.867,
-      "lastIndexed": 1768968765462,
+      "hash": "4b1b75481a23",
+      "size": 9117,
+      "mtime": 1770348561321.887,
+      "lastIndexed": 1770397054369,
       "symbols": [
         "createPackageJson",
         "Home",
@@ -1545,17 +1571,16 @@
         "@/lib/orion/types"
       ],
       "lineCount": 212,
-      "relevanceScore": 80,
+      "relevanceScore": 50,
       "reasons": [
-        "mentioned",
-        "recently modified"
+        "modified today"
       ]
     },
     "tests/orion/stack-detector.test.ts": {
-      "hash": "bf4621c04661",
-      "size": 3531,
-      "mtime": 1767383832899.1748,
-      "lastIndexed": 1768948822396,
+      "hash": "231baaa02c42",
+      "size": 3529,
+      "mtime": 1770348562303.6165,
+      "lastIndexed": 1770397054372,
       "symbols": [
         "Home",
         "Layout"
@@ -1566,14 +1591,16 @@
         "@/lib/orion/types"
       ],
       "lineCount": 107,
-      "relevanceScore": 40,
-      "reasons": []
+      "relevanceScore": 50,
+      "reasons": [
+        "modified today"
+      ]
     },
     "tests/orion/altitude.test.ts": {
-      "hash": "f80594a4663b",
-      "size": 8926,
-      "mtime": 1768968491013.8672,
-      "lastIndexed": 1768968765462,
+      "hash": "3f594df9e166",
+      "size": 8924,
+      "mtime": 1770348561261.8118,
+      "lastIndexed": 1770397054369,
       "symbols": [
         "createCategoryScore"
       ],
@@ -1582,17 +1609,16 @@
         "@/lib/orion/types"
       ],
       "lineCount": 288,
-      "relevanceScore": 80,
+      "relevanceScore": 50,
       "reasons": [
-        "mentioned",
-        "recently modified"
+        "modified today"
       ]
     },
     "tests/orion/security.test.ts": {
-      "hash": "8c41bb4d12ee",
-      "size": 12118,
-      "mtime": 1768969714164.887,
-      "lastIndexed": 1769024967195,
+      "hash": "a1d3df6611e0",
+      "size": 12116,
+      "mtime": 1770348559494.9119,
+      "lastIndexed": 1770397054372,
       "symbols": [
         "createContext",
         "Home",
@@ -1655,10 +1681,10 @@
       ]
     },
     "tests/orion/analyzers.test.ts": {
-      "hash": "ddeff5d535ce",
-      "size": 17764,
-      "mtime": 1769103954618.0005,
-      "lastIndexed": 1769104192609,
+      "hash": "b7a6a3ed6535",
+      "size": 17752,
+      "mtime": 1770348559423.6438,
+      "lastIndexed": 1770397054370,
       "symbols": [
         "createContext",
         "Home",
@@ -1684,18 +1710,16 @@
         "crypto"
       ],
       "lineCount": 503,
-      "relevanceScore": 100,
+      "relevanceScore": 50,
       "reasons": [
-        "testing phase",
-        "mentioned",
-        "recently modified"
+        "modified today"
       ]
     },
     "lib/orion/generators/authentication.ts": {
-      "hash": "34742cbb56b2",
-      "size": 11707,
-      "mtime": 1769103954607.2297,
-      "lastIndexed": 1769104192613,
+      "hash": "6972cf2fa16e",
+      "size": 11691,
+      "mtime": 1770247497373.1697,
+      "lastIndexed": 1770397054362,
       "symbols": [
         "generateAuthentication",
         "generateCryptoUtils",
@@ -1727,17 +1751,14 @@
         "./crypto"
       ],
       "lineCount": 441,
-      "relevanceScore": 95,
-      "reasons": [
-        "mentioned",
-        "recently modified"
-      ]
+      "relevanceScore": 60,
+      "reasons": []
     },
     "lib/orion/generators/backend.ts": {
-      "hash": "ae4bf8001a03",
-      "size": 13319,
-      "mtime": 1769103954607.4297,
-      "lastIndexed": 1769104192613,
+      "hash": "cc5b3080590f",
+      "size": 13299,
+      "mtime": 1770247495278.088,
+      "lastIndexed": 1770397054362,
       "symbols": [
         "generateBackend",
         "generateZodValidation",
@@ -1767,17 +1788,14 @@
         "express"
       ],
       "lineCount": 520,
-      "relevanceScore": 95,
-      "reasons": [
-        "mentioned",
-        "recently modified"
-      ]
+      "relevanceScore": 60,
+      "reasons": []
     },
     "lib/orion/generators/database.ts": {
-      "hash": "7234f5988ff3",
-      "size": 7557,
-      "mtime": 1769103954607.2432,
-      "lastIndexed": 1769104192613,
+      "hash": "d9776d40349d",
+      "size": 7541,
+      "mtime": 1770247503891.5984,
+      "lastIndexed": 1770397054363,
       "symbols": [
         "generateDatabase",
         "generatePrismaSetup",
@@ -1792,17 +1810,14 @@
         "@prisma/client"
       ],
       "lineCount": 292,
-      "relevanceScore": 95,
-      "reasons": [
-        "mentioned",
-        "recently modified"
-      ]
+      "relevanceScore": 60,
+      "reasons": []
     },
     "lib/orion/generators/error-handling.ts": {
-      "hash": "97d0e657970f",
-      "size": 15276,
-      "mtime": 1769103954607.6262,
-      "lastIndexed": 1769104192613,
+      "hash": "d723dfcac619",
+      "size": 15248,
+      "mtime": 1770247494262.5913,
+      "lastIndexed": 1770397054363,
       "symbols": [
         "generateErrorHandling",
         "generateSentrySetup",
@@ -1838,17 +1853,14 @@
         "./logger"
       ],
       "lineCount": 566,
-      "relevanceScore": 95,
-      "reasons": [
-        "mentioned",
-        "recently modified"
-      ]
+      "relevanceScore": 60,
+      "reasons": []
     },
     "tests/orion/generators/cicd.test.ts": {
-      "hash": "3c5aa0eab908",
-      "size": 11222,
-      "mtime": 1769887758723.3025,
-      "lastIndexed": 1769887783364,
+      "hash": "4b8a0e9a1373",
+      "size": 11220,
+      "mtime": 1770348558065.5483,
+      "lastIndexed": 1770397054372,
       "symbols": [
         "createMockContext"
       ],
@@ -1858,14 +1870,845 @@
         "@/lib/orion/types"
       ],
       "lineCount": 343,
-      "relevanceScore": 100,
+      "relevanceScore": 50,
       "reasons": [
-        "testing phase",
-        "mentioned",
+        "modified today"
+      ]
+    },
+    "lib/orion/verifiers/index.ts": {
+      "hash": "d723524fdeb2",
+      "size": 390,
+      "mtime": 1770396568727.904,
+      "lastIndexed": 1770397054345,
+      "symbols": [],
+      "imports": [],
+      "lineCount": 13,
+      "relevanceScore": 90,
+      "reasons": [
+        "core file",
         "recently modified"
+      ]
+    },
+    "cli/index.ts": {
+      "hash": "f2e20e645d14",
+      "size": 13560,
+      "mtime": 1770358007862.4968,
+      "lastIndexed": 1770397054349,
+      "symbols": [
+        "getRepoFiles",
+        "detectTechStack",
+        "analyzeCategory",
+        "hasFile",
+        "hasContent",
+        "analyze"
+      ],
+      "imports": [
+        "fs",
+        "path"
+      ],
+      "lineCount": 389,
+      "relevanceScore": 80,
+      "reasons": [
+        "core file",
+        "modified today"
+      ]
+    },
+    "components/space/index.ts": {
+      "hash": "c8e20a9ac0fb",
+      "size": 646,
+      "mtime": 1770354503845.1082,
+      "lastIndexed": 1770397054350,
+      "symbols": [
+        "default"
+      ],
+      "imports": [],
+      "lineCount": 13,
+      "relevanceScore": 80,
+      "reasons": [
+        "core file",
+        "modified today"
+      ]
+    },
+    "lib/orion/efficiency/index.ts": {
+      "hash": "ec92bb2eb10d",
+      "size": 455,
+      "mtime": 1770242691571.501,
+      "lastIndexed": 1770397054350,
+      "symbols": [],
+      "imports": [],
+      "lineCount": 12,
+      "relevanceScore": 80,
+      "reasons": [
+        "core file"
+      ]
+    },
+    "lib/orion/efficiency/types.ts": {
+      "hash": "29c4f90211d0",
+      "size": 5444,
+      "mtime": 1770230123927.3782,
+      "lastIndexed": 1770397054350,
+      "symbols": [
+        "ProblemClass",
+        "PROBLEM_CLASSES",
+        "PROBLEM_CLASS_LABELS",
+        "OperationType",
+        "Citation",
+        "BoundParams",
+        "TheoreticalBound",
+        "ClassificationResult",
+        "CodePatterns",
+        "OperationCounts",
+        "Measurement",
+        "EfficiencyGap",
+        "EfficiencyResult",
+        "BenchmarkDifficulty",
+        "BenchmarkCase",
+        "BenchmarkResult",
+        "BenchmarkSummary"
+      ],
+      "imports": [],
+      "lineCount": 204,
+      "relevanceScore": 80,
+      "reasons": [
+        "core file"
+      ]
+    },
+    "lib/orion/verifiers/types.ts": {
+      "hash": "014055069f37",
+      "size": 3308,
+      "mtime": 1770230352212.3286,
+      "lastIndexed": 1770397054351,
+      "symbols": [
+        "VerificationLevel",
+        "CompileError",
+        "CompileResult",
+        "TestFailure",
+        "TestResult",
+        "WeakTest",
+        "MutationResult",
+        "LoadTestMetrics",
+        "LoadTestBottleneck",
+        "LoadTestResult",
+        "VerificationResult"
+      ],
+      "imports": [],
+      "lineCount": 128,
+      "relevanceScore": 80,
+      "reasons": [
+        "core file"
+      ]
+    },
+    "lib/orion/verifiers/capacity.ts": {
+      "hash": "7f52a8809caa",
+      "size": 7375,
+      "mtime": 1770396534831.3198,
+      "lastIndexed": 1770397054351,
+      "symbols": [
+        "estimateCapacity",
+        "extractArchitectureFiles",
+        "defaultEstimate",
+        "CapacityEstimate",
+        "CapacityFactor"
+      ],
+      "imports": [
+        "@anthropic-ai/sdk",
+        "../types"
+      ],
+      "lineCount": 212,
+      "relevanceScore": 70,
+      "reasons": [
+        "recently modified"
+      ]
+    },
+    "lib/orion/verifiers/load.ts": {
+      "hash": "8b5b9a3d95a4",
+      "size": 8626,
+      "mtime": 1770396497600.5176,
+      "lastIndexed": 1770397054352,
+      "symbols": [
+        "verifyLoad",
+        "waitForReady",
+        "generateK6Script",
+        "parseK6Output",
+        "detectBottleneck",
+        "emptyResult",
+        "options"
+      ],
+      "imports": [
+        "e2b",
+        "../types",
+        "./types",
+        "k6/http",
+        "k6"
+      ],
+      "lineCount": 257,
+      "relevanceScore": 70,
+      "reasons": [
+        "recently modified"
+      ]
+    },
+    "lib/orion/verifiers/mutation.ts": {
+      "hash": "e56dd17b8924",
+      "size": 7960,
+      "mtime": 1770396459845.7666,
+      "lastIndexed": 1770397054352,
+      "symbols": [
+        "verifyMutations",
+        "priority",
+        "parseStrykerReport",
+        "parseClearTextOutput",
+        "emptyResult"
+      ],
+      "imports": [
+        "e2b",
+        "../types",
+        "./types"
+      ],
+      "lineCount": 245,
+      "relevanceScore": 70,
+      "reasons": [
+        "recently modified"
+      ]
+    },
+    "lib/orion/verifiers/production.ts": {
+      "hash": "d6dc7cea3f65",
+      "size": 6324,
+      "mtime": 1770396563223.7769,
+      "lastIndexed": 1770397054352,
+      "symbols": [
+        "correlateProduction",
+        "fetchSentryIssues",
+        "mapSentryIssue",
+        "categorizeIssue",
+        "issueMatchesGap",
+        "emptyResult",
+        "ProductionIssue",
+        "ProductionCorrelation",
+        "ProductionResult"
+      ],
+      "imports": [
+        "../types"
+      ],
+      "lineCount": 209,
+      "relevanceScore": 70,
+      "reasons": [
+        "recently modified"
+      ]
+    },
+    "lib/orion/verifiers/semgrep.ts": {
+      "hash": "e84945d52734",
+      "size": 4708,
+      "mtime": 1770396396034.509,
+      "lastIndexed": 1770397054353,
+      "symbols": [
+        "runSemgrep",
+        "mapSeverity",
+        "extractCategory",
+        "SemgrepFinding",
+        "SemgrepResult"
+      ],
+      "imports": [
+        "e2b",
+        "../types"
+      ],
+      "lineCount": 163,
+      "relevanceScore": 70,
+      "reasons": [
+        "recently modified"
+      ]
+    },
+    "lib/orion/verifiers/tests.ts": {
+      "hash": "0826eceb3e21",
+      "size": 5420,
+      "mtime": 1770396423913.4343,
+      "lastIndexed": 1770397054353,
+      "symbols": [
+        "verifyTests",
+        "parseTestOutput",
+        "parseVitestFailures",
+        "parseJestFailures",
+        "extractErrorAfter"
+      ],
+      "imports": [
+        "@/lib/sandbox",
+        "../types",
+        "./types"
+      ],
+      "lineCount": 155,
+      "relevanceScore": 70,
+      "reasons": [
+        "recently modified"
+      ]
+    },
+    "components/space/AscendingRocket.tsx": {
+      "hash": "60eb1e68fd46",
+      "size": 15276,
+      "mtime": 1770357051182.7341,
+      "lastIndexed": 1770397054357,
+      "symbols": [
+        "RocketBody",
+        "ExhaustFlame",
+        "ExhaustParticles",
+        "Sparks",
+        "FlybyController",
+        "Scene",
+        "AscendingRocket"
+      ],
+      "imports": [
+        "react",
+        "@react-three/fiber",
+        "@react-three/drei",
+        "@react-three/postprocessing",
+        "postprocessing",
+        "three"
+      ],
+      "lineCount": 427,
+      "relevanceScore": 60,
+      "reasons": [
+        "modified today"
+      ]
+    },
+    "components/space/BeamEffect.tsx": {
+      "hash": "7160e753a089",
+      "size": 2255,
+      "mtime": 1770327313373.7192,
+      "lastIndexed": 1770397054358,
+      "symbols": [
+        "BeamEffect"
+      ],
+      "imports": [
+        "framer-motion"
+      ],
+      "lineCount": 59,
+      "relevanceScore": 60,
+      "reasons": [
+        "modified today"
+      ]
+    },
+    "components/space/GlowingCard.tsx": {
+      "hash": "c278aeb51c4e",
+      "size": 3183,
+      "mtime": 1770327304527.0554,
+      "lastIndexed": 1770397054358,
+      "symbols": [
+        "GlowingCard"
+      ],
+      "imports": [
+        "react",
+        "framer-motion"
+      ],
+      "lineCount": 98,
+      "relevanceScore": 60,
+      "reasons": [
+        "modified today"
+      ]
+    },
+    "components/space/OrionLogo.tsx": {
+      "hash": "443232728f38",
+      "size": 2757,
+      "mtime": 1770327336893.881,
+      "lastIndexed": 1770397054358,
+      "symbols": [
+        "OrionLogo"
+      ],
+      "imports": [
+        "framer-motion"
+      ],
+      "lineCount": 79,
+      "relevanceScore": 60,
+      "reasons": [
+        "modified today"
+      ]
+    },
+    "components/space/ShootingStar.tsx": {
+      "hash": "0a9b46fae143",
+      "size": 2091,
+      "mtime": 1770327321401.3896,
+      "lastIndexed": 1770397054359,
+      "symbols": [
+        "ShootingStars"
+      ],
+      "imports": [
+        "react",
+        "framer-motion"
+      ],
+      "lineCount": 75,
+      "relevanceScore": 60,
+      "reasons": [
+        "modified today"
+      ]
+    },
+    "components/space/SpaceParticles.tsx": {
+      "hash": "e1850e070fb3",
+      "size": 2157,
+      "mtime": 1770327537481.0205,
+      "lastIndexed": 1770397054359,
+      "symbols": [
+        "SpaceParticles"
+      ],
+      "imports": [
+        "react",
+        "@tsparticles/react"
+      ],
+      "lineCount": 85,
+      "relevanceScore": 60,
+      "reasons": [
+        "modified today"
+      ]
+    },
+    "components/space/Spotlight.tsx": {
+      "hash": "d9eb1a612f11",
+      "size": 1793,
+      "mtime": 1770327291157.6743,
+      "lastIndexed": 1770397054359,
+      "symbols": [
+        "Spotlight"
+      ],
+      "imports": [
+        "react",
+        "framer-motion"
+      ],
+      "lineCount": 58,
+      "relevanceScore": 60,
+      "reasons": [
+        "modified today"
+      ]
+    },
+    "components/space/StarField3D.tsx": {
+      "hash": "0e286c6e131f",
+      "size": 5455,
+      "mtime": 1770344796664.1575,
+      "lastIndexed": 1770397054360,
+      "symbols": [
+        "RotatingStars",
+        "StarField3D"
+      ],
+      "imports": [
+        "react",
+        "@react-three/fiber",
+        "@react-three/drei",
+        "framer-motion",
+        "three"
+      ],
+      "lineCount": 175,
+      "relevanceScore": 60,
+      "reasons": [
+        "modified today"
+      ]
+    },
+    "lib/orion/efficiency/bounds-database.ts": {
+      "hash": "9061c341d97b",
+      "size": 12160,
+      "mtime": 1770230176412.552,
+      "lastIndexed": 1770397054360,
+      "symbols": [
+        "ensures",
+        "getBound",
+        "calculateTheoreticalMinimum",
+        "getBoundsMap",
+        "getOptimalAlgorithm",
+        "isTightBound",
+        "formatCitation",
+        "and",
+        "BOUNDS_DATABASE"
+      ],
+      "imports": [],
+      "lineCount": 353,
+      "relevanceScore": 60,
+      "reasons": []
+    },
+    "lib/orion/efficiency/calculator.ts": {
+      "hash": "e8821301a5a0",
+      "size": 8881,
+      "mtime": 1770242620412.1367,
+      "lastIndexed": 1770397054361,
+      "symbols": [
+        "calculateEfficiency",
+        "calculateEfficiencyFromCounts",
+        "inferComplexity",
+        "formatEfficiency",
+        "formatOperations",
+        "generateEfficiencyBar",
+        "was",
+        "EfficiencyInput",
+        "EfficiencyCalculation"
+      ],
+      "imports": [
+        "./bounds-database",
+        "./classifier"
+      ],
+      "lineCount": 286,
+      "relevanceScore": 60,
+      "reasons": []
+    },
+    "lib/orion/efficiency/classifier.ts": {
+      "hash": "1cbfbc1e4c18",
+      "size": 8743,
+      "mtime": 1770241902614.6147,
+      "lastIndexed": 1770397054361,
+      "symbols": [
+        "preprocessing",
+        "detectCodePatterns",
+        "heuristicClassify",
+        "classifyWithLLM",
+        "classifyCode",
+        "getClassLabel",
+        "CODE",
+        "if",
+        "using",
+        "const",
+        "as"
+      ],
+      "imports": [
+        "@anthropic-ai/sdk",
+        "./types"
+      ],
+      "lineCount": 265,
+      "relevanceScore": 60,
+      "reasons": []
+    },
+    "lib/orion/efficiency/measurement.ts": {
+      "hash": "fbf7902fdf1f",
+      "size": 8879,
+      "mtime": 1770247534292.9182,
+      "lastIndexed": 1770397054362,
+      "symbols": [
+        "createEmptyCounts",
+        "createInstrumentedArray",
+        "that",
+        "createComparator",
+        "numericComparator",
+        "and",
+        "should",
+        "measureFunction",
+        "measureAtSizes",
+        "analyzeAtSizes",
+        "calculateStats",
+        "InstrumentedArray",
+        "MeasurementResult"
+      ],
+      "imports": [
+        "./types",
+        "./calculator"
+      ],
+      "lineCount": 294,
+      "relevanceScore": 60,
+      "reasons": []
+    },
+    "lib/orion/verifiers/compile.ts": {
+      "hash": "883b351ee0a1",
+      "size": 13592,
+      "mtime": 1770236052112.655,
+      "lastIndexed": 1770397054364,
+      "symbols": [
+        "verifyCompilation",
+        "getSandboxType",
+        "getInstallCommand",
+        "getBuildCommand",
+        "getTypeCheckCommand",
+        "parseErrors",
+        "parseNodeErrors",
+        "parsePythonErrors",
+        "parseGoErrors",
+        "parseRustErrors"
+      ],
+      "imports": [
+        "e2b",
+        "../types",
+        "./types"
+      ],
+      "lineCount": 450,
+      "relevanceScore": 60,
+      "reasons": []
+    },
+    "scripts/analyze-local.ts": {
+      "hash": "31b2b4ce4cb7",
+      "size": 5186,
+      "mtime": 1770349382913.367,
+      "lastIndexed": 1770397054365,
+      "symbols": [
+        "getRepoFiles",
+        "main"
+      ],
+      "imports": [
+        "fs",
+        "path",
+        "../lib/orion/analyzer",
+        "../lib/orion/stack-detector",
+        "../lib/orion/types"
+      ],
+      "lineCount": 163,
+      "relevanceScore": 60,
+      "reasons": [
+        "modified today"
+      ]
+    },
+    "lib/orion/efficiency/classification-benchmark.ts": {
+      "hash": "4d3ef3897d5a",
+      "size": 78082,
+      "mtime": 1770230528776.9324,
+      "lastIndexed": 1770397054368,
+      "symbols": [
+        "bubbleSort",
+        "selectionSort",
+        "insertionSort",
+        "mergeSort",
+        "merge",
+        "quickSort",
+        "partition",
+        "heapSort",
+        "heapify",
+        "quickSortHoare",
+        "hoarePartition",
+        "shellSort",
+        "sortByValue",
+        "timSort",
+        "insertionSortRange",
+        "mergeRange",
+        "binarySearch",
+        "binarySearchRecursive",
+        "lowerBound",
+        "upperBound",
+        "searchInsert",
+        "searchRotated",
+        "findPeakElement",
+        "mySqrt",
+        "firstBadVersion",
+        "searchMatrix",
+        "linearSearch",
+        "findIndex",
+        "includes",
+        "findMax",
+        "findMin",
+        "countOccurrences",
+        "findAllIndices",
+        "findLast",
+        "twoSum",
+        "findDuplicate",
+        "bfs",
+        "shortestPath",
+        "levelOrder",
+        "countComponents",
+        "gridBFS",
+        "minDepth",
+        "ladderLength",
+        "isBipartite",
+        "orangesRotting",
+        "cloneGraph",
+        "dfs",
+        "dfsIterative",
+        "inorderTraversal",
+        "preorderTraversal",
+        "hasCycle",
+        "topologicalSort",
+        "hasPathSum",
+        "numIslands",
+        "allPathsSourceTarget",
+        "maxDepth",
+        "dijkstra",
+        "networkDelayTime",
+        "findCheapestPrice",
+        "minimumEffortPath",
+        "swimInWater",
+        "dijkstraWithPath",
+        "minCostConnectPoints",
+        "shortestPathBinaryMatrix",
+        "trapRainWater",
+        "naiveSearch",
+        "findAllOccurrences",
+        "strStr",
+        "countPattern",
+        "repeatedSubstringPattern",
+        "longestCommonPrefix",
+        "matchWithWildcard",
+        "isSubsequence",
+        "rotateString",
+        "longestRepeatingSubstring",
+        "kmpSearch",
+        "computeLPS",
+        "kmpFindAll",
+        "buildLPS",
+        "zSearch",
+        "zFunction",
+        "shortestPalindrome",
+        "rabinKarp",
+        "longestPrefix",
+        "repeatedStringMatch",
+        "buildFailure",
+        "kmpContains",
+        "distinctEchoSubstrings",
+        "computeFailure",
+        "removeDuplicateLetters",
+        "findPeriod",
+        "matrixMultiply",
+        "matrixVectorMultiply",
+        "matrixPower",
+        "multiply",
+        "strassenMultiply",
+        "naiveMultiply",
+        "splitMatrix",
+        "addMatrix",
+        "subMatrix",
+        "combineMatrix",
+        "matrixChainOrder",
+        "multiplyByTranspose",
+        "multiplySparse",
+        "blockMatrixMultiply",
+        "dotProduct",
+        "outerProduct",
+        "quickselect",
+        "select",
+        "findMedian",
+        "quickSelect",
+        "findKthLargest",
+        "medianOfMedians",
+        "kthSmallest",
+        "topKFrequent",
+        "wiggleSort",
+        "newIndex",
+        "quickSelectValue",
+        "findClosestElements",
+        "quickSelectK",
+        "percentile",
+        "getCasesByClass",
+        "getCasesByDifficulty",
+        "getBenchmarkStats",
+        "with",
+        "GraphNode",
+        "KthLargest",
+        "CLASSIFICATION_BENCHMARK"
+      ],
+      "imports": [
+        "./types"
+      ],
+      "lineCount": 2844,
+      "relevanceScore": 55,
+      "reasons": []
+    },
+    "tests/orion/efficiency/bounds-database.test.ts": {
+      "hash": "ff80edb71996",
+      "size": 7442,
+      "mtime": 1770348557351.103,
+      "lastIndexed": 1770397054370,
+      "symbols": [],
+      "imports": [
+        "vitest"
+      ],
+      "lineCount": 228,
+      "relevanceScore": 50,
+      "reasons": [
+        "modified today"
+      ]
+    },
+    "tests/orion/efficiency/calculator.test.ts": {
+      "hash": "2401e279f7f1",
+      "size": 10113,
+      "mtime": 1770348552714.8796,
+      "lastIndexed": 1770397054370,
+      "symbols": [
+        "createCounts"
+      ],
+      "imports": [
+        "vitest",
+        "@/lib/orion/efficiency/types"
+      ],
+      "lineCount": 290,
+      "relevanceScore": 50,
+      "reasons": [
+        "modified today"
+      ]
+    },
+    "tests/orion/efficiency/classification-benchmark.test.ts": {
+      "hash": "7c3c85f40720",
+      "size": 8879,
+      "mtime": 1770348555816.8184,
+      "lastIndexed": 1770397054371,
+      "symbols": [
+        "names",
+        "variants",
+        "should",
+        "keyword"
+      ],
+      "imports": [
+        "vitest",
+        "@/lib/orion/efficiency/types"
+      ],
+      "lineCount": 282,
+      "relevanceScore": 50,
+      "reasons": [
+        "modified today"
+      ]
+    },
+    "tests/orion/efficiency/classifier.test.ts": {
+      "hash": "ce70cd490f81",
+      "size": 9014,
+      "mtime": 1770348551822.3052,
+      "lastIndexed": 1770397054371,
+      "symbols": [
+        "sort",
+        "bfs",
+        "findDuplicate",
+        "bubbleSort",
+        "factorial",
+        "dfs",
+        "search",
+        "findPattern",
+        "mystery",
+        "binarySearch",
+        "quickselect",
+        "a",
+        "broken",
+        "f"
+      ],
+      "imports": [
+        "vitest",
+        "@/lib/orion/efficiency/types"
+      ],
+      "lineCount": 299,
+      "relevanceScore": 50,
+      "reasons": [
+        "modified today"
+      ]
+    },
+    "tests/orion/efficiency/measurement.test.ts": {
+      "hash": "a7ed31370d16",
+      "size": 9440,
+      "mtime": 1770348554734.0647,
+      "lastIndexed": 1770397054372,
+      "symbols": [
+        "createCounts",
+        "createMeasurement",
+        "as"
+      ],
+      "imports": [
+        "vitest",
+        "@/lib/orion/efficiency/types"
+      ],
+      "lineCount": 325,
+      "relevanceScore": 50,
+      "reasons": [
+        "modified today"
+      ]
+    },
+    "tests/orion/verifiers/compile.test.ts": {
+      "hash": "50e39874a05e",
+      "size": 13693,
+      "mtime": 1770348554806.338,
+      "lastIndexed": 1770397054373,
+      "symbols": [],
+      "imports": [
+        "vitest",
+        "@/lib/orion/verifiers/compile",
+        "@/lib/orion/types",
+        "e2b"
+      ],
+      "lineCount": 473,
+      "relevanceScore": 50,
+      "reasons": [
+        "modified today"
       ]
     }
   },
-  "totalFiles": 88,
-  "totalSymbols": 336
+  "totalFiles": 121,
+  "totalSymbols": 637
 }

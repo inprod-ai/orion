@@ -184,7 +184,9 @@ function extractArchitectureFiles(files: RepoFile[]): RepoFile[] {
   const seen = new Set<string>()
 
   for (const pattern of patterns) {
+    if (found.length >= 20) break // Cap at 20 files
     for (const file of files) {
+      if (found.length >= 20) break
       if (!seen.has(file.path) && pattern(file)) {
         // Truncate large files to 3000 chars
         found.push({
@@ -194,7 +196,6 @@ function extractArchitectureFiles(files: RepoFile[]): RepoFile[] {
         seen.add(file.path)
       }
     }
-    if (found.length >= 20) break // Cap at 20 files
   }
 
   return found
