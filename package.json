@@ -1,6 +1,6 @@
 {
   "name": "orion-archi",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Production readiness CLI - analyze any codebase for security, testing, CI/CD, and more",
   "author": "Orion <hello@orion.archi>",
   "license": "MIT",
@@ -23,6 +23,7 @@
   ],
   "private": false,
   "bin": {
+    "orion-archi": "./cli/dist/index.js",
     "orion": "./cli/dist/index.js"
   },
   "files": [
@@ -38,7 +39,7 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "typecheck": "tsc --noEmit",
-    "postinstall": "prisma generate",
+    "postinstall": "test -f prisma/schema.prisma && prisma generate || true",
     "prepare": "husky"
   },
   "dependencies": {
